@@ -116,6 +116,9 @@ class testApp : public ofxiPhoneApp{
     ofRectangle viewButtons[5];
     int curView;
     
+    //images to display as the boarders
+    ofImage borderPics[2];
+    
     //resons the game might be paused   SOME OF THESE DON'T APPLY IN THE IPAD VERSION
     bool paused;        //global pause. If any reason is true, this is true
     bool playerPause;   //player pauses the game

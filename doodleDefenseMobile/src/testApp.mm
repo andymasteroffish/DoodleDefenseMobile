@@ -12,15 +12,14 @@ void testApp::setup(){
 	ofBackground(127,127,127);
     
     //size of the grid the game is played on
-    float sizeIncreaseToBoard = 8;
+    float sizeIncreaseToBoard = 7;
     fieldW=80;
     fieldH=60;
     boardW=fieldW*sizeIncreaseToBoard;
     boardH=fieldH*sizeIncreaseToBoard;
     
-    fieldScale = 8; //this was 7 in the computer verison
+    fieldScale = 10; //this was 7 in the computer verison
     boardScale = fieldScale/sizeIncreaseToBoard; //these things should not be set manualy since they need to be exact
-                                                    //yes, right now this = 1 and could probably be removed
     
     //setup vector field
     VF.setupField(120, 90,fieldW*fieldScale, fieldH*fieldScale);
@@ -72,6 +71,9 @@ void testApp::setup(){
     goalX[1]=boardW*boardScale/2+25;
     goalY[1]=boardH*boardScale-10;
     
+    //border
+    borderPics[0].loadImage("walls1Entrance.png");
+    borderPics[1].loadImage("walls2Entrance.png");
     
     //color selection
     curBrushColor = 3;
@@ -128,6 +130,8 @@ void testApp::setup(){
     
     fingerDown = false;
     gameStarted = true;
+    
+    combinedImg.invert();
     
     reset();
 }
@@ -469,9 +473,8 @@ void testApp::draw(){
     if (curView == 4)
         combinedImg.draw(boardOffset.x,boardOffset.y, boardW*boardScale, boardH*boardScale);
     
-    
     //testing the wall image
-    wallImage.draw(boardOffset.x+boardW*boardScale, boardOffset.y, fieldW*2, fieldH*2);
+    wallImage.draw(boardOffset.x+boardW*boardScale, ofGetHeight()*0.5, fieldW*2, fieldH*2);
     
     //color selection buttons
     ofFill();
@@ -518,9 +521,10 @@ void testApp::draw(){
     //ofScale(projScale, projScale);
     
     //show the border
-    ofSetRectMode(OF_RECTMODE_CORNER);
-    ofSetColor(255);
-    //borderPics[numEntrances-1].draw(0,0,fieldW*fieldScale,fieldH*fieldScale);
+//    ofSetRectMode(OF_RECTMODE_CORNER);
+//    ofSetColor(255);
+//    borderPics[numEntrances-1].draw(0,0,boardW*boardScale,boardH*boardScale);
+    
     //show the game
     drawGame();
     //drawPlayerInfo();   //show player stats that live outside of the game area
@@ -791,6 +795,7 @@ void testApp::touchMoved(ofTouchEventArgs & touch){
         
         //put all of the images together as one unified and briliant whole
         combinedImg.setFromPixels(combinedPixels, boardW, boardH);
+        combinedImg.invert();
     }
     
 }
