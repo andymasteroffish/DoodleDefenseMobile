@@ -12,7 +12,7 @@ void testApp::setup(){
 	ofBackground(127,127,127);
     
     //size of the grid the game is played on
-    float sizeIncreaseToBoard = 3;
+    float sizeIncreaseToBoard = 8;
     fieldW=80;
     fieldH=60;
     boardW=fieldW*sizeIncreaseToBoard;
@@ -20,6 +20,7 @@ void testApp::setup(){
     
     fieldScale = 8; //this was 7 in the computer verison
     boardScale = fieldScale/sizeIncreaseToBoard; //these things should not be set manualy since they need to be exact
+                                                    //yes, right now this = 1 and could probably be removed
     
     //setup vector field
     VF.setupField(128, 96,fieldW*fieldScale, fieldH*fieldScale);
@@ -711,7 +712,7 @@ void testApp::touchMoved(ofTouchEventArgs & touch){
     
     int brushStrength = 100;    //how much it adds at the center
     
-    int maxDist = 5*boardScale;
+    int maxDist = 15*boardScale;
     if (curBrushColor == 4) maxDist*=3; //make the eraser bigger
     //paint into the array
     int brushSize=maxDist/boardScale;
@@ -831,7 +832,7 @@ void testApp::convertDrawingToGame(){
     wallImage.invert();
     wallPixels=wallImage.getPixels();
     //thickenWallImage(); //maybe don't need to do this
-    //setMazeBorders();
+    setMazeBorders();
     
     //pathfinding for the foes
     if (foes.size()>0){
