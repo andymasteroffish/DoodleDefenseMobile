@@ -12,19 +12,23 @@ void testApp::setup(){
 	ofBackground(127,127,127);
     
     //size of the grid the game is played on
-    fieldW=160/2;
-    fieldH=120/2;
-    boardW=fieldW*3;
-    boardH=fieldH*3;
+    float sizeIncreaseToBoard = 3;
+    fieldW=80;
+    fieldH=60;
+    boardW=fieldW*sizeIncreaseToBoard;
+    boardH=fieldH*sizeIncreaseToBoard;
     
-    fieldScale = 7; //this was 7 in the computer verison
+    fieldScale = 8; //this was 7 in the computer verison
+    boardScale = fieldScale/sizeIncreaseToBoard; //these things should not be set manualy since they need to be exact
+    
+    //setup vector field
     VF.setupField(128, 96,fieldW*fieldScale, fieldH*fieldScale);
     
     boardOffset.set(10,120);
     
     //black image
-    blackImg.allocate(fieldW, fieldH);
-    blackPixels = new unsigned char [fieldW * fieldH];
+    blackImg.allocate(boardW, boardH);
+    blackPixels = new unsigned char [boardW * boardH];
     blackThreshold = 97;
     
     //set up the images
@@ -33,21 +37,21 @@ void testApp::setup(){
     
     //r,g,b images WILL PROBABLY NEED TO BE DOUBLE RESOLUTION
     for (int i=0; i<3; i++){
-        colorImgs[i].allocate(fieldW, fieldH);
-        colorPixels[i]= new unsigned char [fieldW * fieldH];
+        colorImgs[i].allocate(boardW, boardH);
+        colorPixels[i]= new unsigned char [boardW * boardH];
     }
     //combined image
-    combinedImg.allocate(fieldW, fieldH);
-    combinedPixels = new unsigned char [fieldW * fieldH * 3];
+    combinedImg.allocate(boardW, boardH);
+    combinedPixels = new unsigned char [boardW * boardH * 3];
     
     //clear them
-    for (int i=0; i<fieldW*fieldH; i++){
+    for (int i=0; i<boardW*boardH; i++){
         blackPixels[i] = 0;
         colorPixels[0][i] = 0;
         colorPixels[1][i] = 0;
         colorPixels[2][i] = 0;
     }
-    for (int i=0; i<fieldW*fieldH*3; i++){
+    for (int i=0; i<boardW*boardH*3; i++){
         combinedPixels[i] = 0;
     }
     
@@ -58,14 +62,14 @@ void testApp::setup(){
     mazeRight=fieldW-4;
     
     //where the foes start and end
-    startX[0]=60/fieldScale;
-    startY[0]=fieldH*fieldScale/2+25;
-    startX[1]=fieldW*fieldScale/2+25;
-    startY[1]=60/fieldScale;
-    goalX[0]=fieldW*fieldScale-10;
-    goalY[0]=fieldH*fieldScale/2+25;
-    goalX[1]=fieldW*fieldScale/2+25;
-    goalY[1]=fieldH*fieldScale-10;
+    startX[0]=60/boardScale;
+    startY[0]=boardH*boardScale/2+25;
+    startX[1]=boardW*boardScale/2+25;
+    startY[1]=60/boardScale;
+    goalX[0]=boardW*boardScale-10;
+    goalY[0]=boardH*boardScale/2+25;
+    goalX[1]=boardW*boardScale/2+25;
+    goalY[1]=boardH*boardScale-10;
     
     
     //color selection
@@ -447,15 +451,15 @@ void testApp::draw(){
 	ofSetColor(255);
     
     if (curView < 3)
-        colorImgs[curView].draw(boardOffset.x,boardOffset.y, fieldW*fieldScale, fieldH*fieldScale);
+        colorImgs[curView].draw(boardOffset.x,boardOffset.y, boardW*boardScale, boardH*boardScale);
     if (curView == 3)
-        blackImg.draw(boardOffset.x,boardOffset.y, fieldW*fieldScale, fieldH*fieldScale);
+        blackImg.draw(boardOffset.x,boardOffset.y, boardW*boardScale, boardH*boardScale);
     if (curView == 4)
-        combinedImg.draw(boardOffset.x,boardOffset.y, fieldW*fieldScale, fieldH*fieldScale);
+        combinedImg.draw(boardOffset.x,boardOffset.y, boardW*boardScale, boardH*boardScale);
     
     
-    //tetsing the wall image
-    wallImage.draw(boardOffset.x+fieldW*fieldScale, boardOffset.y, fieldW*2, fieldH*2);
+    //testing the wall image
+    wallImage.draw(boardOffset.x+boardW*boardScale, boardOffset.y, fieldW*2, fieldH*2);
     
     //color selection buttons
     ofFill();
@@ -707,25 +711,26 @@ void testApp::touchMoved(ofTouchEventArgs & touch){
     
     int brushStrength = 100;    //how much it adds at the center
     
-    int maxDist = 2*fieldScale;
+    int maxDist = 5*boardScale;
+    if (curBrushColor == 4) maxDist*=3; //make the eraser bigger
     //paint into the array
-    int brushSize=maxDist/fieldScale;
+    int brushSize=maxDist/boardScale;
     //get the center of the brush
-    int xMid=relativeX/fieldScale;
-    int yMid=relativeY/fieldScale;
+    int xMid=relativeX/boardScale;
+    int yMid=relativeY/boardScale;
     
     int xStart=MAX(0,xMid-brushSize);
-    int xEnd=MIN(fieldW,xMid+brushSize);
+    int xEnd=MIN(boardW,xMid+brushSize);
     int yStart=MAX(0,yMid-brushSize);
-    int yEnd=MIN(fieldH,yMid+brushSize);
+    int yEnd=MIN(boardH,yMid+brushSize);
     
     //go through and set the pixels being effected by the brush
     for (int col=xStart; col<xEnd; col++){
         for (int row=yStart; row<yEnd; row++){
-            int pos= row*fieldW+col;
-            int rgbPos = row*fieldW*3+col*3;
+            int pos= row*boardW+col;
+            int rgbPos = row*boardW*3+col*3;
             
-            int brushAmount = ofMap(ofDist(relativeX, relativeY, col*fieldScale, row*fieldScale),0, maxDist, brushStrength, 0, true);
+            int brushAmount = ofMap(ofDist(relativeX, relativeY, col*boardScale, row*boardScale),0, maxDist, brushStrength, 0, true);
             
             if (touch.id == 0){
                 if (curBrushColor<3){
@@ -763,11 +768,11 @@ void testApp::touchMoved(ofTouchEventArgs & touch){
     
     //set the image
     for (int i=0; i<3; i++)
-        colorImgs[i].setFromPixels(colorPixels[i],fieldW, fieldH);
-    blackImg.setFromPixels(blackPixels, fieldW, fieldH);
+        colorImgs[i].setFromPixels(colorPixels[i],boardW, boardH);
+    blackImg.setFromPixels(blackPixels, boardW, boardH);
     
     //put all of the images together as one unified and briliant whole
-    combinedImg.setFromPixels(combinedPixels, fieldW, fieldH);
+    combinedImg.setFromPixels(combinedPixels, boardW, boardH);
     
 }
 
@@ -820,11 +825,12 @@ void testApp::convertDrawingToGame(){
     needToConvertDrawingToGame = false; //turn the flag off
     
     //get the walls
-    wallImage=blackImg;
+    wallImage.scaleIntoMe(blackImg);
+    //wallImage=blackImg;
     wallImage.threshold(blackThreshold,false);
     wallImage.invert();
     wallPixels=wallImage.getPixels();
-    thickenWallImage();
+    //thickenWallImage(); //maybe don't need to do this
     //setMazeBorders();
     
     //pathfinding for the foes

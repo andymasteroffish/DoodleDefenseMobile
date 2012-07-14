@@ -75,7 +75,8 @@ class testApp : public ofxiPhoneApp{
     int boardW;
     int boardH;
     
-    float fieldScale; //how much to blow up the image
+    float fieldScale; //how much to blow up the wall image
+    float boardScale;   //how much to blow up the display image
     
     //walls
     ofxCvGrayscaleImage		blackImg;
