@@ -144,10 +144,10 @@ void Foe::update(){
         
         //if we've reach the move particle, the foe is done
         if ( (goalX>goalY && p.pos.x>moveParticle.pos.x) || 
-             (goalY>goalX && p.pos.y>moveParticle.pos.y) ) {
+            (goalY>goalX && p.pos.y>moveParticle.pos.y) ) {
             reachedTheEnd=true;
         }
-
+        
     }
     
     //test if the foes is dead
@@ -169,7 +169,7 @@ void Foe::update(){
 
 //------------------------------------------------------------
 void Foe::standardDraw(){
-
+    
     ofFill();
     
     
@@ -233,13 +233,13 @@ void Foe::drawDebug(){
 //draws the area that was explored when no path was found. Also flashes the location of the foe
 void Foe::drawExplored(){
     //otherwise draw the area explored
-     ofSetColor(220,35,130,40);
+    ofSetColor(220,35,130,40);
     ofPushMatrix();
     ofScale(fieldScale,fieldScale);
     for (int i=0; i<closedList.size()-1; i++)
         ofRect(closedList[i]->x,closedList[i]->y,2,2);
     ofPopMatrix();
-
+    
 }
 
 //------------------------------------------------------------
@@ -253,11 +253,11 @@ void Foe::setNextNode(){
     int tileY= MIN( fieldH-1, MAX(0, route[nextNode]->y));
     
     //set the particle position
-//    moveParticle.pos.x=route[nextNode]->x*fieldScale;
-//    moveParticle.pos.y=route[nextNode]->y*fieldScale;
+    //    moveParticle.pos.x=route[nextNode]->x*fieldScale;
+    //    moveParticle.pos.y=route[nextNode]->y*fieldScale;
     moveParticle.pos.x=tileX*fieldScale;
     moveParticle.pos.y=tileY*fieldScale;
-
+    
     
     moveAtraction=speed;
     
@@ -302,7 +302,7 @@ bool Foe::checkExistingRoute(vector<tile *> & existing){
     }
     
     return false;
-
+    
 }
 
 //------------------------------------------------------------

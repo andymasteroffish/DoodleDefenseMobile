@@ -12,9 +12,12 @@ void testApp::setup(){
 	ofBackground(127,127,127);
     
     //size of the grid the game is played on
-    fieldW=160;
-    fieldH=120;
-    fieldScale = 3; //this was 7 in the computer verison
+    fieldW=160/2;
+    fieldH=120/2;
+    boardW=fieldW*3;
+    boardH=fieldH*3;
+    
+    fieldScale = 7; //this was 7 in the computer verison
     VF.setupField(128, 96,fieldW*fieldScale, fieldH*fieldScale);
     
     boardOffset.set(10,120);
@@ -83,14 +86,14 @@ void testApp::setup(){
     for (int i=0; i<NUM_FOE_FRAMES; i++){
         normFoePic[0][i].loadImage("foePics/normal/wnormal"+ofToString(i+1)+".png");
         normFoePic[1][i].loadImage("foePics/normal/nfill"+ofToString(i+1)+".png");
-//        fastFoePic[0][i].loadImage("foePics/fast/wfast"+ofToString(i+1)+".png");
-//        fastFoePic[1][i].loadImage("foePics/fast/ffill"+ofToString(i+1)+".png");
-//        heavyFoePic[0][i].loadImage("foePics/heavy/heavy"+ofToString(i+1)+".png");
-//        heavyFoePic[1][i].loadImage("foePics/heavy/hfill"+ofToString(i+1)+".png");
-//        stealthFoePic[0][i].loadImage("foePics/stealth/wstealth"+ofToString(i+1)+".png");
-//        stealthFoePic[1][i].loadImage("foePics/stealth/sfill"+ofToString(i+1)+".png");
-//        immuneRedFoePic[0][i].loadImage("foePics/immune/immune"+ofToString(i+1)+".png");
-//        immuneRedFoePic[1][i].loadImage("foePics/immune/ifill"+ofToString(i+1)+".png");
+        //        fastFoePic[0][i].loadImage("foePics/fast/wfast"+ofToString(i+1)+".png");
+        //        fastFoePic[1][i].loadImage("foePics/fast/ffill"+ofToString(i+1)+".png");
+        //        heavyFoePic[0][i].loadImage("foePics/heavy/heavy"+ofToString(i+1)+".png");
+        //        heavyFoePic[1][i].loadImage("foePics/heavy/hfill"+ofToString(i+1)+".png");
+        //        stealthFoePic[0][i].loadImage("foePics/stealth/wstealth"+ofToString(i+1)+".png");
+        //        stealthFoePic[1][i].loadImage("foePics/stealth/sfill"+ofToString(i+1)+".png");
+        //        immuneRedFoePic[0][i].loadImage("foePics/immune/immune"+ofToString(i+1)+".png");
+        //        immuneRedFoePic[1][i].loadImage("foePics/immune/ifill"+ofToString(i+1)+".png");
     }
     
     //explosion and puff images
@@ -115,6 +118,8 @@ void testApp::setup(){
     infoFont.loadFont(fontName, 50, true, true);
     infoFontBig.loadFont(fontName, 75, true, true);
     infoFontHuge.loadFont(fontName, 100, true, true);
+    
+    showAllInfo = false;
     
     reset();
 }
@@ -180,7 +185,6 @@ void testApp::loadFromText(){
             if (cmd=="ran"){
                 waves[waves.size()-1].randomize();
             }
-            cout<<"add wave"<<endl;
         }
 	}
     
@@ -201,14 +205,14 @@ void testApp::loadFromText(){
 //--------------------------------------------------------------
 void testApp::reset(){ 
     
-//    //clear out any foes if there are any
-//    for (int i=foes.size()-1; i>=0; i--)
-//        killFoe(i);
-//    
-//    //set all towers to think the player is alive
-//    for (int i=0; i<towers.size(); i++)
-//        towers[i]->playerDead=false;
-//    
+    //    //clear out any foes if there are any
+    //    for (int i=foes.size()-1; i>=0; i--)
+    //        killFoe(i);
+    //    
+    //    //set all towers to think the player is alive
+    //    for (int i=0; i<towers.size(); i++)
+    //        towers[i]->playerDead=false;
+    //    
     health=healthStart;
     totalInk=startInk;
     score=0;
@@ -219,28 +223,28 @@ void testApp::reset(){
     fastForward = false;
     
     damageFlashTimer=0;
-//    
-//    //clear any ink coming to the player
-//    inkParticles.clear();
-//    
-//    //set all of the pixels to blank
-//    for (int i=0; i<fieldW*fieldH; i++){
-//        wallPixels[i]=255;
-//    }
-//    
+    //    
+    //    //clear any ink coming to the player
+    //    inkParticles.clear();
+    //    
+    //    //set all of the pixels to blank
+    //    for (int i=0; i<fieldW*fieldH; i++){
+    //        wallPixels[i]=255;
+    //    }
+    //    
     paused=false;
     noPath=false;
-//    
-//    towerID=0;
-//    
+    //    
+    //    towerID=0;
+    //    
     curWave=-1;
     wavesDone=false;
     loadFromText();
-//    startNextWave();
-//    
-//    //play the sound
-//    if (ofGetFrameNum()>5)  //don't play the sound when the game first turns on
-//        SM.playSound("start");
+    //    startNextWave();
+    //    
+    //    //play the sound
+    //    if (ofGetFrameNum()>5)  //don't play the sound when the game first turns on
+    //        SM.playSound("start");
     
     convertDrawingToGame();
 }
@@ -297,112 +301,112 @@ void testApp::update(){
             }
         }
         
-//        //add to the punishment timer if a foe back tracked
-//        if (addToPunishmentTimer)
-//            punishmentFoeTimer++;
-//        
-//        //reduce the timer slightly to account for no back tracking recently
-//        if (punishmentFoeTimer>0 && !paused)
-//            punishmentFoeTimer-=punishmentTimerDecrease;
-//        
-//        //check if it's time to spawn an punishment foe
-//        if (punishmentFoeTimer>=punishmentFoeTime){
-//            punishmentFoeTimer=0;   //reset the timer
-//            //spawn a stealth foe slightly stronger than the current wave level
-//            spawnFoe("stealth", waves[curWave].level+1);
-//        }
-//        
-//        //if the game was paused because a foes didn't have a path, unpause if the way is clear now
-//        //        if (allFoesHavePath && noPath){
-//        //            noPath=false;
-//        //        }
-//        
-//        //update the towers
-//        for (int i=0; i<towers.size(); i++){
-//            towers[i]->update();
-//            
-//            //if this tower is ready to shoot and the player isn't dead, check if there is a foe within range
-//            if (towers[i]->readyToShoot && health>0){
-//                
-//                float closestDist=10000000;
-//                int closestID=-1;
-//                for (int k=0; k<foes.size(); k++){
-//                    float distance=towers[i]->pos.distance(foes[k]->p.pos);
-//                    if ( distance < towers[i]->range +towers[i]->rangePadding && distance<closestDist){
-//                        
-//                        //red can only target foes not immune to red
-//                        if (towers[i]->type=="red" && foes[k]->type!="immune_red"){
-//                            closestDist=distance;
-//                            closestID=k;
-//                        }
-//                        
-//                        //green can shoot goddamn anything
-//                        if (towers[i]->type=="green"){
-//                            closestDist=distance;
-//                            closestID=k;
-//                        }
-//                        
-//                        //freeze tower cannot shoot the foe if it is already frozen
-//                        if (towers[i]->type=="blue" && foes[k]->freezeTimer<=0){
-//                            closestDist=distance;
-//                            closestID=k;
-//                        }
-//                    }
-//                }
-//                
-//                if (closestID!=-1){
-//                    towers[i]->fire(foes[closestID]);
-//                }
-//                
-//            }
-//            
-//            //if this is a bomb tower, check if it just hit
-//            if(towers[i]->bombHit){
-//                towers[i]->bombHit=false;
-//                
-//                //find all of the foes in range of the bullet and damage them
-//                for (int k=0; k<foes.size(); k++){
-//                    if (towers[i]->bullet.pos.distance(foes[k]->p.pos)<towers[i]->blastRadius){
-//                        foes[k]->hp-=towers[i]->bulletDamage;
-//                    }
-//                }
-//                
-//                //add an animation
-//                BombAnimation newBombAnimation;
-//                newBombAnimation.setup(towers[i]->bullet.pos.x,towers[i]->bullet.pos.y,towers[i]->blastRadius);
-//                bombAnimations.push_back(newBombAnimation);
-//            }
-//        }
+        //        //add to the punishment timer if a foe back tracked
+        //        if (addToPunishmentTimer)
+        //            punishmentFoeTimer++;
+        //        
+        //        //reduce the timer slightly to account for no back tracking recently
+        //        if (punishmentFoeTimer>0 && !paused)
+        //            punishmentFoeTimer-=punishmentTimerDecrease;
+        //        
+        //        //check if it's time to spawn an punishment foe
+        //        if (punishmentFoeTimer>=punishmentFoeTime){
+        //            punishmentFoeTimer=0;   //reset the timer
+        //            //spawn a stealth foe slightly stronger than the current wave level
+        //            spawnFoe("stealth", waves[curWave].level+1);
+        //        }
+        //        
+        //        //if the game was paused because a foes didn't have a path, unpause if the way is clear now
+        //        //        if (allFoesHavePath && noPath){
+        //        //            noPath=false;
+        //        //        }
+        //        
+        //        //update the towers
+        //        for (int i=0; i<towers.size(); i++){
+        //            towers[i]->update();
+        //            
+        //            //if this tower is ready to shoot and the player isn't dead, check if there is a foe within range
+        //            if (towers[i]->readyToShoot && health>0){
+        //                
+        //                float closestDist=10000000;
+        //                int closestID=-1;
+        //                for (int k=0; k<foes.size(); k++){
+        //                    float distance=towers[i]->pos.distance(foes[k]->p.pos);
+        //                    if ( distance < towers[i]->range +towers[i]->rangePadding && distance<closestDist){
+        //                        
+        //                        //red can only target foes not immune to red
+        //                        if (towers[i]->type=="red" && foes[k]->type!="immune_red"){
+        //                            closestDist=distance;
+        //                            closestID=k;
+        //                        }
+        //                        
+        //                        //green can shoot goddamn anything
+        //                        if (towers[i]->type=="green"){
+        //                            closestDist=distance;
+        //                            closestID=k;
+        //                        }
+        //                        
+        //                        //freeze tower cannot shoot the foe if it is already frozen
+        //                        if (towers[i]->type=="blue" && foes[k]->freezeTimer<=0){
+        //                            closestDist=distance;
+        //                            closestID=k;
+        //                        }
+        //                    }
+        //                }
+        //                
+        //                if (closestID!=-1){
+        //                    towers[i]->fire(foes[closestID]);
+        //                }
+        //                
+        //            }
+        //            
+        //            //if this is a bomb tower, check if it just hit
+        //            if(towers[i]->bombHit){
+        //                towers[i]->bombHit=false;
+        //                
+        //                //find all of the foes in range of the bullet and damage them
+        //                for (int k=0; k<foes.size(); k++){
+        //                    if (towers[i]->bullet.pos.distance(foes[k]->p.pos)<towers[i]->blastRadius){
+        //                        foes[k]->hp-=towers[i]->bulletDamage;
+        //                    }
+        //                }
+        //                
+        //                //add an animation
+        //                BombAnimation newBombAnimation;
+        //                newBombAnimation.setup(towers[i]->bullet.pos.x,towers[i]->bullet.pos.y,towers[i]->blastRadius);
+        //                bombAnimations.push_back(newBombAnimation);
+        //            }
+        //        }
     }
     
-//    //kil any old bomb animations
-//    for (int i=bombAnimations.size()-1; i>=0; i--){
-//        bombAnimations[i].update();
-//        if (bombAnimations[i].done)
-//            bombAnimations.erase(bombAnimations.begin()+i);
-//    }
-//    
-//    //update ink particles
-//    int inkEndX=-175;
-//    int inkEndY=215;
-//    for (int i=inkParticles.size()-1; i>=0; i--){
-//        //reset the particle
-//        inkParticles[i].resetForce();
-//        //atract the controler to the next node
-//        inkParticles[i].addAttractionForce(inkEndX, inkEndY, 10000, 0.4);
-//        //dampen and update the particle
-//        inkParticles[i].addDampingForce();
-//        inkParticles[i].update();
-//        
-//        //check if it reached the end
-//        if (ofDist(inkParticles[i].pos.x, inkParticles[i].pos.y, inkEndX, inkEndY)<20){
-//            //give the player ink
-//            totalInk++;
-//            //kill the particle
-//            inkParticles.erase(inkParticles.begin()+i);
-//        }
-//    }
-//    
+    //    //kil any old bomb animations
+    //    for (int i=bombAnimations.size()-1; i>=0; i--){
+    //        bombAnimations[i].update();
+    //        if (bombAnimations[i].done)
+    //            bombAnimations.erase(bombAnimations.begin()+i);
+    //    }
+    //    
+    //    //update ink particles
+    //    int inkEndX=-175;
+    //    int inkEndY=215;
+    //    for (int i=inkParticles.size()-1; i>=0; i--){
+    //        //reset the particle
+    //        inkParticles[i].resetForce();
+    //        //atract the controler to the next node
+    //        inkParticles[i].addAttractionForce(inkEndX, inkEndY, 10000, 0.4);
+    //        //dampen and update the particle
+    //        inkParticles[i].addDampingForce();
+    //        inkParticles[i].update();
+    //        
+    //        //check if it reached the end
+    //        if (ofDist(inkParticles[i].pos.x, inkParticles[i].pos.y, inkEndX, inkEndY)<20){
+    //            //give the player ink
+    //            totalInk++;
+    //            //kill the particle
+    //            inkParticles.erase(inkParticles.begin()+i);
+    //        }
+    //    }
+    //    
     //update explosions and puffs
     for (int i=explosions.size()-1; i>=0; i--){
         explosions[i].update();
@@ -410,38 +414,38 @@ void testApp::update(){
         if (explosions[i].killMe)
             explosions.erase(explosions.begin()+i);
     }
-//    
-//    //update the wave info boxes if they need any changing
-//    //fade out the bottom box if the level was just finished
-//    if (waveInfoBoxes.size()>0){
-//        if (waveInfoBoxes[0].fading){
-//            waveInfoBoxes[0].alpha-=waveInfoBoxes[0].fadeSpeed;
-//            //kill it if it is gone
-//            if (waveInfoBoxes[0].alpha<=0){
-//                waveInfoBoxes.erase(waveInfoBoxes.begin());
-//            }
-//        }
-//    }
-//    //if the bottom box is not on the bottom line, move them all down and adjust the alhpa
-//    if (waveInfoBoxes.size()>0){    //make sure there is somehting there
-//        if (waveInfoBoxes[0].pos.y<waveInfoBottom){
-//            for (int i=0; i<waveInfoBoxes.size(); i++){
-//                waveInfoBoxes[i].pos.y+=waveInfoBoxes[i].fallSpeed;
-//                //make sure they don't go below the line
-//                waveInfoBoxes[i].pos.y=MIN(waveInfoBottom, waveInfoBoxes[i].pos.y);
-//                //set the alpha based on the distance to the bottom line
-//                waveInfoBoxes[i].alpha=ofMap( waveInfoBottom-waveInfoBoxes[i].pos.y, 0, waveInfoDistToFadeOut, 255, 0, true);
-//            }
-//        }
-//    }
-//    
+    //    
+    //    //update the wave info boxes if they need any changing
+    //    //fade out the bottom box if the level was just finished
+    //    if (waveInfoBoxes.size()>0){
+    //        if (waveInfoBoxes[0].fading){
+    //            waveInfoBoxes[0].alpha-=waveInfoBoxes[0].fadeSpeed;
+    //            //kill it if it is gone
+    //            if (waveInfoBoxes[0].alpha<=0){
+    //                waveInfoBoxes.erase(waveInfoBoxes.begin());
+    //            }
+    //        }
+    //    }
+    //    //if the bottom box is not on the bottom line, move them all down and adjust the alhpa
+    //    if (waveInfoBoxes.size()>0){    //make sure there is somehting there
+    //        if (waveInfoBoxes[0].pos.y<waveInfoBottom){
+    //            for (int i=0; i<waveInfoBoxes.size(); i++){
+    //                waveInfoBoxes[i].pos.y+=waveInfoBoxes[i].fallSpeed;
+    //                //make sure they don't go below the line
+    //                waveInfoBoxes[i].pos.y=MIN(waveInfoBottom, waveInfoBoxes[i].pos.y);
+    //                //set the alpha based on the distance to the bottom line
+    //                waveInfoBoxes[i].alpha=ofMap( waveInfoBottom-waveInfoBoxes[i].pos.y, 0, waveInfoDistToFadeOut, 255, 0, true);
+    //            }
+    //        }
+    //    }
+    //    
 	
 }
 
 //--------------------------------------------------------------
 void testApp::draw(){	
 	ofSetColor(255);
-        
+    
     if (curView < 3)
         colorImgs[curView].draw(boardOffset.x,boardOffset.y, fieldW*fieldScale, fieldH*fieldScale);
     if (curView == 3)
@@ -533,9 +537,9 @@ void testApp::drawGame(){
         VF.draw();
     }
     
-//    //show the towers
-//    for (int i=0; i<towers.size(); i++)
-//        towers[i]->draw();
+    //    //show the towers
+    //    for (int i=0; i<towers.size(); i++)
+    //        towers[i]->draw();
     
     //show the foes
     for (int i=0; i<foes.size(); i++){
@@ -545,140 +549,140 @@ void testApp::drawGame(){
     }
     
     //draw the bomb animations if there are any
-//    ofFill();
-//    for (int i=0; i<bombAnimations.size(); i++)
-//        bombAnimations[i].draw();
+    //    ofFill();
+    //    for (int i=0; i<bombAnimations.size(); i++)
+    //        bombAnimations[i].draw();
     
     //draw explosions and puffs
     for (int i=0; i<explosions.size(); i++)
         explosions[i].draw();
     
     //draw ink particles if there are any
-//    ofSetColor(150);
-//    for (int i=0; i<inkParticles.size(); i++)
-//        inkParticles[i].draw();
+    //    ofSetColor(150);
+    //    for (int i=0; i<inkParticles.size(); i++)
+    //        inkParticles[i].draw();
     
     
 }
 
 //--------------------------------------------------------------
 void testApp::drawWaveCompleteAnimation(){
-//    //get the amount of time the animation has played
-//    float curTime=ofGetElapsedTimef()-waveAnimationStart;
-//    
-//    int messageX=615;
-//    int messageY=-120;
-//    
-//    ofColor thisCol;
-//    thisCol.setHsb(ofRandom(255), 255, 100);
-//    
-//    ofSetColor(thisCol);
-//    
-//    
-//    if (wavesDone)
-//        banners[3].draw(messageX, messageY);
-//    else {
-//        banners[2].draw(messageX, messageY);
-//    }
-//    
-//    //    if (curWave+1 != waves.size()){
-//    //        banners[2].draw(messageX, messageY);
-//    //    }else{
-//    //        banners[3].draw(messageX, messageY);
-//    //        curTime=0;
-//    //    }
-//    
-//    //if time is up, return to the game
-//    if (curTime>waveAnimationTime){
-//        cout<<"start it I think"<<endl;
-//        startNextWave();
-//    }
+    //    //get the amount of time the animation has played
+    //    float curTime=ofGetElapsedTimef()-waveAnimationStart;
+    //    
+    //    int messageX=615;
+    //    int messageY=-120;
+    //    
+    //    ofColor thisCol;
+    //    thisCol.setHsb(ofRandom(255), 255, 100);
+    //    
+    //    ofSetColor(thisCol);
+    //    
+    //    
+    //    if (wavesDone)
+    //        banners[3].draw(messageX, messageY);
+    //    else {
+    //        banners[2].draw(messageX, messageY);
+    //    }
+    //    
+    //    //    if (curWave+1 != waves.size()){
+    //    //        banners[2].draw(messageX, messageY);
+    //    //    }else{
+    //    //        banners[3].draw(messageX, messageY);
+    //    //        curTime=0;
+    //    //    }
+    //    
+    //    //if time is up, return to the game
+    //    if (curTime>waveAnimationTime){
+    //        cout<<"start it I think"<<endl;
+    //        startNextWave();
+    //    }
 }
 
 //--------------------------------------------------------------
 void testApp::drawPlayerInfo(){
     
-//    //draw health
-//    ofSetRectMode(OF_RECTMODE_CORNER);
-//    float xCenter=(fieldW*fieldScale)/2+5; //slight offset for the openning on the side
-//    float healthY=870;
-//    float healthWidth=(mazeRight-mazeLeft)*fieldScale;
-//    float xLeft=xCenter-healthWidth/2+healthPicFull[0].width/2;
-//    float healthSpacing= (healthWidth - healthStart*healthPicFull[0].width)/healthStart;
-//    //draw full hearts for the life remaining
-//    ofSetColor(255);
-//    for (int i=0; i<health; i++){
-//        healthPicFull[i].draw(xLeft+i*healthPicFull[0].width+i*healthSpacing,healthY);
-//    }
-//    //end empty life for the life lost
-//    for (int i=health; i<healthStart; i++){
-//        healthPicEmpty[0].draw(xLeft+i*healthPicEmpty[0].width+i*healthSpacing,healthY);
-//    }
-//    
-//    
-//    //written values
-//    int thisTextX;
-//    
-//    //SHOW INK VALUES
-//    ofFill();
-//    ofSetColor(0);
-//    //make it blink if the player is out if ink
-//    if (tooMuchInk && ofGetFrameNum()/4%2==0)   ofSetColor(255,0,0);
-//    int inktextRightX=-150;
-//    int inkTextY=160;
-//    
-//    thisTextX=inktextRightX-infoFont.stringWidth("Ink Left:")/2;
-//    infoFont.drawString("Ink Left:",thisTextX,inkTextY);
-//    inkTextY+=infoFontBig.getLineHeight();
-//    
-//    //thisTextX=inktextRightX-infoFontBig.stringWidth(ofToString((int)(totalInk-inkUsed))+"/"+ofToString((int)totalInk));
-//    thisTextX=inktextRightX-infoFontBig.stringWidth(ofToString((int)(totalInk-inkUsed)))/2;
-//    infoFontBig.drawString(ofToString((int)(totalInk-inkUsed)),thisTextX,inkTextY);
-//    inkTextY+=infoFontBig.getLineHeight();
-//    
-//    
-//    //draw the wave info boxes
-//    ofSetRectMode(OF_RECTMODE_CENTER);
-//    for (int i=0; i<waveInfoBoxes.size(); i++){
-//        waveInfoBoxes[i].draw();
-//    }
-//    
-//    //BANNERS
-//    //let the player no if there is no path
-//    ofFill();
-//    int messageX=615;
-//    int messageY=-120;
-//    ofSetColor(0,0,0);
-//    if (noPath){
-//        banners[0].draw(messageX, messageY);
-//    }
-//    //let the player know if they used too much ink
-//    if (tooMuchInk){
-//        banners[1].draw(messageX, messageY);
-//    }
-//    //let the player know if they are dead
-//    if (health<=0){
-//        ofSetColor(255,0,0);
-//        if (ofGetFrameNum()/4%2==0) ofSetColor(0);
-//        banners[4].draw(messageX, messageY);
-//    }
-//    
-//    //check if we should be showing the wave complete animation
-//    if (waveComplete)
-//        drawWaveCompleteAnimation();
-//    
-//    //draw red over the game if the player was just hit
-//    if (damageFlashTimer-- >0){
-//        ofSetRectMode(OF_RECTMODE_CORNER);
-//        ofSetColor(255, ofMap(damageFlashTimer, 0, damageFlashTime, 0, 255));
-//        playerHitPic.draw(75,80);
-//    }
+    //    //draw health
+    //    ofSetRectMode(OF_RECTMODE_CORNER);
+    //    float xCenter=(fieldW*fieldScale)/2+5; //slight offset for the openning on the side
+    //    float healthY=870;
+    //    float healthWidth=(mazeRight-mazeLeft)*fieldScale;
+    //    float xLeft=xCenter-healthWidth/2+healthPicFull[0].width/2;
+    //    float healthSpacing= (healthWidth - healthStart*healthPicFull[0].width)/healthStart;
+    //    //draw full hearts for the life remaining
+    //    ofSetColor(255);
+    //    for (int i=0; i<health; i++){
+    //        healthPicFull[i].draw(xLeft+i*healthPicFull[0].width+i*healthSpacing,healthY);
+    //    }
+    //    //end empty life for the life lost
+    //    for (int i=health; i<healthStart; i++){
+    //        healthPicEmpty[0].draw(xLeft+i*healthPicEmpty[0].width+i*healthSpacing,healthY);
+    //    }
+    //    
+    //    
+    //    //written values
+    //    int thisTextX;
+    //    
+    //    //SHOW INK VALUES
+    //    ofFill();
+    //    ofSetColor(0);
+    //    //make it blink if the player is out if ink
+    //    if (tooMuchInk && ofGetFrameNum()/4%2==0)   ofSetColor(255,0,0);
+    //    int inktextRightX=-150;
+    //    int inkTextY=160;
+    //    
+    //    thisTextX=inktextRightX-infoFont.stringWidth("Ink Left:")/2;
+    //    infoFont.drawString("Ink Left:",thisTextX,inkTextY);
+    //    inkTextY+=infoFontBig.getLineHeight();
+    //    
+    //    //thisTextX=inktextRightX-infoFontBig.stringWidth(ofToString((int)(totalInk-inkUsed))+"/"+ofToString((int)totalInk));
+    //    thisTextX=inktextRightX-infoFontBig.stringWidth(ofToString((int)(totalInk-inkUsed)))/2;
+    //    infoFontBig.drawString(ofToString((int)(totalInk-inkUsed)),thisTextX,inkTextY);
+    //    inkTextY+=infoFontBig.getLineHeight();
+    //    
+    //    
+    //    //draw the wave info boxes
+    //    ofSetRectMode(OF_RECTMODE_CENTER);
+    //    for (int i=0; i<waveInfoBoxes.size(); i++){
+    //        waveInfoBoxes[i].draw();
+    //    }
+    //    
+    //    //BANNERS
+    //    //let the player no if there is no path
+    //    ofFill();
+    //    int messageX=615;
+    //    int messageY=-120;
+    //    ofSetColor(0,0,0);
+    //    if (noPath){
+    //        banners[0].draw(messageX, messageY);
+    //    }
+    //    //let the player know if they used too much ink
+    //    if (tooMuchInk){
+    //        banners[1].draw(messageX, messageY);
+    //    }
+    //    //let the player know if they are dead
+    //    if (health<=0){
+    //        ofSetColor(255,0,0);
+    //        if (ofGetFrameNum()/4%2==0) ofSetColor(0);
+    //        banners[4].draw(messageX, messageY);
+    //    }
+    //    
+    //    //check if we should be showing the wave complete animation
+    //    if (waveComplete)
+    //        drawWaveCompleteAnimation();
+    //    
+    //    //draw red over the game if the player was just hit
+    //    if (damageFlashTimer-- >0){
+    //        ofSetRectMode(OF_RECTMODE_CORNER);
+    //        ofSetColor(255, ofMap(damageFlashTimer, 0, damageFlashTime, 0, 255));
+    //        playerHitPic.draw(75,80);
+    //    }
     
 }
-    
+
 //--------------------------------------------------------------
 void testApp::exit(){
-        
+    
 }
 
 //--------------------------------------------------------------
@@ -703,7 +707,7 @@ void testApp::touchMoved(ofTouchEventArgs & touch){
     
     int brushStrength = 100;    //how much it adds at the center
     
-    int maxDist = 5*fieldScale;
+    int maxDist = 2*fieldScale;
     //paint into the array
     int brushSize=maxDist/fieldScale;
     //get the center of the brush
@@ -766,7 +770,7 @@ void testApp::touchMoved(ofTouchEventArgs & touch){
     combinedImg.setFromPixels(combinedPixels, fieldW, fieldH);
     
 }
-    
+
 //--------------------------------------------------------------
 void testApp::touchUp(ofTouchEventArgs & touch){
     if (needToConvertDrawingToGame){
@@ -775,7 +779,7 @@ void testApp::touchUp(ofTouchEventArgs & touch){
         cout<<"fuck your sad ass"<<endl;
     }
 }
-    
+
 //--------------------------------------------------------------
 void testApp::touchDoubleTap(ofTouchEventArgs & touch){
     if (touch.x<60 && touch.y>ofGetHeight()-60)
@@ -785,30 +789,30 @@ void testApp::touchDoubleTap(ofTouchEventArgs & touch){
         spawnFoe("norm", 1);
     
 }
-    
+
 //--------------------------------------------------------------
 void testApp::touchCancelled(ofTouchEventArgs & touch){
-        
-}
     
+}
+
 //--------------------------------------------------------------
 void testApp::lostFocus(){
-        
-}
     
+}
+
 //--------------------------------------------------------------
 void testApp::gotFocus(){
-        
-}
     
+}
+
 //--------------------------------------------------------------
 void testApp::gotMemoryWarning(){
-        
-}
     
+}
+
 //--------------------------------------------------------------
 void testApp::deviceOrientationChanged(int newOrientation){
-        
+    
 }
 
 //--------------------------------------------------------------
@@ -854,162 +858,162 @@ void testApp::convertDrawingToGame(){
             VF.addOutwardCircle(wallX*fieldScale, wallY*fieldScale, 20, 0.3);
         }
     }
-//    
-//    //look for blobs to turn into towers
-//    //set all towers as unfound. If they are not found when checking the blobs, they will be rmeoved
-//    for (int i=0; i<towers.size(); i++){
-//        towers[i]->found=false;
-//    }
-//    
-//    //red
-//    int minArea=20;
-//    int maxArea=(fieldW*fieldH)/2;
-//    int maxNumberOfBlobs=25;
-//    
-//    //expand the pixels in the images 
-//    for (int i=0; i<3; i++)
-//        colorImgs[i].dilate_3x3();    
-//    
-//    contourFinder.findContours(colorImgs[0], minArea, maxArea, maxNumberOfBlobs, false);
-//    checkTowers("red");
-//    //green
-//    contourFinder.findContours(colorImgs[1], minArea, maxArea, maxNumberOfBlobs, false);
-//    checkTowers("green");
-//    //blue
-//    contourFinder.findContours(colorImgs[2], minArea, maxArea, maxNumberOfBlobs, false);
-//    checkTowers("blue");
-//    
-//    //find any towers that were not found in the last sweep and kill them
-//    for (int i=towers.size()-1; i>=0; i--){
-//        if (!towers[i]->found){
-//            delete towers[i];
-//            towers.erase(towers.begin()+i);
-//        }
-//    }
-//    
-//    //in case the markers fucked with the IR reading, save a new background
-//    saveChangeBackground=true;
-//    
-//    //save these images to the display array for debug purposes
-//    for (int i=0; i<3; i++)
-//        colorImgsDisplay[i]=colorImgs[i];
-//    
-//    
-//    //check how much ink has been used
-//    inkUsed= 0;  
-//    //check black pixels
-//    for (int i=0; i<fieldW*fieldH; i++){
-//        if (wallPixels[i]==0) inkUsed+=blackInkValue;
-//    }
-//    //check towers
-//    for (int i=0; i<towers.size(); i++){
-//        if (towers[i]->type=="red") inkUsed+=rInkValue*towers[i]->size;
-//        if (towers[i]->type=="green") inkUsed+=gInkValue*towers[i]->size;
-//        if (towers[i]->type=="blue") inkUsed+=bInkValue*towers[i]->size;
-//    }
-//    //let calibration know how much was used
-//    calibration.inkUsedBeforeRefund=inkUsed;
-//    //factor in the refund
-//    inkUsed-=inkRefund;
-//    //make sure ink used is not negative
-//    inkUsed=MAX(0,inkUsed);
-//    //check if they used more ink than they have
-//    if (inkUsed>totalInk){
-//        tooMuchInk=true;
-//        SM.playSound("error");  //play the sound
-//    }else if (tooMuchInk){  //if they just fixed using too much ink, unpause the game
-//        tooMuchInk=false;
-//    }
-//    
-//    //if there is nothing wrong, the game is ready to continue
-//    //but we should check to see if any towers from the last safe game state were removed
-//    if (!tooMuchInk && !noPath){
-//        cout<<"ITS GOOD"<<endl;
-//        
-//        //check the current wall image against the last one to see if any big chunks of wall were erased
-//        vector <int> wallEraseLocations;
-//        wallDiffImage.absDiff(lastSafeWallImage, wallImage);
-//        wallDiffImage.erode_3x3();  //try to remove some noise by expanding the black parts of the image
-//        unsigned char * wallDiffPixels=wallDiffImage.getPixels();
-//        //go thorugh and see how many pixels that had been black are now white
-//        int totalDiff=0;
-//        //int spawnParticleFrequency= (1/blackInkValue)*wallRefund;
-//        for (int i=0; i<fieldW*fieldH; i++){
-//            if (wallDiffPixels[i]>128 && wallPixels[i]==255){
-//                totalDiff++;
-//                //spawn an ink particle every so often based on the number of pixels checked so far if the game has started
-//                if (gameStarted){
-//                    particle newInkParticle;
-//                    int xPos= (i%fieldW)*fieldScale;
-//                    int yPos= ( floor(i/fieldW) )*fieldScale;
-//                    newInkParticle.setInitialCondition( xPos, yPos , ofRandom(-5,5),ofRandom(-5,5));
-//                    inkParticles.push_back(newInkParticle);
-//                }
-//            }
-//        }
-//        //remove from their total ink based on the total
-//        if (gameStarted)
-//            totalInk-= totalDiff/wallRefund;
-//        cout<<"total wall difference: "<<totalDiff<<endl;
-//        cout<<"took Away: "<<totalDiff/wallRefund<<endl;
-//        
-//        
-//        
-//        //go through the tower data from the last safe state and see if antyhing is missing
-//        for (int i=0; i<lastSafeTowerSet.size(); i++){
-//            bool found=false;   //assume the tower will not be found
-//            
-//            //checking each tower might be a super innificient way of doing this
-//            for (int k=0; k<towers.size(); k++){
-//                if ( lastSafeTowerSet[i].pos.distance(towers[k]->pos)<lastSafeTowerSet[i].size && lastSafeTowerSet[i].type==towers[k]->type){
-//                    found=true;
-//                    break;
-//                }
-//            }
-//            
-//            if (!found){
-//                cout<<"you erased the tower at "<<lastSafeTowerSet[i].pos.x<<" , "<<lastSafeTowerSet[i].pos.y<<endl;
-//                
-//                //figure out how much ink that tower was worth
-//                float inkValue;
-//                if (lastSafeTowerSet[i].type=="red") inkValue=rInkValue*lastSafeTowerSet[i].size;
-//                if (lastSafeTowerSet[i].type=="green") inkValue=gInkValue*lastSafeTowerSet[i].size;
-//                if (lastSafeTowerSet[i].type=="blue") inkValue=bInkValue*lastSafeTowerSet[i].size;
-//                
-//                //remove that ink from the player's reserve if the game has been started
-//                if (gameStarted){
-//                    totalInk-=inkValue;
-//                    //and spawn ink particles equal to the refund they should get
-//                    for (int r=0; r<inkValue*towerRefund; r++){
-//                        particle newInkParticle;
-//                        newInkParticle.setInitialCondition(lastSafeTowerSet[i].pos.x,lastSafeTowerSet[i].pos.y,ofRandom(-5,5),ofRandom(-5,5));
-//                        inkParticles.push_back(newInkParticle);
-//                    }
-//                }
-//                
-//            }
-//            
-//            
-//        }
-//        
-//        //save the current wall image
-//        lastSafeWallImage=wallImage;
-//        
-//        //save all of the current tower info to be checked next time
-//        lastSafeTowerSet.clear();
-//        for (int i=0; i<towers.size(); i++){
-//            TowerInfo newInfo;
-//            newInfo.pos=towers[i]->pos;
-//            newInfo.size=towers[i]->size;
-//            newInfo.type=towers[i]->type;
-//            lastSafeTowerSet.push_back(newInfo);
-//        }
-//    }
-//    else{
-//        cout<<"NO GOOD BAD BAD"<<endl;
-//        if (tooMuchInk)    cout<<"TOO MUCH INK"<<endl;
-//        if (noPath)        cout<<"NO PATH"<<endl;
-//    }
+    //    
+    //    //look for blobs to turn into towers
+    //    //set all towers as unfound. If they are not found when checking the blobs, they will be rmeoved
+    //    for (int i=0; i<towers.size(); i++){
+    //        towers[i]->found=false;
+    //    }
+    //    
+    //    //red
+    //    int minArea=20;
+    //    int maxArea=(fieldW*fieldH)/2;
+    //    int maxNumberOfBlobs=25;
+    //    
+    //    //expand the pixels in the images 
+    //    for (int i=0; i<3; i++)
+    //        colorImgs[i].dilate_3x3();    
+    //    
+    //    contourFinder.findContours(colorImgs[0], minArea, maxArea, maxNumberOfBlobs, false);
+    //    checkTowers("red");
+    //    //green
+    //    contourFinder.findContours(colorImgs[1], minArea, maxArea, maxNumberOfBlobs, false);
+    //    checkTowers("green");
+    //    //blue
+    //    contourFinder.findContours(colorImgs[2], minArea, maxArea, maxNumberOfBlobs, false);
+    //    checkTowers("blue");
+    //    
+    //    //find any towers that were not found in the last sweep and kill them
+    //    for (int i=towers.size()-1; i>=0; i--){
+    //        if (!towers[i]->found){
+    //            delete towers[i];
+    //            towers.erase(towers.begin()+i);
+    //        }
+    //    }
+    //    
+    //    //in case the markers fucked with the IR reading, save a new background
+    //    saveChangeBackground=true;
+    //    
+    //    //save these images to the display array for debug purposes
+    //    for (int i=0; i<3; i++)
+    //        colorImgsDisplay[i]=colorImgs[i];
+    //    
+    //    
+    //    //check how much ink has been used
+    //    inkUsed= 0;  
+    //    //check black pixels
+    //    for (int i=0; i<fieldW*fieldH; i++){
+    //        if (wallPixels[i]==0) inkUsed+=blackInkValue;
+    //    }
+    //    //check towers
+    //    for (int i=0; i<towers.size(); i++){
+    //        if (towers[i]->type=="red") inkUsed+=rInkValue*towers[i]->size;
+    //        if (towers[i]->type=="green") inkUsed+=gInkValue*towers[i]->size;
+    //        if (towers[i]->type=="blue") inkUsed+=bInkValue*towers[i]->size;
+    //    }
+    //    //let calibration know how much was used
+    //    calibration.inkUsedBeforeRefund=inkUsed;
+    //    //factor in the refund
+    //    inkUsed-=inkRefund;
+    //    //make sure ink used is not negative
+    //    inkUsed=MAX(0,inkUsed);
+    //    //check if they used more ink than they have
+    //    if (inkUsed>totalInk){
+    //        tooMuchInk=true;
+    //        SM.playSound("error");  //play the sound
+    //    }else if (tooMuchInk){  //if they just fixed using too much ink, unpause the game
+    //        tooMuchInk=false;
+    //    }
+    //    
+    //    //if there is nothing wrong, the game is ready to continue
+    //    //but we should check to see if any towers from the last safe game state were removed
+    //    if (!tooMuchInk && !noPath){
+    //        cout<<"ITS GOOD"<<endl;
+    //        
+    //        //check the current wall image against the last one to see if any big chunks of wall were erased
+    //        vector <int> wallEraseLocations;
+    //        wallDiffImage.absDiff(lastSafeWallImage, wallImage);
+    //        wallDiffImage.erode_3x3();  //try to remove some noise by expanding the black parts of the image
+    //        unsigned char * wallDiffPixels=wallDiffImage.getPixels();
+    //        //go thorugh and see how many pixels that had been black are now white
+    //        int totalDiff=0;
+    //        //int spawnParticleFrequency= (1/blackInkValue)*wallRefund;
+    //        for (int i=0; i<fieldW*fieldH; i++){
+    //            if (wallDiffPixels[i]>128 && wallPixels[i]==255){
+    //                totalDiff++;
+    //                //spawn an ink particle every so often based on the number of pixels checked so far if the game has started
+    //                if (gameStarted){
+    //                    particle newInkParticle;
+    //                    int xPos= (i%fieldW)*fieldScale;
+    //                    int yPos= ( floor(i/fieldW) )*fieldScale;
+    //                    newInkParticle.setInitialCondition( xPos, yPos , ofRandom(-5,5),ofRandom(-5,5));
+    //                    inkParticles.push_back(newInkParticle);
+    //                }
+    //            }
+    //        }
+    //        //remove from their total ink based on the total
+    //        if (gameStarted)
+    //            totalInk-= totalDiff/wallRefund;
+    //        cout<<"total wall difference: "<<totalDiff<<endl;
+    //        cout<<"took Away: "<<totalDiff/wallRefund<<endl;
+    //        
+    //        
+    //        
+    //        //go through the tower data from the last safe state and see if antyhing is missing
+    //        for (int i=0; i<lastSafeTowerSet.size(); i++){
+    //            bool found=false;   //assume the tower will not be found
+    //            
+    //            //checking each tower might be a super innificient way of doing this
+    //            for (int k=0; k<towers.size(); k++){
+    //                if ( lastSafeTowerSet[i].pos.distance(towers[k]->pos)<lastSafeTowerSet[i].size && lastSafeTowerSet[i].type==towers[k]->type){
+    //                    found=true;
+    //                    break;
+    //                }
+    //            }
+    //            
+    //            if (!found){
+    //                cout<<"you erased the tower at "<<lastSafeTowerSet[i].pos.x<<" , "<<lastSafeTowerSet[i].pos.y<<endl;
+    //                
+    //                //figure out how much ink that tower was worth
+    //                float inkValue;
+    //                if (lastSafeTowerSet[i].type=="red") inkValue=rInkValue*lastSafeTowerSet[i].size;
+    //                if (lastSafeTowerSet[i].type=="green") inkValue=gInkValue*lastSafeTowerSet[i].size;
+    //                if (lastSafeTowerSet[i].type=="blue") inkValue=bInkValue*lastSafeTowerSet[i].size;
+    //                
+    //                //remove that ink from the player's reserve if the game has been started
+    //                if (gameStarted){
+    //                    totalInk-=inkValue;
+    //                    //and spawn ink particles equal to the refund they should get
+    //                    for (int r=0; r<inkValue*towerRefund; r++){
+    //                        particle newInkParticle;
+    //                        newInkParticle.setInitialCondition(lastSafeTowerSet[i].pos.x,lastSafeTowerSet[i].pos.y,ofRandom(-5,5),ofRandom(-5,5));
+    //                        inkParticles.push_back(newInkParticle);
+    //                    }
+    //                }
+    //                
+    //            }
+    //            
+    //            
+    //        }
+    //        
+    //        //save the current wall image
+    //        lastSafeWallImage=wallImage;
+    //        
+    //        //save all of the current tower info to be checked next time
+    //        lastSafeTowerSet.clear();
+    //        for (int i=0; i<towers.size(); i++){
+    //            TowerInfo newInfo;
+    //            newInfo.pos=towers[i]->pos;
+    //            newInfo.size=towers[i]->size;
+    //            newInfo.type=towers[i]->type;
+    //            lastSafeTowerSet.push_back(newInfo);
+    //        }
+    //    }
+    //    else{
+    //        cout<<"NO GOOD BAD BAD"<<endl;
+    //        if (tooMuchInk)    cout<<"TOO MUCH INK"<<endl;
+    //        if (noPath)        cout<<"NO PATH"<<endl;
+    //    }
     
 }
 
@@ -1131,32 +1135,32 @@ void testApp::endWave(){
 
 //--------------------------------------------------------------
 void testApp::spawnFoe(string name, int level){ 
-//    if (name=="fast"){
-//        FastFoe * newFoe=new FastFoe;
-//        newFoe->setPics(fastFoePic[0], fastFoePic[1]);
-//        foes.push_back(newFoe);
-//    }
-//    else if (name=="stealth"){
-//        StealthFoe * newFoe=new StealthFoe;
-//        newFoe->setPics(stealthFoePic[0], stealthFoePic[1]);
-//        foes.push_back(newFoe);
-//    }
-//    else if (name=="immune_red"){
-//        ImmuneRedFoe * newFoe=new ImmuneRedFoe;
-//        newFoe->setPics(immuneRedFoePic[0], immuneRedFoePic[1]);
-//        foes.push_back(newFoe);
-//    }
-//    else if (name=="heavy"){
-//        HeavyFoe * newFoe=new HeavyFoe;
-//        newFoe->setPics(heavyFoePic[0], heavyFoePic[1]);
-//        foes.push_back(newFoe);
-//    }
-//    else {  //assume anything that didn't ahve one of the above names is a normal foe
-        NormFoe * newFoe=new NormFoe;
-        newFoe->setPics(normFoePic[0], normFoePic[1]);
-        //add it to the vector
-        foes.push_back(newFoe);
-//    }
+    //    if (name=="fast"){
+    //        FastFoe * newFoe=new FastFoe;
+    //        newFoe->setPics(fastFoePic[0], fastFoePic[1]);
+    //        foes.push_back(newFoe);
+    //    }
+    //    else if (name=="stealth"){
+    //        StealthFoe * newFoe=new StealthFoe;
+    //        newFoe->setPics(stealthFoePic[0], stealthFoePic[1]);
+    //        foes.push_back(newFoe);
+    //    }
+    //    else if (name=="immune_red"){
+    //        ImmuneRedFoe * newFoe=new ImmuneRedFoe;
+    //        newFoe->setPics(immuneRedFoePic[0], immuneRedFoePic[1]);
+    //        foes.push_back(newFoe);
+    //    }
+    //    else if (name=="heavy"){
+    //        HeavyFoe * newFoe=new HeavyFoe;
+    //        newFoe->setPics(heavyFoePic[0], heavyFoePic[1]);
+    //        foes.push_back(newFoe);
+    //    }
+    //    else {  //assume anything that didn't ahve one of the above names is a normal foe
+    NormFoe * newFoe=new NormFoe;
+    newFoe->setPics(normFoePic[0], normFoePic[1]);
+    //add it to the vector
+    foes.push_back(newFoe);
+    //    }
     
     //give the foe all of the info it needs
     int entrance=nextEntrance;
@@ -1180,12 +1184,12 @@ void testApp::killFoe(int num){
     newExplosion.setup(foes[num]->p.pos, &explosionPic);
     explosions.push_back(newExplosion);
     
-//    //go through and find any towers targetting this foe and remove the target
-//    for (int i=0; i<towers.size(); i++){
-//        if (towers[i]->target==foes[num]){
-//            towers[i]->target=NULL;
-//        }
-//    }
+    //    //go through and find any towers targetting this foe and remove the target
+    //    for (int i=0; i<towers.size(); i++){
+    //        if (towers[i]->target==foes[num]){
+    //            towers[i]->target=NULL;
+    //        }
+    //    }
     
     delete foes[num]; //dealocate the meory
     foes.erase(foes.begin()+num);
@@ -1201,9 +1205,9 @@ void testApp::takeDamage(int damage){
     
     //check if the player is dead
     if (health==0){
-//        //gray out all towers
-//        for (int i=0; i<towers.size(); i++)
-//            towers[i]->playerDead=true;
+        //        //gray out all towers
+        //        for (int i=0; i<towers.size(); i++)
+        //            towers[i]->playerDead=true;
         //play the lose game sound
         SM.playSound("lose");
     }
@@ -1211,5 +1215,4 @@ void testApp::takeDamage(int damage){
     //play the sound
     SM.playSound("playerHit");
 }
-
 

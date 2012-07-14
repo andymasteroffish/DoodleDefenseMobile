@@ -71,6 +71,9 @@ class testApp : public ofxiPhoneApp{
     //size of the openCV image the game data is taken from
     int fieldW;
     int fieldH;
+    //size of the image show to the player
+    int boardW;
+    int boardH;
     
     float fieldScale; //how much to blow up the image
     
