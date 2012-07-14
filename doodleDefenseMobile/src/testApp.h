@@ -116,14 +116,13 @@ class testApp : public ofxiPhoneApp{
     ofRectangle viewButtons[5];
     int curView;
     
-    //resons the game might be paused
+    //resons the game might be paused   SOME OF THESE DON'T APPLY IN THE IPAD VERSION
     bool paused;        //global pause. If any reason is true, this is true
     bool playerPause;   //player pauses the game
     bool noPath;        //becomes true if any foe can't reach the end
     bool tooMuchInk;    //pauses the game when the player has used more ink than they have
-    bool changePause;    //player in frnt of the screen
-    bool showGame;      //shows the game
     bool gameStarted;   //the camera must have taken at least one image to play the game
+    bool fingerDown;
     
     bool fastForward;
     

@@ -23,7 +23,7 @@ void testApp::setup(){
                                                     //yes, right now this = 1 and could probably be removed
     
     //setup vector field
-    VF.setupField(128, 96,fieldW*fieldScale, fieldH*fieldScale);
+    VF.setupField(120, 90,fieldW*fieldScale, fieldH*fieldScale);
     
     boardOffset.set(10,120);
     
@@ -125,6 +125,9 @@ void testApp::setup(){
     infoFontHuge.loadFont(fontName, 100, true, true);
     
     showAllInfo = false;
+    
+    fingerDown = false;
+    gameStarted = true;
     
     reset();
 }
@@ -257,6 +260,14 @@ void testApp::reset(){
 
 //--------------------------------------------------------------
 void testApp::update(){
+    //TESTING
+    waveComplete = false;
+    
+    //check if there is any reason to pause the game
+    if (playerPause || noPath || tooMuchInk  || !gameStarted || waveComplete || fingerDown)
+        paused=true;
+    else
+        paused=false;
     
     int numUpdates=1;
     if (fastForward)    numUpdates=6;
@@ -692,97 +703,107 @@ void testApp::exit(){
 
 //--------------------------------------------------------------
 void testApp::touchDown(ofTouchEventArgs & touch){
-    for (int i=0; i<5; i++){
-        if (colorButtons[i].inside(touch.x,touch.y)){
-            curBrushColor = i;
-        }
-    }
     
-    for (int i=0; i<5; i++){
-        if (viewButtons[i].inside(touch.x,touch.y)){
-            curView = i;
+    if (touch.id == 0){
+        fingerDown = true;
+        
+        for (int i=0; i<5; i++){
+            if (colorButtons[i].inside(touch.x,touch.y)){
+                curBrushColor = i;
+            }
+        }
+        
+        for (int i=0; i<5; i++){
+            if (viewButtons[i].inside(touch.x,touch.y)){
+                curView = i;
+            }
         }
     }
 }
 
 //--------------------------------------------------------------
 void testApp::touchMoved(ofTouchEventArgs & touch){
-    int relativeX = touch.x-boardOffset.x;
-    int relativeY = touch.y-boardOffset.y;
-    
-    int brushStrength = 100;    //how much it adds at the center
-    
-    int maxDist = 15*boardScale;
-    if (curBrushColor == 4) maxDist*=3; //make the eraser bigger
-    //paint into the array
-    int brushSize=maxDist/boardScale;
-    //get the center of the brush
-    int xMid=relativeX/boardScale;
-    int yMid=relativeY/boardScale;
-    
-    int xStart=MAX(0,xMid-brushSize);
-    int xEnd=MIN(boardW,xMid+brushSize);
-    int yStart=MAX(0,yMid-brushSize);
-    int yEnd=MIN(boardH,yMid+brushSize);
-    
-    //go through and set the pixels being effected by the brush
-    for (int col=xStart; col<xEnd; col++){
-        for (int row=yStart; row<yEnd; row++){
-            int pos= row*boardW+col;
-            int rgbPos = row*boardW*3+col*3;
-            
-            int brushAmount = ofMap(ofDist(relativeX, relativeY, col*boardScale, row*boardScale),0, maxDist, brushStrength, 0, true);
-            
-            if (touch.id == 0){
-                if (curBrushColor<3){
-                    //add to the selected color, take away from all others
-                    for (int i=0; i<3; i++){
-                        if (i==curBrushColor)
-                            colorPixels[i][pos] = MIN(255, colorPixels[i][pos]+brushAmount);
-                        else
+    if (touch.id == 0){
+        int relativeX = touch.x-boardOffset.x;
+        int relativeY = touch.y-boardOffset.y;
+        
+        int brushStrength = 100;    //how much it adds at the center
+        
+        int maxDist = 15*boardScale;
+        if (curBrushColor == 4) maxDist*=3; //make the eraser bigger
+        //paint into the array
+        int brushSize=maxDist/boardScale;
+        //get the center of the brush
+        int xMid=relativeX/boardScale;
+        int yMid=relativeY/boardScale;
+        
+        int xStart=MAX(0,xMid-brushSize);
+        int xEnd=MIN(boardW,xMid+brushSize);
+        int yStart=MAX(0,yMid-brushSize);
+        int yEnd=MIN(boardH,yMid+brushSize);
+        
+        //go through and set the pixels being effected by the brush
+        for (int col=xStart; col<xEnd; col++){
+            for (int row=yStart; row<yEnd; row++){
+                int pos= row*boardW+col;
+                int rgbPos = row*boardW*3+col*3;
+                
+                int brushAmount = ofMap(ofDist(relativeX, relativeY, col*boardScale, row*boardScale),0, maxDist, brushStrength, 0, true);
+                
+                if (touch.id == 0){
+                    if (curBrushColor<3){
+                        //add to the selected color, take away from all others
+                        for (int i=0; i<3; i++){
+                            if (i==curBrushColor)
+                                colorPixels[i][pos] = MIN(255, colorPixels[i][pos]+brushAmount);
+                            else
+                                colorPixels[i][pos] = MAX(0, colorPixels[i][pos]-brushAmount);
+                        }
+                        blackPixels[pos] = MAX(0, blackPixels[pos]-brushAmount);
+                    }else if (curBrushColor==3){
+                        blackPixels[pos] = MIN(255, blackPixels[pos]+brushAmount);
+                        //shrink the colored images
+                        for (int i=0; i<3; i++)
                             colorPixels[i][pos] = MAX(0, colorPixels[i][pos]-brushAmount);
                     }
+                }
+                
+                //update this pixel on the combined image
+                for (int i=0; i<3; i++)
+                    combinedPixels[rgbPos+i] = MIN(255, colorPixels[i][pos] + blackPixels[pos]);
+                
+                //temporary eraser
+                if (curBrushColor == 4){
                     blackPixels[pos] = MAX(0, blackPixels[pos]-brushAmount);
-                }else if (curBrushColor==3){
-                    blackPixels[pos] = MIN(255, blackPixels[pos]+brushAmount);
-                    //shrink the colored images
                     for (int i=0; i<3; i++)
                         colorPixels[i][pos] = MAX(0, colorPixels[i][pos]-brushAmount);
                 }
+                
+                //since something changed, flag that we need to alter the game
+                needToConvertDrawingToGame = true;
             }
-            
-            //update this pixel on the combined image
-            for (int i=0; i<3; i++)
-                combinedPixels[rgbPos+i] = MIN(255, colorPixels[i][pos] + blackPixels[pos]);
-            
-            //temporary eraser
-            if (curBrushColor == 4){
-                blackPixels[pos] = MAX(0, blackPixels[pos]-brushAmount);
-                for (int i=0; i<3; i++)
-                    colorPixels[i][pos] = MAX(0, colorPixels[i][pos]-brushAmount);
-            }
-            
-            //since something changed, flag that we need to alter the game
-            needToConvertDrawingToGame = true;
         }
+        
+        //set the image
+        for (int i=0; i<3; i++)
+            colorImgs[i].setFromPixels(colorPixels[i],boardW, boardH);
+        blackImg.setFromPixels(blackPixels, boardW, boardH);
+        
+        //put all of the images together as one unified and briliant whole
+        combinedImg.setFromPixels(combinedPixels, boardW, boardH);
     }
-    
-    //set the image
-    for (int i=0; i<3; i++)
-        colorImgs[i].setFromPixels(colorPixels[i],boardW, boardH);
-    blackImg.setFromPixels(blackPixels, boardW, boardH);
-    
-    //put all of the images together as one unified and briliant whole
-    combinedImg.setFromPixels(combinedPixels, boardW, boardH);
     
 }
 
 //--------------------------------------------------------------
 void testApp::touchUp(ofTouchEventArgs & touch){
-    if (needToConvertDrawingToGame){
-        convertDrawingToGame();
-    }else{
-        cout<<"fuck your sad ass"<<endl;
+    if (touch.id == 0){
+        if (needToConvertDrawingToGame){
+            convertDrawingToGame();
+        }else{
+            cout<<"fuck your sad ass"<<endl;
+        }
+        fingerDown = false;
     }
 }
 
