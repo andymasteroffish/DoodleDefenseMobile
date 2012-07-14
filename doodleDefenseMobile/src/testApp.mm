@@ -66,7 +66,7 @@ void testApp::setup(){
     
     
     //color selection
-    curBrushColor = 0;
+    curBrushColor = 3;
     int buttonW=100;
     int buttonH=100;
     for (int i=0; i<5; i++){
@@ -715,7 +715,7 @@ void testApp::touchMoved(ofTouchEventArgs & touch){
     int yStart=MAX(0,yMid-brushSize);
     int yEnd=MIN(fieldH,yMid+brushSize);
     
-    //go through and set those pixels to black
+    //go through and set the pixels being effected by the brush
     for (int col=xStart; col<xEnd; col++){
         for (int row=yStart; row<yEnd; row++){
             int pos= row*fieldW+col;
@@ -751,6 +751,9 @@ void testApp::touchMoved(ofTouchEventArgs & touch){
                 for (int i=0; i<3; i++)
                     colorPixels[i][pos] = MAX(0, colorPixels[i][pos]-brushAmount);
             }
+            
+            //since something changed, flag that we need to alter the game
+            needToConvertDrawingToGame = true;
         }
     }
     
@@ -766,7 +769,11 @@ void testApp::touchMoved(ofTouchEventArgs & touch){
     
 //--------------------------------------------------------------
 void testApp::touchUp(ofTouchEventArgs & touch){
-    convertDrawingToGame();
+    if (needToConvertDrawingToGame){
+        convertDrawingToGame();
+    }else{
+        cout<<"fuck your sad ass"<<endl;
+    }
 }
     
 //--------------------------------------------------------------
@@ -806,6 +813,8 @@ void testApp::deviceOrientationChanged(int newOrientation){
 
 //--------------------------------------------------------------
 void testApp::convertDrawingToGame(){ 
+    needToConvertDrawingToGame = false; //turn the flag off
+    
     //get the walls
     wallImage=blackImg;
     wallImage.threshold(blackThreshold,false);
@@ -1001,6 +1010,7 @@ void testApp::convertDrawingToGame(){
 //        if (tooMuchInk)    cout<<"TOO MUCH INK"<<endl;
 //        if (noPath)        cout<<"NO PATH"<<endl;
 //    }
+    
 }
 
 //--------------------------------------------------------------
@@ -1121,7 +1131,6 @@ void testApp::endWave(){
 
 //--------------------------------------------------------------
 void testApp::spawnFoe(string name, int level){ 
-    cout<<"spawn start: "<<ofGetElapsedTimef()<<endl;
 //    if (name=="fast"){
 //        FastFoe * newFoe=new FastFoe;
 //        newFoe->setPics(fastFoePic[0], fastFoePic[1]);
@@ -1153,19 +1162,15 @@ void testApp::spawnFoe(string name, int level){
     int entrance=nextEntrance;
     if (++nextEntrance >= numEntrances) nextEntrance=0;
     foes[foes.size()-1]->setup(&VF, startX[entrance], startY[entrance], goalX[entrance], goalY[entrance], fieldScale, fieldW, fieldH,level);
-    cout<<"done with setup "<<ofGetElapsedTimef()<<endl;
     foes[foes.size()-1]->wallPixels=wallPixels;
     foes[foes.size()-1]->showAllInfo=&showAllInfo;
     foes[foes.size()-1]->paused=&paused;
-    cout<<"about to find path "<<ofGetElapsedTimef()<<endl;
     foes[foes.size()-1]->findPath();
-    cout<<"find that path "<<ofGetElapsedTimef()<<endl;
     
     //if there is no path for this guy, pause the game
     if (!foes[foes.size()-1]->pathFound){
         noPath=true;
     }
-    cout<<"spawn end: "<<ofGetElapsedTimef()<<endl;
 }
 
 //--------------------------------------------------------------

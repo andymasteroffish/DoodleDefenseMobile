@@ -10,6 +10,7 @@
 
 //------------------------------------------------------------
 void Foe::setup(vectorField * _vf, float x, float y, float _goalX, float _goalY, float _fieldScale, int _fieldW, int _fieldH, int level){
+    cout<<endl<<"foe setup start: "<<ofGetElapsedTimef()<<endl;
     VF=_vf;
     p.pos.x=x;
     p.pos.y=y;
@@ -65,8 +66,6 @@ void Foe::setup(vectorField * _vf, float x, float y, float _goalX, float _goalY,
     displayAngle=0;
     turnSpeed=0.1;
     
-    firstUpdate = true;
-    firstDraw = true;
 }
 
 //------------------------------------------------------------
@@ -79,7 +78,6 @@ void Foe::setPics(ofImage stroke[], ofImage fill[]){
 
 //------------------------------------------------------------
 void Foe::update(){
-    if(firstUpdate) cout<<"first update start :"<<ofGetElapsedTimef()<<endl;
     
     if (! *paused){
         bool frozen=false;
@@ -167,19 +165,11 @@ void Foe::update(){
         
     }
     
-    if(firstUpdate){ 
-        cout<<"first update end :"<<ofGetElapsedTimef()<<endl;
-        firstUpdate = false;
-    }
-    
 }
 
 //------------------------------------------------------------
 void Foe::standardDraw(){
-    if(firstDraw){ 
-        cout<<"first draw start :"<<ofGetElapsedTimef()<<endl;
-    }
-    
+
     ofFill();
     
     
@@ -202,11 +192,6 @@ void Foe::standardDraw(){
     picStroke[curPicFrame]->draw(0,0);
     ofPopMatrix();
     
-    
-    if(firstDraw){ 
-        cout<<"first draw end :"<<ofGetElapsedTimef()<<endl;
-        firstDraw = false;
-    }
 }
 
 //------------------------------------------------------------
@@ -323,6 +308,9 @@ bool Foe::checkExistingRoute(vector<tile *> & existing){
 //------------------------------------------------------------
 //attempt to find a path
 void Foe::standardFindPath(){
+    //testing how long it takes
+    float startTime = ofGetElapsedTimef();
+    
     int startX=p.pos.x/fieldScale;
     int startY=p.pos.y/fieldScale;
     
@@ -482,6 +470,9 @@ void Foe::standardFindPath(){
         
         standardFindPath(); //try again recursievly
     }
+    
+    cout<<"time to find path: "<<ofGetElapsedTimef()-startTime<<endl;
+    cout<<"time when path was found: "<<ofGetElapsedTimef()<<endl;
 }
 
 //--------------------------------------------------------------

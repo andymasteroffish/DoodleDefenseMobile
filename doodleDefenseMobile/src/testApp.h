@@ -101,6 +101,8 @@ class testApp : public ofxiPhoneApp{
     
     ofPoint boardOffset;    //where the gameboard is placed on screen
     
+    bool needToConvertDrawingToGame;    //flag for when a pixel in one of the images has changed
+    
     int curBrushColor;  //3 for black
 
     //selecting color

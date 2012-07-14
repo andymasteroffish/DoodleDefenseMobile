@@ -96,8 +96,8 @@ public:
     float turnSpeed;    //percentage to zeno toward the current angle
     
     //testing
-    bool firstUpdate;
-    bool firstDraw;
+    //bool firstUpdate;
+    //bool firstDraw;
 };
 
 
