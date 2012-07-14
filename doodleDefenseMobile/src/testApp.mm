@@ -773,8 +773,9 @@ void testApp::touchMoved(ofTouchEventArgs & touch){
                 }
                 
                 //update this pixel on the combined image
-                for (int i=0; i<3; i++)
-                    combinedPixels[rgbPos+i] = MIN(255, colorPixels[i][pos] + blackPixels[pos]);
+                for (int i=0; i<3; i++){
+                    combinedPixels[rgbPos+i] = MIN(255, colorPixels[i][pos] + blackPixels[pos]);                                                   
+                }
                 
                 //temporary eraser
                 if (curBrushColor == 4){
