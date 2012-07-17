@@ -738,6 +738,7 @@ void testApp::touchDown(ofTouchEventArgs & touch){
             }
         }
     }
+    
 }
 
 //--------------------------------------------------------------
@@ -789,7 +790,7 @@ void testApp::touchMoved(ofTouchEventArgs & touch){
                 
                 //update this pixel on the combined image
                 for (int i=0; i<3; i++){
-                    combinedPixels[rgbPos+i] = MIN(255, colorPixels[i][pos] + blackPixels[pos]);                                                   
+                    combinedPixels[rgbPos+i] = MIN(255, colorPixels[i][pos] + blackPixels[pos]);
                 }
                 
                 //temporary eraser
@@ -865,6 +866,7 @@ void testApp::deviceOrientationChanged(int newOrientation){
 
 //--------------------------------------------------------------
 void testApp::convertDrawingToGame(){ 
+    
     needToConvertDrawingToGame = false; //turn the flag off
     
     //get the walls
