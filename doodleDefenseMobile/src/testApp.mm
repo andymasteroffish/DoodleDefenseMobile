@@ -75,6 +75,8 @@ void testApp::setup(){
     borderPics[0].loadImage("walls1Entrance.png");
     borderPics[1].loadImage("walls2Entrance.png");
     
+    maxCompactness = 1.8;
+    
     //color selection
     curBrushColor = 3;
     int buttonW=100;
@@ -217,14 +219,14 @@ void testApp::loadFromText(){
 //--------------------------------------------------------------
 void testApp::reset(){ 
     
-    //    //clear out any foes if there are any
-    //    for (int i=foes.size()-1; i>=0; i--)
-    //        killFoe(i);
-    //    
-    //    //set all towers to think the player is alive
-    //    for (int i=0; i<towers.size(); i++)
-    //        towers[i]->playerDead=false;
-    //    
+    //clear out any foes if there are any
+    for (int i=foes.size()-1; i>=0; i--)
+        killFoe(i);
+    
+    //set all towers to think the player is alive
+    for (int i=0; i<towers.size(); i++)
+        towers[i]->playerDead=false;
+    
     health=healthStart;
     totalInk=startInk;
     score=0;
@@ -244,11 +246,11 @@ void testApp::reset(){
     //        wallPixels[i]=255;
     //    }
     //    
-    paused=false;
+    playerPause = false;
     noPath=false;
-    //    
-    //    towerID=0;
-    //    
+    
+    towerID=0;
+    
     curWave=-1;
     wavesDone=false;
     loadFromText();
@@ -340,63 +342,64 @@ void testApp::update(){
         //        //        if (allFoesHavePath && noPath){
         //        //            noPath=false;
         //        //        }
-        //        
-        //        //update the towers
-        //        for (int i=0; i<towers.size(); i++){
-        //            towers[i]->update();
-        //            
-        //            //if this tower is ready to shoot and the player isn't dead, check if there is a foe within range
-        //            if (towers[i]->readyToShoot && health>0){
-        //                
-        //                float closestDist=10000000;
-        //                int closestID=-1;
-        //                for (int k=0; k<foes.size(); k++){
-        //                    float distance=towers[i]->pos.distance(foes[k]->p.pos);
-        //                    if ( distance < towers[i]->range +towers[i]->rangePadding && distance<closestDist){
-        //                        
-        //                        //red can only target foes not immune to red
-        //                        if (towers[i]->type=="red" && foes[k]->type!="immune_red"){
-        //                            closestDist=distance;
-        //                            closestID=k;
-        //                        }
-        //                        
-        //                        //green can shoot goddamn anything
-        //                        if (towers[i]->type=="green"){
-        //                            closestDist=distance;
-        //                            closestID=k;
-        //                        }
-        //                        
-        //                        //freeze tower cannot shoot the foe if it is already frozen
-        //                        if (towers[i]->type=="blue" && foes[k]->freezeTimer<=0){
-        //                            closestDist=distance;
-        //                            closestID=k;
-        //                        }
-        //                    }
-        //                }
-        //                
-        //                if (closestID!=-1){
-        //                    towers[i]->fire(foes[closestID]);
-        //                }
-        //                
-        //            }
-        //            
-        //            //if this is a bomb tower, check if it just hit
-        //            if(towers[i]->bombHit){
-        //                towers[i]->bombHit=false;
-        //                
-        //                //find all of the foes in range of the bullet and damage them
-        //                for (int k=0; k<foes.size(); k++){
-        //                    if (towers[i]->bullet.pos.distance(foes[k]->p.pos)<towers[i]->blastRadius){
-        //                        foes[k]->hp-=towers[i]->bulletDamage;
-        //                    }
-        //                }
-        //                
-        //                //add an animation
-        //                BombAnimation newBombAnimation;
-        //                newBombAnimation.setup(towers[i]->bullet.pos.x,towers[i]->bullet.pos.y,towers[i]->blastRadius);
-        //                bombAnimations.push_back(newBombAnimation);
-        //            }
-        //        }
+        //   
+        
+        //update the towers
+        for (int i=0; i<towers.size(); i++){
+            towers[i]->update();
+            
+            //if this tower is ready to shoot and the player isn't dead, check if there is a foe within range
+            if (towers[i]->readyToShoot && health>0){
+                
+                float closestDist=10000000;
+                int closestID=-1;
+                for (int k=0; k<foes.size(); k++){
+                    float distance=towers[i]->pos.distance(foes[k]->p.pos);
+                    if ( distance < towers[i]->range +towers[i]->rangePadding && distance<closestDist){
+                        
+                        //red can only target foes not immune to red
+                        if (towers[i]->type=="red" && foes[k]->type!="immune_red"){
+                            closestDist=distance;
+                            closestID=k;
+                        }
+                        
+                        //green can shoot goddamn anything
+                        if (towers[i]->type=="green"){
+                            closestDist=distance;
+                            closestID=k;
+                        }
+                        
+                        //freeze tower cannot shoot the foe if it is already frozen
+                        if (towers[i]->type=="blue" && foes[k]->freezeTimer<=0){
+                            closestDist=distance;
+                            closestID=k;
+                        }
+                    }
+                }
+                
+                if (closestID!=-1){
+                    towers[i]->fire(foes[closestID]);
+                }
+                
+            }
+            
+            //if this is a bomb tower, check if it just hit
+            if(towers[i]->bombHit){
+                towers[i]->bombHit=false;
+                
+                //find all of the foes in range of the bullet and damage them
+                for (int k=0; k<foes.size(); k++){
+                    if (towers[i]->bullet.pos.distance(foes[k]->p.pos)<towers[i]->blastRadius){
+                        foes[k]->hp-=towers[i]->bulletDamage;
+                    }
+                }
+                
+                //add an animation
+                BombAnimation newBombAnimation;
+                newBombAnimation.setup(towers[i]->bullet.pos.x,towers[i]->bullet.pos.y,towers[i]->blastRadius);
+                bombAnimations.push_back(newBombAnimation);
+            }
+        }
     }
     
     //    //kil any old bomb animations
@@ -508,8 +511,20 @@ void testApp::draw(){
     ofSetColor(200, 10, 10);
     ofRect(colorButtons[0]);
     
-    ofSetColor(255,0,0);
+    //debug info
+    ofSetColor(255,100,100);
     ofDrawBitmapString(ofToString(ofGetFrameRate()), 5,ofGetHeight()-2);
+    string pausedText = "not paused";
+    if (paused){
+        pausedText = "paused because  ";
+        if (playerPause)    pausedText+="player paused  ";
+        if (noPath)         pausedText+="no path  ";
+        if (tooMuchInk)     pausedText+="too much ink  ";
+        if (!gameStarted)   pausedText+="game not started  ";
+        if (waveComplete)   pausedText+="wave complete  ";
+        if (fingerDown)     pausedText+="finger down";
+    }
+    ofDrawBitmapString(pausedText, 100, ofGetHeight()-2);
     
     //below this from the computer verison:
     
@@ -557,9 +572,9 @@ void testApp::drawGame(){
         VF.draw();
     }
     
-    //    //show the towers
-    //    for (int i=0; i<towers.size(); i++)
-    //        towers[i]->draw();
+    //show the towers
+    for (int i=0; i<towers.size(); i++)
+        towers[i]->draw();
     
     //show the foes
     for (int i=0; i<foes.size(); i++){
@@ -892,163 +907,242 @@ void testApp::convertDrawingToGame(){
             VF.addOutwardCircle(wallX*fieldScale, wallY*fieldScale, 20, 0.3);
         }
     }
-    //    
-    //    //look for blobs to turn into towers
-    //    //set all towers as unfound. If they are not found when checking the blobs, they will be rmeoved
-    //    for (int i=0; i<towers.size(); i++){
-    //        towers[i]->found=false;
-    //    }
-    //    
-    //    //red
-    //    int minArea=20;
-    //    int maxArea=(fieldW*fieldH)/2;
-    //    int maxNumberOfBlobs=25;
-    //    
-    //    //expand the pixels in the images 
-    //    for (int i=0; i<3; i++)
-    //        colorImgs[i].dilate_3x3();    
-    //    
-    //    contourFinder.findContours(colorImgs[0], minArea, maxArea, maxNumberOfBlobs, false);
-    //    checkTowers("red");
-    //    //green
-    //    contourFinder.findContours(colorImgs[1], minArea, maxArea, maxNumberOfBlobs, false);
-    //    checkTowers("green");
-    //    //blue
-    //    contourFinder.findContours(colorImgs[2], minArea, maxArea, maxNumberOfBlobs, false);
-    //    checkTowers("blue");
-    //    
-    //    //find any towers that were not found in the last sweep and kill them
-    //    for (int i=towers.size()-1; i>=0; i--){
-    //        if (!towers[i]->found){
-    //            delete towers[i];
-    //            towers.erase(towers.begin()+i);
-    //        }
-    //    }
-    //    
-    //    //in case the markers fucked with the IR reading, save a new background
-    //    saveChangeBackground=true;
-    //    
-    //    //save these images to the display array for debug purposes
-    //    for (int i=0; i<3; i++)
-    //        colorImgsDisplay[i]=colorImgs[i];
-    //    
-    //    
-    //    //check how much ink has been used
-    //    inkUsed= 0;  
-    //    //check black pixels
-    //    for (int i=0; i<fieldW*fieldH; i++){
-    //        if (wallPixels[i]==0) inkUsed+=blackInkValue;
-    //    }
-    //    //check towers
-    //    for (int i=0; i<towers.size(); i++){
-    //        if (towers[i]->type=="red") inkUsed+=rInkValue*towers[i]->size;
-    //        if (towers[i]->type=="green") inkUsed+=gInkValue*towers[i]->size;
-    //        if (towers[i]->type=="blue") inkUsed+=bInkValue*towers[i]->size;
-    //    }
-    //    //let calibration know how much was used
-    //    calibration.inkUsedBeforeRefund=inkUsed;
-    //    //factor in the refund
-    //    inkUsed-=inkRefund;
-    //    //make sure ink used is not negative
-    //    inkUsed=MAX(0,inkUsed);
-    //    //check if they used more ink than they have
-    //    if (inkUsed>totalInk){
-    //        tooMuchInk=true;
-    //        SM.playSound("error");  //play the sound
-    //    }else if (tooMuchInk){  //if they just fixed using too much ink, unpause the game
-    //        tooMuchInk=false;
-    //    }
-    //    
-    //    //if there is nothing wrong, the game is ready to continue
-    //    //but we should check to see if any towers from the last safe game state were removed
-    //    if (!tooMuchInk && !noPath){
-    //        cout<<"ITS GOOD"<<endl;
-    //        
-    //        //check the current wall image against the last one to see if any big chunks of wall were erased
-    //        vector <int> wallEraseLocations;
-    //        wallDiffImage.absDiff(lastSafeWallImage, wallImage);
-    //        wallDiffImage.erode_3x3();  //try to remove some noise by expanding the black parts of the image
-    //        unsigned char * wallDiffPixels=wallDiffImage.getPixels();
-    //        //go thorugh and see how many pixels that had been black are now white
-    //        int totalDiff=0;
-    //        //int spawnParticleFrequency= (1/blackInkValue)*wallRefund;
-    //        for (int i=0; i<fieldW*fieldH; i++){
-    //            if (wallDiffPixels[i]>128 && wallPixels[i]==255){
-    //                totalDiff++;
-    //                //spawn an ink particle every so often based on the number of pixels checked so far if the game has started
-    //                if (gameStarted){
-    //                    particle newInkParticle;
-    //                    int xPos= (i%fieldW)*fieldScale;
-    //                    int yPos= ( floor(i/fieldW) )*fieldScale;
-    //                    newInkParticle.setInitialCondition( xPos, yPos , ofRandom(-5,5),ofRandom(-5,5));
-    //                    inkParticles.push_back(newInkParticle);
-    //                }
-    //            }
-    //        }
-    //        //remove from their total ink based on the total
-    //        if (gameStarted)
-    //            totalInk-= totalDiff/wallRefund;
-    //        cout<<"total wall difference: "<<totalDiff<<endl;
-    //        cout<<"took Away: "<<totalDiff/wallRefund<<endl;
-    //        
-    //        
-    //        
-    //        //go through the tower data from the last safe state and see if antyhing is missing
-    //        for (int i=0; i<lastSafeTowerSet.size(); i++){
-    //            bool found=false;   //assume the tower will not be found
-    //            
-    //            //checking each tower might be a super innificient way of doing this
-    //            for (int k=0; k<towers.size(); k++){
-    //                if ( lastSafeTowerSet[i].pos.distance(towers[k]->pos)<lastSafeTowerSet[i].size && lastSafeTowerSet[i].type==towers[k]->type){
-    //                    found=true;
-    //                    break;
-    //                }
-    //            }
-    //            
-    //            if (!found){
-    //                cout<<"you erased the tower at "<<lastSafeTowerSet[i].pos.x<<" , "<<lastSafeTowerSet[i].pos.y<<endl;
-    //                
-    //                //figure out how much ink that tower was worth
-    //                float inkValue;
-    //                if (lastSafeTowerSet[i].type=="red") inkValue=rInkValue*lastSafeTowerSet[i].size;
-    //                if (lastSafeTowerSet[i].type=="green") inkValue=gInkValue*lastSafeTowerSet[i].size;
-    //                if (lastSafeTowerSet[i].type=="blue") inkValue=bInkValue*lastSafeTowerSet[i].size;
-    //                
-    //                //remove that ink from the player's reserve if the game has been started
-    //                if (gameStarted){
-    //                    totalInk-=inkValue;
-    //                    //and spawn ink particles equal to the refund they should get
-    //                    for (int r=0; r<inkValue*towerRefund; r++){
-    //                        particle newInkParticle;
-    //                        newInkParticle.setInitialCondition(lastSafeTowerSet[i].pos.x,lastSafeTowerSet[i].pos.y,ofRandom(-5,5),ofRandom(-5,5));
-    //                        inkParticles.push_back(newInkParticle);
-    //                    }
-    //                }
-    //                
-    //            }
-    //            
-    //            
-    //        }
-    //        
-    //        //save the current wall image
-    //        lastSafeWallImage=wallImage;
-    //        
-    //        //save all of the current tower info to be checked next time
-    //        lastSafeTowerSet.clear();
-    //        for (int i=0; i<towers.size(); i++){
-    //            TowerInfo newInfo;
-    //            newInfo.pos=towers[i]->pos;
-    //            newInfo.size=towers[i]->size;
-    //            newInfo.type=towers[i]->type;
-    //            lastSafeTowerSet.push_back(newInfo);
-    //        }
-    //    }
-    //    else{
-    //        cout<<"NO GOOD BAD BAD"<<endl;
-    //        if (tooMuchInk)    cout<<"TOO MUCH INK"<<endl;
-    //        if (noPath)        cout<<"NO PATH"<<endl;
-    //    }
     
+    //look for blobs to turn into towers
+    //set all towers as unfound. If they are not found when checking the blobs, they will be removed
+    for (int i=0; i<towers.size(); i++){
+        towers[i]->found=false;
+    }
+    
+    //red
+    int minArea=20;
+    int maxArea=(boardW*boardH)/2;
+    int maxNumberOfBlobs=25;        //how many towers there can be
+    
+    //expand the pixels in the images 
+    for (int i=0; i<3; i++)
+        colorImgs[i].dilate_3x3();    
+    
+    contourFinder.findContours(colorImgs[0], minArea, maxArea, maxNumberOfBlobs, false);
+    checkTowers("red");
+    //green
+    contourFinder.findContours(colorImgs[1], minArea, maxArea, maxNumberOfBlobs, false);
+    checkTowers("green");
+    //blue
+    contourFinder.findContours(colorImgs[2], minArea, maxArea, maxNumberOfBlobs, false);
+    checkTowers("blue");
+    
+    //find any towers that were not found in the last sweep and kill them
+    for (int i=towers.size()-1; i>=0; i--){
+        if (!towers[i]->found){
+            delete towers[i];
+            towers.erase(towers.begin()+i);
+        }
+    }
+    
+    
+    
+//    //check how much ink has been used
+//    inkUsed= 0;  
+//    //check black pixels
+//    for (int i=0; i<fieldW*fieldH; i++){
+//        if (wallPixels[i]==0) inkUsed+=blackInkValue;
+//    }
+//    //check towers
+//    for (int i=0; i<towers.size(); i++){
+//        if (towers[i]->type=="red") inkUsed+=rInkValue*towers[i]->size;
+//        if (towers[i]->type=="green") inkUsed+=gInkValue*towers[i]->size;
+//        if (towers[i]->type=="blue") inkUsed+=bInkValue*towers[i]->size;
+//    }
+//    //factor in the refund
+//    inkUsed-=inkRefund;
+//    //make sure ink used is not negative
+//    inkUsed=MAX(0,inkUsed);
+//    //check if they used more ink than they have
+//    if (inkUsed>totalInk){
+//        tooMuchInk=true;
+//        SM.playSound("error");  //play the sound
+//    }else if (tooMuchInk){  //if they just fixed using too much ink, unpause the game
+//        tooMuchInk=false;
+//    }
+    
+//    //if there is nothing wrong, the game is ready to continue
+//    //but we should check to see if any towers from the last safe game state were removed
+//    if (!tooMuchInk && !noPath){
+//        cout<<"ITS GOOD"<<endl;
+//        
+//        //check the current wall image against the last one to see if any big chunks of wall were erased
+//        vector <int> wallEraseLocations;
+//        wallDiffImage.absDiff(lastSafeWallImage, wallImage);
+//        wallDiffImage.erode_3x3();  //try to remove some noise by expanding the black parts of the image
+//        unsigned char * wallDiffPixels=wallDiffImage.getPixels();
+//        //go thorugh and see how many pixels that had been black are now white
+//        int totalDiff=0;
+//        //int spawnParticleFrequency= (1/blackInkValue)*wallRefund;
+//        for (int i=0; i<fieldW*fieldH; i++){
+//            if (wallDiffPixels[i]>128 && wallPixels[i]==255){
+//                totalDiff++;
+//                //spawn an ink particle every so often based on the number of pixels checked so far if the game has started
+//                if (gameStarted){
+//                    particle newInkParticle;
+//                    int xPos= (i%fieldW)*fieldScale;
+//                    int yPos= ( floor(i/fieldW) )*fieldScale;
+//                    newInkParticle.setInitialCondition( xPos, yPos , ofRandom(-5,5),ofRandom(-5,5));
+//                    inkParticles.push_back(newInkParticle);
+//                }
+//            }
+//        }
+//        //remove from their total ink based on the total
+//        if (gameStarted)
+//            totalInk-= totalDiff/wallRefund;
+//        cout<<"total wall difference: "<<totalDiff<<endl;
+//        cout<<"took Away: "<<totalDiff/wallRefund<<endl;
+//        
+//        
+//        
+//        //go through the tower data from the last safe state and see if antyhing is missing
+//        for (int i=0; i<lastSafeTowerSet.size(); i++){
+//            bool found=false;   //assume the tower will not be found
+//            
+//            //checking each tower might be a super innificient way of doing this
+//            for (int k=0; k<towers.size(); k++){
+//                if ( lastSafeTowerSet[i].pos.distance(towers[k]->pos)<lastSafeTowerSet[i].size && lastSafeTowerSet[i].type==towers[k]->type){
+//                    found=true;
+//                    break;
+//                }
+//            }
+//            
+//            if (!found){
+//                cout<<"you erased the tower at "<<lastSafeTowerSet[i].pos.x<<" , "<<lastSafeTowerSet[i].pos.y<<endl;
+//                
+//                //figure out how much ink that tower was worth
+//                float inkValue;
+//                if (lastSafeTowerSet[i].type=="red") inkValue=rInkValue*lastSafeTowerSet[i].size;
+//                if (lastSafeTowerSet[i].type=="green") inkValue=gInkValue*lastSafeTowerSet[i].size;
+//                if (lastSafeTowerSet[i].type=="blue") inkValue=bInkValue*lastSafeTowerSet[i].size;
+//                
+//                //remove that ink from the player's reserve if the game has been started
+//                if (gameStarted){
+//                    totalInk-=inkValue;
+//                    //and spawn ink particles equal to the refund they should get
+//                    for (int r=0; r<inkValue*towerRefund; r++){
+//                        particle newInkParticle;
+//                        newInkParticle.setInitialCondition(lastSafeTowerSet[i].pos.x,lastSafeTowerSet[i].pos.y,ofRandom(-5,5),ofRandom(-5,5));
+//                        inkParticles.push_back(newInkParticle);
+//                    }
+//                }
+//                
+//            }
+//            
+//            
+//        }
+//        
+//        //save the current wall image
+//        lastSafeWallImage=wallImage;
+//        
+//        //save all of the current tower info to be checked next time
+//        lastSafeTowerSet.clear();
+//        for (int i=0; i<towers.size(); i++){
+//            TowerInfo newInfo;
+//            newInfo.pos=towers[i]->pos;
+//            newInfo.size=towers[i]->size;
+//            newInfo.type=towers[i]->type;
+//            lastSafeTowerSet.push_back(newInfo);
+//        }
+//    }
+//    else{
+//        cout<<"NO GOOD BAD BAD"<<endl;
+//        if (tooMuchInk)    cout<<"TOO MUCH INK"<<endl;
+//        if (noPath)        cout<<"NO PATH"<<endl;
+//    }
+    cout<<"this many towers: "<<towers.size()<<endl;   
+}
+
+//--------------------------------------------------------------
+//checks the contour finder for blobs and updates the towers based on them
+void testApp::checkTowers(string type){
+    cout<<"checking "<<type<<endl;
+    //if there is a blob inside of another blob, then it was not a full circle and should not be considerred
+    vector <int> skip;
+    float minDist=5;
+    
+    cout<<"num blobs: "<<contourFinder.nBlobs<<endl;
+    
+    //JUST USE the holes boolean in the blog. JESUS
+    for (int i = 0; i < contourFinder.nBlobs; i++){
+        for (int k=0; k<i; k++){
+            if (ofDist(contourFinder.blobs[i].centroid.x,contourFinder.blobs[i].centroid.y,
+                       contourFinder.blobs[k].centroid.x,contourFinder.blobs[k].centroid.y)<minDist){
+                skip.push_back(i);
+                skip.push_back(k);
+            }
+        }
+    }
+    
+    for (int i = 0; i < contourFinder.nBlobs; i++){
+        //check if this was one of the blobs with holes. Skip it if it was
+        bool skipMe=false;
+        for (int k=0; k<skip.size(); k++){
+            if (i==skip[k]) skipMe=true;
+        }
+        
+        //find the radius
+        float size=sqrt( contourFinder.blobs[i].area/PI )/2;    //diviing by 2 because the image is twice the size of the field
+        
+        //make sure the blob is at least pretty close to being a circle
+        //check compacntess of the blob. a value of 1 would be a perfect circle. Higher values are less compact
+        float compactness = (float)((contourFinder.blobs[i].length*contourFinder.blobs[i].length/contourFinder.blobs[i].area)/FOUR_PI);
+        if (compactness>maxCompactness) skipMe=true;
+        
+        //if it passed all those tests, try to make a tower for the blob
+        if (!skipMe){
+            //check if there is already a tower in this spot
+            bool towerHere=false;
+            
+            for (int k=0; k<towers.size(); k++){
+                if ( ofDist(towers[k]->pos.x,towers[k]->pos.y, contourFinder.blobs[i].centroid.x*boardScale,contourFinder.blobs[i].centroid.y*boardScale)<size*boardScale &&
+                    towers[k]->type==type){
+                    //there is a tower here
+                    towerHere=true;
+                    towers[k]->found=true;
+                    
+                    //was the tower built up? adjust its size and center position
+                    //the image is twice the size of the field, so we need to cut the values in half before scalling them up to game size
+                    towers[k]->setNewPos(contourFinder.blobs[i].centroid.x*boardScale, contourFinder.blobs[i].centroid.y*boardScale, size*boardScale);
+                }
+            }
+            
+            //if there is no tower currently in this spot, create one
+            if (!towerHere){
+                if (type=="red"){
+                    HitTower * newTower=new HitTower();
+                    newTower->setup(contourFinder.blobs[i].centroid.x*boardScale, contourFinder.blobs[i].centroid.y*boardScale, size*boardScale, ++towerID);
+                    newTower->showAllInfo=&showAllInfo;
+                    newTower->paused=&paused;
+                    newTower->SM= &SM;
+                    towers.push_back(newTower);
+                }
+                if (type=="green"){
+                    BombTower * newTower=new BombTower();
+                    newTower->setup(contourFinder.blobs[i].centroid.x*boardScale, contourFinder.blobs[i].centroid.y*boardScale, size*boardScale, ++towerID);
+                    newTower->showAllInfo=&showAllInfo;
+                    newTower->paused=&paused;
+                    newTower->SM= &SM;
+                    towers.push_back(newTower);
+                }
+                if (type=="blue"){
+                    FreezeTower * newTower=new FreezeTower();
+                    newTower->setup(contourFinder.blobs[i].centroid.x*boardScale, contourFinder.blobs[i].centroid.y*boardScale, size*boardScale, ++towerID);
+                    newTower->showAllInfo=&showAllInfo;
+                    newTower->paused=&paused;
+                    newTower->SM= &SM;
+                    towers.push_back(newTower);
+                }
+            }
+        }else{
+            cout<<"my shit got skipped"<<endl;
+        }
+    }
 }
 
 //--------------------------------------------------------------
@@ -1218,12 +1312,12 @@ void testApp::killFoe(int num){
     newExplosion.setup(foes[num]->p.pos, &explosionPic);
     explosions.push_back(newExplosion);
     
-    //    //go through and find any towers targetting this foe and remove the target
-    //    for (int i=0; i<towers.size(); i++){
-    //        if (towers[i]->target==foes[num]){
-    //            towers[i]->target=NULL;
-    //        }
-    //    }
+    //go through and find any towers targetting this foe and remove the target
+    for (int i=0; i<towers.size(); i++){
+        if (towers[i]->target==foes[num]){
+            towers[i]->target=NULL;
+        }
+    }
     
     delete foes[num]; //dealocate the meory
     foes.erase(foes.begin()+num);

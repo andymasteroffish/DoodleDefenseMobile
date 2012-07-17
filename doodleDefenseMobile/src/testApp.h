@@ -7,10 +7,17 @@
 
 #include "Foe.h"
 #include "NormFoe.h"
-//#include "FastFoe.h"
-//#include "StealthFoe.h"
-//#include "ImmuneRedFoe.h"
-//#include "HeavyFoe.h"
+#include "FastFoe.h"
+#include "StealthFoe.h"
+#include "ImmuneRedFoe.h"
+#include "HeavyFoe.h"
+
+#include "Tower.h"
+#include "HitTower.h"
+#include "FreezeTower.h"
+#include "BombTower.h"
+
+#include "BombAnimation.h"
 
 #include "vectorField.h"
 #include "tile.h"
@@ -55,7 +62,7 @@ class testApp : public ofxiPhoneApp{
     void reset();
     void convertDrawingToGame();    //takes the pixels and reads the game values from them
     void setMazeBorders();
-    void thickenWallImage();
+    void thickenWallImage();    //KILL THIS
     
     void spawnFoe(string name, int level);
     void killFoe(int num);
@@ -119,6 +126,8 @@ class testApp : public ofxiPhoneApp{
     //images to display as the boarders
     ofImage borderPics[2];
     
+    ofxCvContourFinder 	contourFinder;  //for finding the blobs of color
+    
     //resons the game might be paused   SOME OF THESE DON'T APPLY IN THE IPAD VERSION
     bool paused;        //global pause. If any reason is true, this is true
     bool playerPause;   //player pauses the game
@@ -164,6 +173,16 @@ class testApp : public ofxiPhoneApp{
     //explosions and poofs from hitting foes
     ofImage explosionPic;
     vector <Explosion> explosions;
+    
+    //towers - the point of the damn game
+    vector <Tower *> towers;
+    vector <TowerInfo> lastSafeTowerSet;  //all the locaitons of the towers when no problem was encounterred
+    int towerID;    //goes up each time a tower is made so they each have a unique ID number
+    float towerRefund;  //percentage of the value of the tower that the user gets back if they erase one
+    float maxCompactness;   //how far the blob can be from being a circle and still be counted
+    
+    //vector to hold the bomb animations
+    vector<BombAnimation> bombAnimations;
     
     //waves of foes
     vector<Wave> waves;
