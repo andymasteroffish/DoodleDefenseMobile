@@ -43,10 +43,10 @@ void WaveInfoBox::setup(int _waveNum, string _message, ofImage * _backPic, ofTru
     
     //set up how to display the text
     waveTextOffset.x = -boxW/2 + 15;
-    waveTextOffset.y = -boxH/2 + 50;
+    waveTextOffset.y = -boxH/2 + ofGetHeight()*0.04;
     
     messageTextOffset.x = -boxW/2 + 30;
-    messageTextOffset.y = -boxH/2 + 140;
+    messageTextOffset.y = -boxH/2 + ofGetHeight()*0.07;
 }
 
 

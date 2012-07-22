@@ -60,6 +60,10 @@ class testApp : public ofxiPhoneApp{
     
     //game functions
     void reset();
+    
+    void brushDown(ofTouchEventArgs & touch);
+    void eraserDown(ofTouchEventArgs & touch);
+    
     void convertDrawingToGame();    //takes the pixels and reads the game values from them
     void setMazeBorders();
     void thickenWallImage();    //KILL THIS
@@ -112,6 +116,8 @@ class testApp : public ofxiPhoneApp{
     //combined image
     ofxCvColorImage         combinedImg;
     unsigned char *			combinedPixels;
+    ofxCvColorImage         wallDispImage;
+    unsigned char *			wallDispPixels;
     
     ofPoint boardOffset;    //where the gameboard is placed on screen
     
@@ -180,6 +186,15 @@ class testApp : public ofxiPhoneApp{
     //getting ink
     vector <particle> inkParticles;
     
+    //ink ussage - how much each pixel costs
+    float blackInkValue;
+    float rInkValue;
+    float gInkValue;
+    float bInkValue;
+    
+    //getting ink back when a wall is erased
+    float wallRefund;
+    
     //towers - the point of the damn game
     vector <Tower *> towers;
     vector <TowerInfo> lastSafeTowerSet;  //all the locaitons of the towers when no problem was encounterred
@@ -201,7 +216,6 @@ class testApp : public ofxiPhoneApp{
     //the boxes to show the details for each wave
     vector <WaveInfoBox> waveInfoBoxes;
     float waveInfoBottom;   //line where the boxes want to fall to
-    float waveInfoX;
     float waveInfoDistToFadeOut;    //how far from the bottom the box can be before daing completely
 #define NUM_WAVE_INFO_BOX_PICS 3
     ofImage waveInfoPics[NUM_WAVE_INFO_BOX_PICS];        //images for the boxes

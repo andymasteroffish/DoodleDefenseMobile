@@ -11,7 +11,7 @@ void testApp::setup(){
 	iPhoneSetOrientation(OFXIPHONE_ORIENTATION_LANDSCAPE_RIGHT);
 	ofSetFrameRate(30);
     
-	ofBackground(127,127,127);
+	ofBackground(255,255,255);
     
     //size of the grid the game is played on
     float sizeIncreaseToBoard = 7;
@@ -26,7 +26,7 @@ void testApp::setup(){
     //setup vector field
     VF.setupField(120, 90,fieldW*fieldScale, fieldH*fieldScale);
     
-    boardOffset.set(ofGetWidth()*0.1,ofGetHeight()*0.15);
+    boardOffset.set(ofGetWidth()*0.04,ofGetHeight()*0.15);
     
     //black image
     blackImg.allocate(boardW, boardH);
@@ -42,9 +42,10 @@ void testApp::setup(){
         colorImgs[i].allocate(boardW, boardH);
         colorPixels[i]= new unsigned char [boardW * boardH];
     }
-    //combined image
+    //combined color image
     combinedImg.allocate(boardW, boardH);
     combinedPixels = new unsigned char [boardW * boardH * 3];
+    //wall display image
     
     //clear them
     for (int i=0; i<boardW*boardH; i++){
@@ -86,7 +87,7 @@ void testApp::setup(){
     int buttonW=100;
     int buttonH=100;
     for (int i=0; i<5; i++){
-        colorButtons[i].set(i*(buttonW+10),0, buttonW, buttonH);
+        colorButtons[i].set(ofGetWidth()*0.3+i*(buttonW+10),0, buttonW, buttonH);
     }
 	
 	//testing different views
@@ -100,6 +101,16 @@ void testApp::setup(){
     startInk=500;
     
     waveAnimationTime=5;    //flash for x seconds when a wave is finished
+    
+    //ink values
+    blackInkValue   = 0.2;
+    rInkValue       = 2.5;
+    gInkValue       = 3.5;
+    bInkValue       = 3.0;
+    
+    //getting ink back when towers and walls are erased
+    towerRefund=0.7;    //what percentage of the tower's value a player gets back when they kill one
+    wallRefund=0.85;
     
     //foe images
     for (int i=0; i<NUM_FOE_FRAMES; i++){
@@ -134,6 +145,13 @@ void testApp::setup(){
     //title
     titleBig.loadImage("banners/titleBig.png");
     
+    //displaying the wave info
+    waveInfoBottom=boardOffset.y+boardH*boardScale-ofGetHeight()*0.15;
+    waveInfoDistToFadeOut=ofGetHeight()*0.8;
+    //box images
+    for (int i=0; i<NUM_WAVE_INFO_BOX_PICS; i++)
+        waveInfoPics[i].loadImage("waveInfoBoxes/boxes-"+ofToString(i+1)+".png");
+    
     //load the sounds
     SM.setup();
 //    SM.loadSound("audio/BOMB.wav", "bomb", 1);
@@ -162,85 +180,6 @@ void testApp::setup(){
     combinedImg.invert();
     
     reset();
-}
-
-//--------------------------------------------------------------
-void testApp::loadFromText(){ 
-    waves.clear();  //get rid of any waves that may be there
-    
-    //load in the text file
-	ifstream fin;
-	fin.open(ofToDataPath("waves.txt").c_str());
-	
-	while(fin!=NULL) //as long as theres still text to be read  
-	{  
-		string full; //declare a string for storage  
-		getline(fin, full); //get a line from the file, put it in the string 
-        
-        //if there are not at least 4 characters it is not a command and the line can be skipped
-        if (full.length()>3){
-            //split the string into the command and value
-            string cmd=full.substr(0,3);    //command is the first 3 values
-            string val=full.substr(4);  //value is everything after the space
-            
-            //check commands
-            
-            //create a new wave at the given level. This must be the first command
-            if (cmd=="new"){
-                int level= atoi(val.c_str());
-                //create a new wave and add it to the vector
-                Wave newWave;
-                newWave.setup(level);
-                waves.push_back(newWave);
-            }
-            
-            //set the time
-            if (cmd=="dur"){
-                int duration= atoi(val.c_str());
-                waves[waves.size()-1].setTime(duration);
-            }
-            
-            //add a number of foes
-            if (cmd=="add"){
-                //there are two values here, a name and a number seperated by a space
-                size_t spacePos=val.find(" ");
-                string name=val.substr(0,spacePos);
-                string numString=val.substr(spacePos+1);
-                int num=atoi(numString.c_str());
-                
-                waves[waves.size()-1].addFoes(name, num);
-            }
-            
-            //add a message
-            if (cmd=="mes"){
-                waves[waves.size()-1].setMessage(val);
-            }
-            
-            //set the color for the box
-            if (cmd=="col"){
-                waves[waves.size()-1].setBoxColor(val);
-            }
-            
-            //randomize the wave
-            if (cmd=="ran"){
-                waves[waves.size()-1].randomize();
-            }
-        }
-	}
-    
-    //set the wave info boxes
-    waveInfoBoxes.clear();  //get rid of any old ones
-    float waveInfoSpacing=80;
-    float boxWidth=400;
-    float boxHeight=300;
-    for (int i=0; i<waves.size(); i++){
-        WaveInfoBox newInfoBox;
-        
-        newInfoBox.setup(i+1, waves[i].message, &waveInfoPics[i%3], &infoFont, &infoFontSmall, waves[i].boxColorID, waveInfoX, waveInfoBottom-i*(boxHeight+waveInfoSpacing), boxWidth, boxHeight);
-        newInfoBox.alpha=ofMap( waveInfoBottom-newInfoBox.pos.y, 0, waveInfoDistToFadeOut, 255, 0, true);
-        waveInfoBoxes.push_back(newInfoBox);
-        
-    }
 }
 
 //--------------------------------------------------------------
@@ -465,31 +404,31 @@ void testApp::update(){
         if (explosions[i].killMe)
             explosions.erase(explosions.begin()+i);
     }
-    //    
-    //    //update the wave info boxes if they need any changing
-    //    //fade out the bottom box if the level was just finished
-    //    if (waveInfoBoxes.size()>0){
-    //        if (waveInfoBoxes[0].fading){
-    //            waveInfoBoxes[0].alpha-=waveInfoBoxes[0].fadeSpeed;
-    //            //kill it if it is gone
-    //            if (waveInfoBoxes[0].alpha<=0){
-    //                waveInfoBoxes.erase(waveInfoBoxes.begin());
-    //            }
-    //        }
-    //    }
-    //    //if the bottom box is not on the bottom line, move them all down and adjust the alhpa
-    //    if (waveInfoBoxes.size()>0){    //make sure there is somehting there
-    //        if (waveInfoBoxes[0].pos.y<waveInfoBottom){
-    //            for (int i=0; i<waveInfoBoxes.size(); i++){
-    //                waveInfoBoxes[i].pos.y+=waveInfoBoxes[i].fallSpeed;
-    //                //make sure they don't go below the line
-    //                waveInfoBoxes[i].pos.y=MIN(waveInfoBottom, waveInfoBoxes[i].pos.y);
-    //                //set the alpha based on the distance to the bottom line
-    //                waveInfoBoxes[i].alpha=ofMap( waveInfoBottom-waveInfoBoxes[i].pos.y, 0, waveInfoDistToFadeOut, 255, 0, true);
-    //            }
-    //        }
-    //    }
-    //    
+    
+    //update the wave info boxes if they need any changing
+    //fade out the bottom box if the level was just finished
+    if (waveInfoBoxes.size()>0){
+        if (waveInfoBoxes[0].fading){
+            waveInfoBoxes[0].alpha-=waveInfoBoxes[0].fadeSpeed;
+            //kill it if it is gone
+            if (waveInfoBoxes[0].alpha<=0){
+                waveInfoBoxes.erase(waveInfoBoxes.begin());
+            }
+        }
+    }
+    //if the bottom box is not on the bottom line, move them all down and adjust the alhpa
+    if (waveInfoBoxes.size()>0){    //make sure there is somehting there
+        if (waveInfoBoxes[0].pos.y<waveInfoBottom){
+            for (int i=0; i<waveInfoBoxes.size(); i++){
+                waveInfoBoxes[i].pos.y+=waveInfoBoxes[i].fallSpeed;
+                //make sure they don't go below the line
+                waveInfoBoxes[i].pos.y=MIN(waveInfoBottom, waveInfoBoxes[i].pos.y);
+                //set the alpha based on the distance to the bottom line
+                waveInfoBoxes[i].alpha=ofMap( waveInfoBottom-waveInfoBoxes[i].pos.y, 0, waveInfoDistToFadeOut, 255, 0, true);
+            }
+        }
+    }
+    
 	
 }
 
@@ -564,7 +503,7 @@ void testApp::draw(){
         combinedImg.draw(boardOffset.x, boardOffset.y, boardW*boardScale, boardH*boardScale);
     
     //testing the wall image
-    wallImage.draw(ofGetWidth()*0.6, 0, fieldW*2, fieldH*2);
+    //wallImage.draw(ofGetWidth()*0.6, 0, fieldW*2, fieldH*2);
     
     //show the border
     ofSetRectMode(OF_RECTMODE_CORNER);
@@ -678,8 +617,8 @@ void testApp::drawPlayerInfo(){
     ofSetRectMode(OF_RECTMODE_CORNER);
     float xCenter=boardOffset.x + boardW*boardScale*0.5;
     float healthY=boardOffset.y + boardH*boardScale + ofGetHeight()*0.01;
-    float healthWidth=(mazeRight-mazeLeft)*fieldScale;
-    float xLeft=xCenter-healthWidth/2+healthPicFull[0].width/2;
+    float healthWidth=boardW*boardScale;
+    float xLeft=xCenter-healthWidth/2;
     float healthSpacing= (healthWidth - healthStart*healthPicFull[0].width)/healthStart;
     //draw full hearts for the life remaining
     ofSetColor(255);
@@ -693,32 +632,32 @@ void testApp::drawPlayerInfo(){
     }
     
     
-//    //written values
-//    int thisTextX;
-//    
-//    //SHOW INK VALUES
-//    ofFill();
-//    ofSetColor(0);
-//    //make it blink if the player is out if ink
-//    if (tooMuchInk && ofGetFrameNum()/4%2==0)   ofSetColor(255,0,0);
-//    int inktextRightX=-150;
-//    int inkTextY=160;
-//    
-//    thisTextX=inktextRightX-infoFont.stringWidth("Ink Left:")/2;
-//    infoFont.drawString("Ink Left:",thisTextX,inkTextY);
-//    inkTextY+=infoFontBig.getLineHeight();
-//    
-//    //thisTextX=inktextRightX-infoFontBig.stringWidth(ofToString((int)(totalInk-inkUsed))+"/"+ofToString((int)totalInk));
-//    thisTextX=inktextRightX-infoFontBig.stringWidth(ofToString((int)(totalInk-inkUsed)))/2;
-//    infoFontBig.drawString(ofToString((int)(totalInk-inkUsed)),thisTextX,inkTextY);
-//    inkTextY+=infoFontBig.getLineHeight();
-//    
-//    
-//    //draw the wave info boxes
-//    ofSetRectMode(OF_RECTMODE_CENTER);
-//    for (int i=0; i<waveInfoBoxes.size(); i++){
-//        waveInfoBoxes[i].draw();
-//    }
+    //written values
+    int thisTextX;
+    
+    //SHOW INK VALUES
+    ofFill();
+    ofSetColor(0);
+    //make it blink if the player is out if ink
+    if (tooMuchInk && ofGetFrameNum()/4%2==0)   ofSetColor(255,0,0);
+    int inktextRightX=ofGetWidth()*0.13;
+    int inkTextY=ofGetHeight()*0.05;
+    
+    thisTextX=inktextRightX-infoFont.stringWidth("Ink Left:")/2;
+    infoFont.drawString("Ink Left:",thisTextX,inkTextY);
+    inkTextY+=infoFontBig.getLineHeight();
+    
+    //thisTextX=inktextRightX-infoFontBig.stringWidth(ofToString((int)(totalInk-inkUsed))+"/"+ofToString((int)totalInk));
+    thisTextX=inktextRightX-infoFontBig.stringWidth(ofToString((int)(totalInk-inkUsed)))/2;
+    infoFontBig.drawString(ofToString((int)(totalInk-inkUsed)),thisTextX,inkTextY);
+    inkTextY+=infoFontBig.getLineHeight();
+    
+    
+    //draw the wave info boxes
+    ofSetRectMode(OF_RECTMODE_CENTER);
+    for (int i=0; i<waveInfoBoxes.size(); i++){
+        waveInfoBoxes[i].draw();
+    }
 //    
 //    //BANNERS
 //    //let the player no if there is no path
@@ -785,75 +724,12 @@ void testApp::touchDown(ofTouchEventArgs & touch){
 //--------------------------------------------------------------
 void testApp::touchMoved(ofTouchEventArgs & touch){
     if (touch.id == 0){
-        int relativeX = touch.x-boardOffset.x;
-        int relativeY = touch.y-boardOffset.y;
         
-        int brushStrength = 100;    //how much it adds at the center
-        
-        int maxDist = 15*boardScale;
-        if (curBrushColor == 4) maxDist*=3; //make the eraser bigger
-        //paint into the array
-        int brushSize=maxDist/boardScale;
-        //get the center of the brush
-        int xMid=relativeX/boardScale;
-        int yMid=relativeY/boardScale;
-        
-        int xStart=MAX(0,xMid-brushSize);
-        int xEnd=MIN(boardW,xMid+brushSize);
-        int yStart=MAX(0,yMid-brushSize);
-        int yEnd=MIN(boardH,yMid+brushSize);
-        
-        //go through and set the pixels being effected by the brush
-        for (int col=xStart; col<xEnd; col++){
-            for (int row=yStart; row<yEnd; row++){
-                int pos= row*boardW+col;
-                int rgbPos = row*boardW*3+col*3;
-                
-                int brushAmount = ofMap(ofDist(relativeX, relativeY, col*boardScale, row*boardScale),0, maxDist, brushStrength, 0, true);
-                
-                if (touch.id == 0){
-                    if (curBrushColor<3){
-                        //add to the selected color, take away from all others
-                        for (int i=0; i<3; i++){
-                            if (i==curBrushColor)
-                                colorPixels[i][pos] = MIN(255, colorPixels[i][pos]+brushAmount);
-                            else
-                                colorPixels[i][pos] = MAX(0, colorPixels[i][pos]-brushAmount);
-                        }
-                        blackPixels[pos] = MAX(0, blackPixels[pos]-brushAmount);
-                    }else if (curBrushColor==3){
-                        blackPixels[pos] = MIN(255, blackPixels[pos]+brushAmount);
-                        //shrink the colored images
-                        for (int i=0; i<3; i++)
-                            colorPixels[i][pos] = MAX(0, colorPixels[i][pos]-brushAmount);
-                    }
-                }
-                
-                //update this pixel on the combined image
-                for (int i=0; i<3; i++){
-                    combinedPixels[rgbPos+i] = MIN(255, colorPixels[i][pos] + blackPixels[pos]);
-                }
-                
-                //temporary eraser
-                if (curBrushColor == 4){
-                    blackPixels[pos] = MAX(0, blackPixels[pos]-brushAmount);
-                    for (int i=0; i<3; i++)
-                        colorPixels[i][pos] = MAX(0, colorPixels[i][pos]-brushAmount);
-                }
-                
-                //since something changed, flag that we need to alter the game
-                needToConvertDrawingToGame = true;
-            }
-        }
-        
-        //set the image
-        for (int i=0; i<3; i++)
-            colorImgs[i].setFromPixels(colorPixels[i],boardW, boardH);
-        blackImg.setFromPixels(blackPixels, boardW, boardH);
-        
-        //put all of the images together as one unified and briliant whole
-        combinedImg.setFromPixels(combinedPixels, boardW, boardH);
-        combinedImg.invert();
+        if (curBrushColor<=3)
+            brushDown(touch);
+    
+        if (curBrushColor==4)
+            eraserDown(touch);
     }
     
     lastX = touch.x;
@@ -906,6 +782,125 @@ void testApp::gotMemoryWarning(){
 //--------------------------------------------------------------
 void testApp::deviceOrientationChanged(int newOrientation){
     
+}
+
+void testApp::brushDown(ofTouchEventArgs & touch){
+    int relativeX = touch.x-boardOffset.x;
+    int relativeY = touch.y-boardOffset.y;
+    
+    int brushStrength = 100;    //how much it adds at the center
+    
+    int maxDist = 15*boardScale;
+    
+    //paint into the array
+    int brushSize=maxDist/boardScale;
+    //get the center of the brush
+    int xMid=relativeX/boardScale;
+    int yMid=relativeY/boardScale;
+    
+    int xStart=MAX(0,xMid-brushSize);
+    int xEnd=MIN(boardW,xMid+brushSize);
+    int yStart=MAX(0,yMid-brushSize);
+    int yEnd=MIN(boardH,yMid+brushSize);
+    
+    //go through and set the pixels being effected by the brush
+    for (int col=xStart; col<xEnd; col++){
+        for (int row=yStart; row<yEnd; row++){
+            int pos= row*boardW+col;
+            int rgbPos = row*boardW*3+col*3;
+            
+            int brushAmount = ofMap(ofDist(relativeX, relativeY, col*boardScale, row*boardScale),0, maxDist, brushStrength, 0, true);
+            
+            if (curBrushColor<3){
+                //add to the selected color, take away from all others
+                for (int i=0; i<3; i++){
+                    if (i==curBrushColor)
+                        colorPixels[i][pos] = MIN(255, colorPixels[i][pos]+brushAmount);
+                    else
+                        colorPixels[i][pos] = MAX(0, colorPixels[i][pos]-brushAmount);
+                }
+                blackPixels[pos] = MAX(0, blackPixels[pos]-brushAmount);
+            }else{
+                //black brush
+                blackPixels[pos] = MIN(255, blackPixels[pos]+brushAmount);
+                //shrink the colored images
+                for (int i=0; i<3; i++)
+                    colorPixels[i][pos] = MAX(0, colorPixels[i][pos]-brushAmount);
+            }
+            
+            
+            //update this pixel on the combined image
+            for (int i=0; i<3; i++){
+                combinedPixels[rgbPos+i] = MIN(255, colorPixels[i][pos] + blackPixels[pos]);
+            }
+            
+            //since something changed, flag that we need to alter the game
+            needToConvertDrawingToGame = true;
+        }
+    }
+    
+    //set the image
+    for (int i=0; i<3; i++)
+        colorImgs[i].setFromPixels(colorPixels[i],boardW, boardH);
+    blackImg.setFromPixels(blackPixels, boardW, boardH);
+    
+    //put all of the images together as one unified and briliant whole
+    combinedImg.setFromPixels(combinedPixels, boardW, boardH);
+    combinedImg.invert();
+    
+}
+void testApp::eraserDown(ofTouchEventArgs & touch){
+        int relativeX = touch.x-boardOffset.x;
+        int relativeY = touch.y-boardOffset.y;
+        
+        int brushStrength = 100;    //how much it removes at the center
+        
+        int maxDist = 30*boardScale;    //eraser is bigger
+        //paint into the array
+        int brushSize=maxDist/boardScale;
+        //get the center of the brush
+        int xMid=relativeX/boardScale;
+        int yMid=relativeY/boardScale;
+        
+        int xStart=MAX(0,xMid-brushSize);
+        int xEnd=MIN(boardW,xMid+brushSize);
+        int yStart=MAX(0,yMid-brushSize);
+        int yEnd=MIN(boardH,yMid+brushSize);
+        
+        //go through and set the pixels being effected by the brush
+        for (int col=xStart; col<xEnd; col++){
+            for (int row=yStart; row<yEnd; row++){
+                int pos= row*boardW+col;
+                int rgbPos = row*boardW*3+col*3;
+                
+                int brushAmount = ofMap(ofDist(relativeX, relativeY, col*boardScale, row*boardScale),0, maxDist, brushStrength, 0, true);
+                
+                //actually erase
+                if (curBrushColor == 4){
+                    blackPixels[pos] = MAX(0, blackPixels[pos]-brushAmount);
+                    for (int i=0; i<3; i++)
+                        colorPixels[i][pos] = MAX(0, colorPixels[i][pos]-brushAmount);
+                }
+                
+                //update this pixel on the combined image
+                for (int i=0; i<3; i++){
+                    combinedPixels[rgbPos+i] = MIN(255, colorPixels[i][pos] + blackPixels[pos]);
+                }
+                
+                //since something changed, flag that we need to alter the game
+                needToConvertDrawingToGame = true;
+            }
+        }
+        
+        //set the image
+        for (int i=0; i<3; i++)
+            colorImgs[i].setFromPixels(colorPixels[i],boardW, boardH);
+        blackImg.setFromPixels(blackPixels, boardW, boardH);
+        
+        //put all of the images together as one unified and briliant whole
+        combinedImg.setFromPixels(combinedPixels, boardW, boardH);
+        combinedImg.invert();
+
 }
 
 //--------------------------------------------------------------
@@ -1114,7 +1109,7 @@ void testApp::checkTowers(string type){
     
     cout<<"num blobs: "<<contourFinder.nBlobs<<endl;
     
-    //JUST USE the holes boolean in the blog. JESUS
+    //JUST USE the holes boolean in the blob. JESUS
     for (int i = 0; i < contourFinder.nBlobs; i++){
         for (int k=0; k<i; k++){
             if (ofDist(contourFinder.blobs[i].centroid.x,contourFinder.blobs[i].centroid.y,
@@ -1128,6 +1123,7 @@ void testApp::checkTowers(string type){
     for (int i = 0; i < contourFinder.nBlobs; i++){
         //check if this was one of the blobs with holes. Skip it if it was
         bool skipMe=false;
+        
         for (int k=0; k<skip.size(); k++){
             if (i==skip[k]) skipMe=true;
         }
@@ -1411,5 +1407,85 @@ void testApp::takeDamage(int damage){
     
     //play the sound
     SM.playSound("playerHit");
+}
+
+//--------------------------------------------------------------
+void testApp::loadFromText(){ 
+    waves.clear();  //get rid of any waves that may be there
+    
+    //load in the text file
+	ifstream fin;
+	fin.open(ofToDataPath("waves.txt").c_str());
+	
+	while(fin!=NULL) //as long as theres still text to be read  
+	{  
+		string full; //declare a string for storage  
+		getline(fin, full); //get a line from the file, put it in the string 
+        
+        //if there are not at least 4 characters it is not a command and the line can be skipped
+        if (full.length()>3){
+            //split the string into the command and value
+            string cmd=full.substr(0,3);    //command is the first 3 values
+            string val=full.substr(4);  //value is everything after the space
+            
+            //check commands
+            
+            //create a new wave at the given level. This must be the first command
+            if (cmd=="new"){
+                int level= atoi(val.c_str());
+                //create a new wave and add it to the vector
+                Wave newWave;
+                newWave.setup(level);
+                waves.push_back(newWave);
+            }
+            
+            //set the time
+            if (cmd=="dur"){
+                int duration= atoi(val.c_str());
+                waves[waves.size()-1].setTime(duration);
+            }
+            
+            //add a number of foes
+            if (cmd=="add"){
+                //there are two values here, a name and a number seperated by a space
+                size_t spacePos=val.find(" ");
+                string name=val.substr(0,spacePos);
+                string numString=val.substr(spacePos+1);
+                int num=atoi(numString.c_str());
+                
+                waves[waves.size()-1].addFoes(name, num);
+            }
+            
+            //add a message
+            if (cmd=="mes"){
+                waves[waves.size()-1].setMessage(val);
+            }
+            
+            //set the color for the box
+            if (cmd=="col"){
+                waves[waves.size()-1].setBoxColor(val);
+            }
+            
+            //randomize the wave
+            if (cmd=="ran"){
+                waves[waves.size()-1].randomize();
+            }
+        }
+	}
+    
+    //set the wave info boxes
+    waveInfoBoxes.clear();  //get rid of any old ones
+    float waveInfoX=ofGetWidth()*0.9;
+    float waveInfoSpacing=ofGetHeight()*0.03;
+    float boxWidth=208;
+    float boxHeight=150;
+    for (int i=0; i<waves.size(); i++){
+        WaveInfoBox newInfoBox;
+        
+        newInfoBox.setup(i+1, waves[i].message, &waveInfoPics[i%3], &infoFont, &infoFontSmall, waves[i].boxColorID, waveInfoX, waveInfoBottom-i*(boxHeight+waveInfoSpacing), boxWidth, boxHeight);
+        newInfoBox.alpha=ofMap( waveInfoBottom-newInfoBox.pos.y, 0, waveInfoDistToFadeOut, 255, 0, true);
+        waveInfoBoxes.push_back(newInfoBox);
+        
+    }
 }
 
