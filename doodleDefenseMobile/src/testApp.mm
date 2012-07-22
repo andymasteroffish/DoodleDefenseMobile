@@ -26,7 +26,7 @@ void testApp::setup(){
     //setup vector field
     VF.setupField(120, 90,fieldW*fieldScale, fieldH*fieldScale);
     
-    boardOffset.set(10,120);
+    boardOffset.set(ofGetWidth()*0.1,ofGetHeight()*0.15);
     
     //black image
     blackImg.allocate(boardW, boardH);
@@ -64,14 +64,15 @@ void testApp::setup(){
     mazeRight=fieldW-4;
     
     //where the foes start and end
-    startX[0]=60/boardScale;
-    startY[0]=boardH*boardScale/2+25;
-    startX[1]=boardW*boardScale/2+25;
-    startY[1]=60/boardScale;
-    goalX[0]=boardW*boardScale-10;
-    goalY[0]=boardH*boardScale/2+25;
-    goalX[1]=boardW*boardScale/2+25;
-    goalY[1]=boardH*boardScale-10;
+    startX[0]=boardW*boardScale*0.01;
+    startY[0]=boardH*boardScale*0.5;
+    goalX[0]=boardW*boardScale*0.99;
+    goalY[0]=boardH*boardScale*0.5;
+    
+    startX[1]=boardW*boardScale*0.5;
+    startY[1]=boardH*boardScale*0.01;
+    goalX[1]=boardW*boardScale*0.5;
+    goalY[1]=boardH*boardScale*0.99;
     
     //border
     borderPics[0].loadImage("walls1Entrance.png");
@@ -292,7 +293,7 @@ void testApp::reset(){
 
 //--------------------------------------------------------------
 void testApp::update(){
-    cout<<"cur wave: "<<curWave<<endl;
+    //cout<<"cur wave: "<<curWave<<endl;
     //TESTING
     //waveComplete = false;
     
@@ -673,22 +674,23 @@ void testApp::drawWaveCompleteAnimation(){
 //--------------------------------------------------------------
 void testApp::drawPlayerInfo(){
     
-//    //draw health
-//    ofSetRectMode(OF_RECTMODE_CORNER);
-//    float xCenter=(fieldW*fieldScale)/2+5; //slight offset for the openning on the side
-//    float healthY=870;
-//    float healthWidth=(mazeRight-mazeLeft)*fieldScale;
-//    float xLeft=xCenter-healthWidth/2+healthPicFull[0].width/2;
-//    float healthSpacing= (healthWidth - healthStart*healthPicFull[0].width)/healthStart;
-//    //draw full hearts for the life remaining
-//    ofSetColor(255);
-//    for (int i=0; i<health; i++){
-//        healthPicFull[i].draw(xLeft+i*healthPicFull[0].width+i*healthSpacing,healthY);
-//    }
-//    //end empty life for the life lost
-//    for (int i=health; i<healthStart; i++){
-//        healthPicEmpty[0].draw(xLeft+i*healthPicEmpty[0].width+i*healthSpacing,healthY);
-//    }
+    //draw health
+    ofSetRectMode(OF_RECTMODE_CORNER);
+    float xCenter=boardOffset.x + boardW*boardScale*0.5;
+    float healthY=boardOffset.y + boardH*boardScale + ofGetHeight()*0.01;
+    float healthWidth=(mazeRight-mazeLeft)*fieldScale;
+    float xLeft=xCenter-healthWidth/2+healthPicFull[0].width/2;
+    float healthSpacing= (healthWidth - healthStart*healthPicFull[0].width)/healthStart;
+    //draw full hearts for the life remaining
+    ofSetColor(255);
+    float tempScale = 0.7;      //actually size the images!
+    for (int i=0; i<health; i++){
+        healthPicFull[i].draw(xLeft+i*healthPicFull[0].width+i*healthSpacing,healthY, healthPicFull[i].width*tempScale, healthPicFull[i].height*tempScale);
+    }
+    //end empty life for the life lost
+    for (int i=health; i<healthStart; i++){
+        healthPicEmpty[0].draw(xLeft+i*healthPicEmpty[0].width+i*healthSpacing,healthY, healthPicEmpty[i].width*tempScale, healthPicEmpty[i].height*tempScale);
+    }
     
     
 //    //written values
