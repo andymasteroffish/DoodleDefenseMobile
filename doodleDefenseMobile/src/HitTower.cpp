@@ -22,7 +22,7 @@ void HitTower::typeSetup(){
 void HitTower::draw(){
     ofFill();
     if (! *showAllInfo){
-        ofSetColor(255, 0, 0,100);
+        ofSetColor(255, 0, 0,80);
         if (playerDead) ofSetColor(100,100,100,70);
         
         ofCircle(pos.x, pos.y, range);

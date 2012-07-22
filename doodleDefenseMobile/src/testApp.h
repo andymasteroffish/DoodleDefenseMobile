@@ -113,11 +113,13 @@ class testApp : public ofxiPhoneApp{
     ofxCvGrayscaleImage     colorImgs[3];
     unsigned char *			colorPixels[3];
     
-    //combined image
-    ofxCvColorImage         combinedImg;
-    unsigned char *			combinedPixels;
-    ofxCvColorImage         wallDispImage;
-    unsigned char *			wallDispPixels;
+    //display images - taking the CV images and showing them on screen
+//    ofxCvColorImage         combinedImg;
+//    unsigned char *			combinedPixels;
+    unsigned char * colorDispPixels[3];
+    ofTexture colorDispTex[3];
+    unsigned char * wallDispPixels;
+    ofTexture wallDispTex;
     
     ofPoint boardOffset;    //where the gameboard is placed on screen
     

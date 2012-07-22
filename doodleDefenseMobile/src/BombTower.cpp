@@ -23,7 +23,7 @@ void BombTower::typeSetup(){
 void BombTower::draw(){
     ofFill();
     if (! *showAllInfo){
-        ofSetColor(0, 255, 0,130);
+        ofSetColor(0, 255, 0,80);
         if (playerDead) ofSetColor(100,100,100,70);
         
         ofCircle(pos.x, pos.y, range);
