@@ -4,6 +4,8 @@
 //--------------------------------------------------------------
 void testApp::setup(){	
     cout<<ofGetWidth()<<" X "<<ofGetHeight()<<endl;
+    
+    retina = false; //TESTING
 	
     //orient landscape
 	iPhoneSetOrientation(OFXIPHONE_ORIENTATION_LANDSCAPE_RIGHT);
@@ -56,9 +58,9 @@ void testApp::setup(){
     }
     
     //set the maze border
-    mazeTop=10;
+    mazeTop=4;
     mazeBottom=fieldH-4;
-    mazeLeft=10;
+    mazeLeft=4;
     mazeRight=fieldW-4;
     
     //where the foes start and end
@@ -75,7 +77,8 @@ void testApp::setup(){
     borderPics[0].loadImage("walls1Entrance.png");
     borderPics[1].loadImage("walls2Entrance.png");
     
-    maxCompactness = 1.8;
+    //for calculating what counts as a tower
+    maxCompactness = 1.3;
     
     //color selection
     curBrushColor = 3;
@@ -91,42 +94,64 @@ void testApp::setup(){
     }
     curView = 4;
     
+    //player values
+    healthStart=15;
+    startInk=500;
+    
+    waveAnimationTime=5;    //flash for x seconds when a wave is finished
+    
     //foe images
     for (int i=0; i<NUM_FOE_FRAMES; i++){
         normFoePic[0][i].loadImage("foePics/normal/wnormal"+ofToString(i+1)+".png");
         normFoePic[1][i].loadImage("foePics/normal/nfill"+ofToString(i+1)+".png");
-        //        fastFoePic[0][i].loadImage("foePics/fast/wfast"+ofToString(i+1)+".png");
-        //        fastFoePic[1][i].loadImage("foePics/fast/ffill"+ofToString(i+1)+".png");
-        //        heavyFoePic[0][i].loadImage("foePics/heavy/heavy"+ofToString(i+1)+".png");
-        //        heavyFoePic[1][i].loadImage("foePics/heavy/hfill"+ofToString(i+1)+".png");
-        //        stealthFoePic[0][i].loadImage("foePics/stealth/wstealth"+ofToString(i+1)+".png");
-        //        stealthFoePic[1][i].loadImage("foePics/stealth/sfill"+ofToString(i+1)+".png");
-        //        immuneRedFoePic[0][i].loadImage("foePics/immune/immune"+ofToString(i+1)+".png");
-        //        immuneRedFoePic[1][i].loadImage("foePics/immune/ifill"+ofToString(i+1)+".png");
+        fastFoePic[0][i].loadImage("foePics/fast/wfast"+ofToString(i+1)+".png");
+        fastFoePic[1][i].loadImage("foePics/fast/ffill"+ofToString(i+1)+".png");
+        heavyFoePic[0][i].loadImage("foePics/heavy/heavy"+ofToString(i+1)+".png");
+        heavyFoePic[1][i].loadImage("foePics/heavy/hfill"+ofToString(i+1)+".png");
+        stealthFoePic[0][i].loadImage("foePics/stealth/wstealth"+ofToString(i+1)+".png");
+        stealthFoePic[1][i].loadImage("foePics/stealth/sfill"+ofToString(i+1)+".png");
+        immuneRedFoePic[0][i].loadImage("foePics/immune/immune"+ofToString(i+1)+".png");
+        immuneRedFoePic[1][i].loadImage("foePics/immune/ifill"+ofToString(i+1)+".png");
     }
     
     //explosion and puff images
     explosionPic.loadImage("misc/explosionFill.png");
     
+    //banners
+    banners[0].loadImage("banners/nopath.png");
+    banners[1].loadImage("banners/outofink.png");
+    banners[2].loadImage("banners/wave.png");
+    banners[3].loadImage("banners/youwin.png");
+    banners[4].loadImage("banners/youlose.png");
+    
+    //player info pics
+    for(int i=0; i<healthStart; i++){
+        healthPicFull[i].loadImage("playerInfo/hearts/filled_hearts-"+ofToString(i+1)+".png");
+        healthPicEmpty[i].loadImage("playerInfo/hearts/outlinehearts-"+ofToString(i+1)+".png");
+    }
+    
+    //title
+    titleBig.loadImage("banners/titleBig.png");
+    
     //load the sounds
     SM.setup();
-    SM.loadSound("audio/BOMB.wav", "bomb", 1);
-    SM.loadSound("audio/ENEMYEXPLODES.wav", "enemyDeath", 0.6);
-    SM.loadSound("audio/ERROR.wav", "error", 1);
-    SM.loadSound("audio/FREEZE.wav", "freeze", 0.3);
-    SM.loadSound("audio/HIT.wav", "hit", 0.4);
-    SM.loadSound("audio/LOSEGAME2.wav", "playerHit", 1);
-    SM.loadSound("audio/SHOT.wav", "shoot", 0.6);
-    SM.loadSound("audio/TRIUMPH4.wav", "beatWave", 1);
-    SM.loadSound("audio/NEWLOSE1.wav", "lose", 1);
-    SM.loadSound("audio/STARTGAME.wav", "start", 1);
+//    SM.loadSound("audio/BOMB.wav", "bomb", 1);
+//    SM.loadSound("audio/ENEMYEXPLODES.wav", "enemyDeath", 0.6);
+//    SM.loadSound("audio/ERROR.wav", "error", 1);
+//    SM.loadSound("audio/FREEZE.wav", "freeze", 0.3);
+//    SM.loadSound("audio/HIT.wav", "hit", 0.4);
+//    SM.loadSound("audio/LOSEGAME2.wav", "playerHit", 1);
+//    SM.loadSound("audio/SHOT.wav", "shoot", 0.6);
+//    SM.loadSound("audio/TRIUMPH4.wav", "beatWave", 1);
+//    SM.loadSound("audio/NEWLOSE1.wav", "lose", 1);
+//    SM.loadSound("audio/STARTGAME.wav", "start", 1);
     
     //fonts
     string fontName="JolenesHand-Regular.ttf";
-    infoFontSmall.loadFont(fontName, 40, true, true);
-    infoFont.loadFont(fontName, 50, true, true);
-    infoFontBig.loadFont(fontName, 75, true, true);
-    infoFontHuge.loadFont(fontName, 100, true, true);
+    infoFontSmall.loadFont(fontName, 20*(retina+1), true, true);
+    infoFont.loadFont(fontName, 25*(retina+1), true, true);
+    infoFontBig.loadFont(fontName, 37*(retina+1), true, true);
+    infoFontHuge.loadFont(fontName, 50*(retina+1), true, true);
     
     showAllInfo = false;
     
@@ -213,6 +238,7 @@ void testApp::loadFromText(){
         newInfoBox.setup(i+1, waves[i].message, &waveInfoPics[i%3], &infoFont, &infoFontSmall, waves[i].boxColorID, waveInfoX, waveInfoBottom-i*(boxHeight+waveInfoSpacing), boxWidth, boxHeight);
         newInfoBox.alpha=ofMap( waveInfoBottom-newInfoBox.pos.y, 0, waveInfoDistToFadeOut, 255, 0, true);
         waveInfoBoxes.push_back(newInfoBox);
+        
     }
 }
 
@@ -237,9 +263,9 @@ void testApp::reset(){
     fastForward = false;
     
     damageFlashTimer=0;
-    //    
-    //    //clear any ink coming to the player
-    //    inkParticles.clear();
+    
+    //clear any ink coming to the player
+    inkParticles.clear();
     //    
     //    //set all of the pixels to blank
     //    for (int i=0; i<fieldW*fieldH; i++){
@@ -254,7 +280,7 @@ void testApp::reset(){
     curWave=-1;
     wavesDone=false;
     loadFromText();
-    //    startNextWave();
+    //startNextWave();
     //    
     //    //play the sound
     //    if (ofGetFrameNum()>5)  //don't play the sound when the game first turns on
@@ -266,8 +292,9 @@ void testApp::reset(){
 
 //--------------------------------------------------------------
 void testApp::update(){
+    cout<<"cur wave: "<<curWave<<endl;
     //TESTING
-    waveComplete = false;
+    //waveComplete = false;
     
     //check if there is any reason to pause the game
     if (playerPause || noPath || tooMuchInk  || !gameStarted || waveComplete || fingerDown)
@@ -469,15 +496,6 @@ void testApp::update(){
 void testApp::draw(){	
 	ofSetColor(255);
     
-    if (curView < 3)
-        colorImgs[curView].draw(boardOffset.x,boardOffset.y, boardW*boardScale, boardH*boardScale);
-    if (curView == 3)
-        blackImg.draw(boardOffset.x,boardOffset.y, boardW*boardScale, boardH*boardScale);
-    if (curView == 4)
-        combinedImg.draw(boardOffset.x,boardOffset.y, boardW*boardScale, boardH*boardScale);
-    
-    //testing the wall image
-    wallImage.draw(boardOffset.x+boardW*boardScale, ofGetHeight()*0.5, fieldW*2, fieldH*2);
     
     //color selection buttons
     ofFill();
@@ -531,19 +549,33 @@ void testApp::draw(){
     
     ofEnableAlphaBlending();
     
-    ofPushMatrix();
-    ofTranslate(boardOffset.x, boardOffset.y);
+//    ofPushMatrix();
+//    ofTranslate(boardOffset.x, boardOffset.y);
     //ofScale(projScale, projScale);
     
+    //show the wall and tower images (right now this features test views)
+    ofSetColor(255);
+    if (curView < 3)
+        colorImgs[curView].draw(boardOffset.x, boardOffset.y, boardW*boardScale, boardH*boardScale);
+    if (curView == 3)
+        blackImg.draw(boardOffset.x, boardOffset.y, boardW*boardScale, boardH*boardScale);
+    if (curView == 4)
+        combinedImg.draw(boardOffset.x, boardOffset.y, boardW*boardScale, boardH*boardScale);
+    
+    //testing the wall image
+    wallImage.draw(ofGetWidth()*0.6, 0, fieldW*2, fieldH*2);
+    
     //show the border
-//    ofSetRectMode(OF_RECTMODE_CORNER);
-//    ofSetColor(255);
-//    borderPics[numEntrances-1].draw(0,0,boardW*boardScale,boardH*boardScale);
+    ofSetRectMode(OF_RECTMODE_CORNER);
+    ofSetColor(255);
+    borderPics[numEntrances-1].draw(boardOffset.x, boardOffset.y);
+
     
     //show the game
     drawGame();
-    //drawPlayerInfo();   //show player stats that live outside of the game area
-    ofPopMatrix();
+    drawPlayerInfo();   //show player stats that live outside of the game area
+    
+    //ofPopMatrix();
     
     ofDisableAlphaBlending();
     //set the rect mode back
@@ -553,9 +585,12 @@ void testApp::draw(){
 
 //--------------------------------------------------------------
 void testApp::drawGame(){
+    ofPushMatrix();
+    ofTranslate(boardOffset.x, boardOffset.y);
     
     ofSetRectMode(OF_RECTMODE_CENTER);
     if(showAllInfo){
+
         //go through the images and draw them all out to the screen
         for (int x=0; x<fieldW; x++){
             for (int y=0; y<fieldH; y++){
@@ -593,11 +628,12 @@ void testApp::drawGame(){
         explosions[i].draw();
     
     //draw ink particles if there are any
-    //    ofSetColor(150);
-    //    for (int i=0; i<inkParticles.size(); i++)
-    //        inkParticles[i].draw();
+    ofSetColor(150);
+    for (int i=0; i<inkParticles.size(); i++)
+        inkParticles[i].draw();
     
     
+     ofPopMatrix();
 }
 
 //--------------------------------------------------------------
@@ -637,81 +673,81 @@ void testApp::drawWaveCompleteAnimation(){
 //--------------------------------------------------------------
 void testApp::drawPlayerInfo(){
     
-    //    //draw health
-    //    ofSetRectMode(OF_RECTMODE_CORNER);
-    //    float xCenter=(fieldW*fieldScale)/2+5; //slight offset for the openning on the side
-    //    float healthY=870;
-    //    float healthWidth=(mazeRight-mazeLeft)*fieldScale;
-    //    float xLeft=xCenter-healthWidth/2+healthPicFull[0].width/2;
-    //    float healthSpacing= (healthWidth - healthStart*healthPicFull[0].width)/healthStart;
-    //    //draw full hearts for the life remaining
-    //    ofSetColor(255);
-    //    for (int i=0; i<health; i++){
-    //        healthPicFull[i].draw(xLeft+i*healthPicFull[0].width+i*healthSpacing,healthY);
-    //    }
-    //    //end empty life for the life lost
-    //    for (int i=health; i<healthStart; i++){
-    //        healthPicEmpty[0].draw(xLeft+i*healthPicEmpty[0].width+i*healthSpacing,healthY);
-    //    }
-    //    
-    //    
-    //    //written values
-    //    int thisTextX;
-    //    
-    //    //SHOW INK VALUES
-    //    ofFill();
-    //    ofSetColor(0);
-    //    //make it blink if the player is out if ink
-    //    if (tooMuchInk && ofGetFrameNum()/4%2==0)   ofSetColor(255,0,0);
-    //    int inktextRightX=-150;
-    //    int inkTextY=160;
-    //    
-    //    thisTextX=inktextRightX-infoFont.stringWidth("Ink Left:")/2;
-    //    infoFont.drawString("Ink Left:",thisTextX,inkTextY);
-    //    inkTextY+=infoFontBig.getLineHeight();
-    //    
-    //    //thisTextX=inktextRightX-infoFontBig.stringWidth(ofToString((int)(totalInk-inkUsed))+"/"+ofToString((int)totalInk));
-    //    thisTextX=inktextRightX-infoFontBig.stringWidth(ofToString((int)(totalInk-inkUsed)))/2;
-    //    infoFontBig.drawString(ofToString((int)(totalInk-inkUsed)),thisTextX,inkTextY);
-    //    inkTextY+=infoFontBig.getLineHeight();
-    //    
-    //    
-    //    //draw the wave info boxes
-    //    ofSetRectMode(OF_RECTMODE_CENTER);
-    //    for (int i=0; i<waveInfoBoxes.size(); i++){
-    //        waveInfoBoxes[i].draw();
-    //    }
-    //    
-    //    //BANNERS
-    //    //let the player no if there is no path
-    //    ofFill();
-    //    int messageX=615;
-    //    int messageY=-120;
-    //    ofSetColor(0,0,0);
-    //    if (noPath){
-    //        banners[0].draw(messageX, messageY);
-    //    }
-    //    //let the player know if they used too much ink
-    //    if (tooMuchInk){
-    //        banners[1].draw(messageX, messageY);
-    //    }
-    //    //let the player know if they are dead
-    //    if (health<=0){
-    //        ofSetColor(255,0,0);
-    //        if (ofGetFrameNum()/4%2==0) ofSetColor(0);
-    //        banners[4].draw(messageX, messageY);
-    //    }
-    //    
-    //    //check if we should be showing the wave complete animation
-    //    if (waveComplete)
-    //        drawWaveCompleteAnimation();
-    //    
-    //    //draw red over the game if the player was just hit
-    //    if (damageFlashTimer-- >0){
-    //        ofSetRectMode(OF_RECTMODE_CORNER);
-    //        ofSetColor(255, ofMap(damageFlashTimer, 0, damageFlashTime, 0, 255));
-    //        playerHitPic.draw(75,80);
-    //    }
+//    //draw health
+//    ofSetRectMode(OF_RECTMODE_CORNER);
+//    float xCenter=(fieldW*fieldScale)/2+5; //slight offset for the openning on the side
+//    float healthY=870;
+//    float healthWidth=(mazeRight-mazeLeft)*fieldScale;
+//    float xLeft=xCenter-healthWidth/2+healthPicFull[0].width/2;
+//    float healthSpacing= (healthWidth - healthStart*healthPicFull[0].width)/healthStart;
+//    //draw full hearts for the life remaining
+//    ofSetColor(255);
+//    for (int i=0; i<health; i++){
+//        healthPicFull[i].draw(xLeft+i*healthPicFull[0].width+i*healthSpacing,healthY);
+//    }
+//    //end empty life for the life lost
+//    for (int i=health; i<healthStart; i++){
+//        healthPicEmpty[0].draw(xLeft+i*healthPicEmpty[0].width+i*healthSpacing,healthY);
+//    }
+    
+    
+//    //written values
+//    int thisTextX;
+//    
+//    //SHOW INK VALUES
+//    ofFill();
+//    ofSetColor(0);
+//    //make it blink if the player is out if ink
+//    if (tooMuchInk && ofGetFrameNum()/4%2==0)   ofSetColor(255,0,0);
+//    int inktextRightX=-150;
+//    int inkTextY=160;
+//    
+//    thisTextX=inktextRightX-infoFont.stringWidth("Ink Left:")/2;
+//    infoFont.drawString("Ink Left:",thisTextX,inkTextY);
+//    inkTextY+=infoFontBig.getLineHeight();
+//    
+//    //thisTextX=inktextRightX-infoFontBig.stringWidth(ofToString((int)(totalInk-inkUsed))+"/"+ofToString((int)totalInk));
+//    thisTextX=inktextRightX-infoFontBig.stringWidth(ofToString((int)(totalInk-inkUsed)))/2;
+//    infoFontBig.drawString(ofToString((int)(totalInk-inkUsed)),thisTextX,inkTextY);
+//    inkTextY+=infoFontBig.getLineHeight();
+//    
+//    
+//    //draw the wave info boxes
+//    ofSetRectMode(OF_RECTMODE_CENTER);
+//    for (int i=0; i<waveInfoBoxes.size(); i++){
+//        waveInfoBoxes[i].draw();
+//    }
+//    
+//    //BANNERS
+//    //let the player no if there is no path
+//    ofFill();
+//    int messageX=615;
+//    int messageY=-120;
+//    ofSetColor(0,0,0);
+//    if (noPath){
+//        banners[0].draw(messageX, messageY);
+//    }
+//    //let the player know if they used too much ink
+//    if (tooMuchInk){
+//        banners[1].draw(messageX, messageY);
+//    }
+//    //let the player know if they are dead
+//    if (health<=0){
+//        ofSetColor(255,0,0);
+//        if (ofGetFrameNum()/4%2==0) ofSetColor(0);
+//        banners[4].draw(messageX, messageY);
+//    }
+//    
+//    //check if we should be showing the wave complete animation
+//    if (waveComplete)
+//        drawWaveCompleteAnimation();
+//    
+//    //draw red over the game if the player was just hit
+//    if (damageFlashTimer-- >0){
+//        ofSetRectMode(OF_RECTMODE_CORNER);
+//        ofSetColor(255, ofMap(damageFlashTimer, 0, damageFlashTime, 0, 255));
+//        playerHitPic.draw(75,80);
+//    }
     
 }
 
@@ -738,6 +774,9 @@ void testApp::touchDown(ofTouchEventArgs & touch){
             }
         }
     }
+    
+    lastX = touch.x;
+    lastY = touch.y;
     
 }
 
@@ -814,6 +853,9 @@ void testApp::touchMoved(ofTouchEventArgs & touch){
         combinedImg.setFromPixels(combinedPixels, boardW, boardH);
         combinedImg.invert();
     }
+    
+    lastX = touch.x;
+    lastY = touch.y;
     
 }
 
@@ -1192,6 +1234,7 @@ void testApp::setMazeBorders(){
     
     //keep the hole empty
     int hole=mazeLeft+ (mazeRight-mazeLeft)/2;
+    hole = fieldW/2;
     //top and bottom walls
     for (int i=mazeLeft; i<=mazeRight; i++){
         if(i<hole-5 || i>hole+5){
@@ -1246,6 +1289,28 @@ void testApp::setMazeBorders(){
         wallPixels[bottomPos]=0;
     }
     
+}
+
+//--------------------------------------------------------------
+void testApp::startNextWave(){
+    cout<<"start Next"<<endl;
+    waveComplete=false;
+    curWave++;
+    if (curWave<waves.size()){
+        waves[curWave].start();
+    }else{
+        cout<<"we're done!"<<endl;
+        curWave=waves.size()-1;
+        wavesDone=true;
+        endWave();  //show the game complete message
+    }
+    
+    //check if it is time to increase the number of entrances starting with the 3rd wave
+    if (curWave>=4){ //should be 4
+        numEntrances=2;
+    }
+    
+    cout<<"end start Next"<<endl;
 }
 
 //--------------------------------------------------------------

@@ -75,6 +75,9 @@ class testApp : public ofxiPhoneApp{
     void endWave();
     float getInkFromWaves(int num);
     
+    //hardware
+    bool retina;
+    
     //size of the openCV image the game data is taken from
     int fieldW;
     int fieldH;
@@ -174,6 +177,9 @@ class testApp : public ofxiPhoneApp{
     ofImage explosionPic;
     vector <Explosion> explosions;
     
+    //getting ink
+    vector <particle> inkParticles;
+    
     //towers - the point of the damn game
     vector <Tower *> towers;
     vector <TowerInfo> lastSafeTowerSet;  //all the locaitons of the towers when no problem was encounterred
@@ -200,6 +206,11 @@ class testApp : public ofxiPhoneApp{
 #define NUM_WAVE_INFO_BOX_PICS 3
     ofImage waveInfoPics[NUM_WAVE_INFO_BOX_PICS];        //images for the boxes
     
+    //banners
+    ofImage banners[5];
+    ofImage titleBig;
+    ofImage playerHitPic;
+    
     //fonts
 	ofTrueTypeFont infoFontSmall;
     ofTrueTypeFont infoFont;
@@ -211,5 +222,9 @@ class testApp : public ofxiPhoneApp{
     
     //debug
     bool showAllInfo;   //shows all of the bullshit lines and data
+    
+    //tetsing
+    int lastX;
+    int lastY;
 
 };
