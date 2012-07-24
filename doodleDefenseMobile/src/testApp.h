@@ -114,8 +114,6 @@ class testApp : public ofxiPhoneApp{
     unsigned char *			colorPixels[3];
     
     //display images - taking the CV images and showing them on screen
-//    ofxCvColorImage         combinedImg;
-//    unsigned char *			combinedPixels;
     unsigned char * colorDispPixels[3];
     ofTexture colorDispTex[3];
     unsigned char * wallDispPixels;

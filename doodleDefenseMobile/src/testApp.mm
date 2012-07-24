@@ -42,12 +42,7 @@ void testApp::setup(){
         colorImgs[i].allocate(boardW, boardH);
         colorPixels[i]= new unsigned char [boardW * boardH];
     }
-    //combined color image
-//    combinedImg.allocate(boardW, boardH);
-//    combinedPixels = new unsigned char [boardW * boardH * 3];
-    //wall display image
-//    wallDispImage.allocate(boardW, boardH, OF_IMAGE_COLOR_ALPHA);
-//    wallDispPixels = new unsigned char [boardW * boardH * 4];
+
     wallDispTex.allocate(boardW, boardH, GL_LUMINANCE_ALPHA);
     wallDispPixels = new unsigned char [boardW * boardH * 2];
     for (int i=0; i<3; i++){
@@ -62,9 +57,7 @@ void testApp::setup(){
         colorPixels[1][i] = 0;
         colorPixels[2][i] = 0;
     }
-//    for (int i=0; i<boardW*boardH*3; i++){
-//        combinedPixels[i] = 255;
-//    }
+
     
     for (int i=0; i<boardW * boardH * 2; i+=2){
         wallDispPixels[i]   = 255;
@@ -193,8 +186,6 @@ void testApp::setup(){
     
     fingerDown = false;
     gameStarted = true;
-    
-    //combinedImg.invert();
     
     reset();
 }
@@ -516,8 +507,6 @@ void testApp::draw(){
 //        colorImgs[curView].draw(boardOffset.x, boardOffset.y, boardW*boardScale, boardH*boardScale);
 //    if (curView == 3)
 //        blackImg.draw(boardOffset.x, boardOffset.y, boardW*boardScale, boardH*boardScale);
-//    if (curView == 4)
-//        combinedImg.draw(boardOffset.x, boardOffset.y, boardW*boardScale, boardH*boardScale);
     
     //testing the wall image
     //wallImage.draw(ofGetWidth()*0.6, 0, fieldW*2, fieldH*2);
@@ -835,7 +824,6 @@ void testApp::brushDown(ofTouchEventArgs & touch){
         for (int row=yStart; row<yEnd; row++){
             int pos= row*boardW+col;
             int dispPos= row*boardW*2+col*2;    //locaiton in the array of greyscale/alpha pixels used for display
-            int rgbPos = row*boardW*3+col*3;
             
             int brushAmount = ofMap(ofDist(relativeX, relativeY, col*boardScale, row*boardScale),0, maxDist, brushStrength, 0, true);
             
@@ -869,17 +857,13 @@ void testApp::brushDown(ofTouchEventArgs & touch){
         }
     }
     
-    //set the image
+    //set the images
     for (int i=0; i<3; i++){
-        colorImgs[i].setFromPixels(colorPixels[i],boardW, boardH);  //is this necessary?
+        colorImgs[i].setFromPixels(colorPixels[i],boardW, boardH);
         colorDispTex[i].loadData(colorDispPixels[i], boardW, boardH, GL_LUMINANCE_ALPHA);
     }
     blackImg.setFromPixels(blackPixels, boardW, boardH);
     wallDispTex.loadData(wallDispPixels, boardW, boardH, GL_LUMINANCE_ALPHA);
-    
-    //put all of the images together as one unified and briliant whole
-    //combinedImg.setFromPixels(combinedPixels, boardW, boardH);
-    //combinedImg.invert();
     
 }
 void testApp::eraserDown(ofTouchEventArgs & touch){
@@ -915,10 +899,6 @@ void testApp::eraserDown(ofTouchEventArgs & touch){
 //                        colorPixels[i][pos] = MAX(0, colorPixels[i][pos]-brushAmount);
 //                }
 //                
-//                //update this pixel on the combined image
-//                for (int i=0; i<3; i++){
-//                    combinedPixels[rgbPos+i] = MIN(255, colorPixels[i][pos] + blackPixels[pos]);
-//                }
 //                
 //                //since something changed, flag that we need to alter the game
 //                needToConvertDrawingToGame = true;
@@ -930,9 +910,7 @@ void testApp::eraserDown(ofTouchEventArgs & touch){
 //            colorImgs[i].setFromPixels(colorPixels[i],boardW, boardH);
 //        blackImg.setFromPixels(blackPixels, boardW, boardH);
 //        
-//        //put all of the images together as one unified and briliant whole
-//        combinedImg.setFromPixels(combinedPixels, boardW, boardH);
-//        combinedImg.invert();
+
 
 }
 
