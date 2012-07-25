@@ -131,6 +131,7 @@ void testApp::setup(){
     towerRefund=0.7;    //what percentage of the tower's value a player gets back when they kill one
     wallRefund=0.85;
     
+    
     //foe images
     for (int i=0; i<NUM_FOE_FRAMES; i++){
         normFoePic[0][i].loadImage("foePics/normal/wnormal"+ofToString(i+1)+".png");
@@ -399,19 +400,20 @@ void testApp::update(){
     }
     
     //update ink particles
-    int inkEndX=ofGetWidth()*0.02;
-    int inkEndY=ofGetHeight()*0.04;
+    //the location is in terms of the board the game is played on, requiring it to go slightly negative to actually reach the display
+    int inkEndX=ofGetWidth()*0.05;
+    int inkEndY=ofGetHeight()* -0.05;
     for (int i=inkParticles.size()-1; i>=0; i--){
         //reset the particle
         inkParticles[i].resetForce();
         //atract the controler to the next node
-        inkParticles[i].addAttractionForce(inkEndX, inkEndY, 10000, 0.4);
+        inkParticles[i].addAttractionForce(inkEndX, inkEndY, ofGetWidth()*1.5, 0.8);
         //dampen and update the particle
         inkParticles[i].addDampingForce();
         inkParticles[i].update();
         
         //check if it reached the end
-        if (ofDist(inkParticles[i].pos.x, inkParticles[i].pos.y, inkEndX, inkEndY)<20){
+        if (ofDist(inkParticles[i].pos.x, inkParticles[i].pos.y, inkEndX, inkEndY)<ofGetWidth()*0.02){
             //give the player ink
             totalInk+=inkParticles[i].inkValue;
             //kill the particle
@@ -814,6 +816,13 @@ void testApp::brushDown(ofTouchEventArgs & touch){
     int maxDist = 15*boardScale;
     if (curBrushColor == 4) maxDist*=2; //eraser gets a bigger brush
     
+    //keeping track of how much ink refund (if any) was generated
+    //float blackInkRefund=0;
+    float colorInkRefund[4];    //slot 3 is black
+    for (int i=0; i<4; i++) colorInkRefund[i]=0;
+    ofVec2f refundAvgLoc(0,0);
+    int numRefundPix=0;   //used to calculate the average location
+    
     //paint into the array
     int brushSize=maxDist/boardScale;
     //get the center of the brush
@@ -872,18 +881,17 @@ void testApp::brushDown(ofTouchEventArgs & touch){
                 wallDispPixels[dispPos+1] = blackPixels[pos];
             }
             
-            float pixelWiggle = 5;  //how far from the pixel and ink particle can spawn
+            
             //check if any pixels crossed a threshold
             if (prevBlackPixel < blackThreshold && blackPixels[pos] >= blackThreshold){
                 inkUsed += blackInkValue;
             }
             if (prevBlackPixel >= blackThreshold && blackPixels[pos] < blackThreshold){
-                //spawn an ink particle to return some ink
-                particle newInkParticle;
-                newInkParticle.setInitialCondition(col*boardScale, row*boardScale, ofRandom(-pixelWiggle,pixelWiggle),ofRandom(-pixelWiggle,pixelWiggle));
-                newInkParticle.inkValue = blackInkValue*wallRefund;
-                newInkParticle.col = ofColor::black;
-                inkParticles.push_back(newInkParticle);
+                //mark that ink should be returned
+                colorInkRefund[3] += blackInkValue*wallRefund;
+                refundAvgLoc.x+=col;
+                refundAvgLoc.y+=row;
+                numRefundPix++;
             }
             
             //check if color pixels crossed the threshold
@@ -892,12 +900,11 @@ void testApp::brushDown(ofTouchEventArgs & touch){
                     inkUsed += colorInkValue[i];
                 }
                 if (prevColPixels[i] >= colorThreshold && colorPixels[i][pos] < colorThreshold){
-                    //spawn an ink particle to return some ink
-                    particle newInkParticle;
-                    newInkParticle.setInitialCondition(col*boardScale, row*boardScale, ofRandom(-pixelWiggle,pixelWiggle),ofRandom(-pixelWiggle,pixelWiggle));
-                    newInkParticle.inkValue = colorInkValue[i]*towerRefund;
-                    newInkParticle.col = dispColor[i];
-                    inkParticles.push_back(newInkParticle);
+                    //mark that ink should be returned
+                    colorInkRefund[i] += colorInkValue[i]*towerRefund;
+                    refundAvgLoc.x+=col;
+                    refundAvgLoc.y+=row;
+                    numRefundPix++;
                 }
             }
             
@@ -913,9 +920,33 @@ void testApp::brushDown(ofTouchEventArgs & touch){
         }
     }
     
+    //spit out some ink pixels if ink was refunded
+    float inkPerParticle = 0.5;
+    float pixelWiggle = ofGetWidth()*0.01;  //the force with which the particle can spawn
+    float particleDist = ofGetWidth()*0.001;  //how far from the starting locaiton it can spawn
+    
+    //get the average locaiton of any refunds that hapenned
+    if (numRefundPix>0) //no divide by 0
+        refundAvgLoc/=numRefundPix;
+    
+    //check for colored ink
+    for (int i=0; i<4; i++){
+        while(colorInkRefund[i]>0){
+            particle newInkParticle;
+            float thisDist = ofRandom(particleDist);
+            float thisAngle = ofRandom(TWO_PI);
+            float newX = refundAvgLoc.x*boardScale + cos(thisAngle)*ofRandom(thisDist);
+            float newY = refundAvgLoc.y*boardScale + sin(thisAngle)*ofRandom(thisDist);    //right now, this is not technicaly placing along a circle
+            newInkParticle.setInitialCondition(newX, newY, ofRandom(-pixelWiggle,pixelWiggle),ofRandom(-pixelWiggle,pixelWiggle));newInkParticle.inkValue = MIN(inkPerParticle, colorInkRefund[i]);
+            newInkParticle.col = (i<3) ? dispColor[i] : ofColor::black;
+            inkParticles.push_back(newInkParticle);
+            //take away from the total
+            colorInkRefund[i]-=inkPerParticle;
+        }
+    }
+    
     //set the images
     for (int i=0; i<3; i++){
-        cout<<"set from pix"<<endl;
         colorImgs[i].setFromPixels(colorPixels[i],boardW, boardH);
         colorDispTex[i].loadData(colorDispPixels[i], boardW, boardH, GL_LUMINANCE_ALPHA);
     }
