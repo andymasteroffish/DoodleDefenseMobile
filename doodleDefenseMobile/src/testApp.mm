@@ -11,7 +11,7 @@ void testApp::setup(){
 	iPhoneSetOrientation(OFXIPHONE_ORIENTATION_LANDSCAPE_RIGHT);
 	ofSetFrameRate(30);
     
-	ofBackground(200,200,200);
+	ofBackground(255,255,255);
     
     //size of the grid the game is played on
     float sizeIncreaseToBoard = 7;
@@ -487,7 +487,7 @@ void testApp::draw(){
     ofRect(viewButtons[2]);
     ofSetColor(10);
     ofRect(viewButtons[3]);
-    ofSetColor(255);
+    ofSetColor(220);
     ofRect(viewButtons[4]);
     
     ofSetColor(200, 10, 10);
@@ -837,6 +837,10 @@ void testApp::brushDown(ofTouchEventArgs & touch){
     //go through and set the pixels being effected by the brush
     for (int col=xStart; col<xEnd; col++){
         for (int row=yStart; row<yEnd; row++){
+            //if there is no ink left to use, just get out
+            if (inkUsed > totalInk && curBrushColor!=4) break;
+            
+            //figure out where in the arrays this pixel is
             int pos= row*boardW+col;
             int dispPos= row*boardW*2+col*2;    //locaiton in the array of greyscale/alpha pixels used for display
             
@@ -923,7 +927,6 @@ void testApp::brushDown(ofTouchEventArgs & touch){
     //spit out some ink pixels if ink was refunded
     float inkPerParticle = 0.5;
     float pixelWiggle = ofGetWidth()*0.01;  //the force with which the particle can spawn
-    float particleDist = ofGetWidth()*0.001;  //how far from the starting locaiton it can spawn
     
     //get the average locaiton of any refunds that hapenned
     if (numRefundPix>0) //no divide by 0
@@ -933,11 +936,11 @@ void testApp::brushDown(ofTouchEventArgs & touch){
     for (int i=0; i<4; i++){
         while(colorInkRefund[i]>0){
             particle newInkParticle;
-            float thisDist = ofRandom(particleDist);
             float thisAngle = ofRandom(TWO_PI);
-            float newX = refundAvgLoc.x*boardScale + cos(thisAngle)*ofRandom(thisDist);
-            float newY = refundAvgLoc.y*boardScale + sin(thisAngle)*ofRandom(thisDist);    //right now, this is not technicaly placing along a circle
-            newInkParticle.setInitialCondition(newX, newY, ofRandom(-pixelWiggle,pixelWiggle),ofRandom(-pixelWiggle,pixelWiggle));newInkParticle.inkValue = MIN(inkPerParticle, colorInkRefund[i]);
+            float newX = refundAvgLoc.x*boardScale;
+            float newY = refundAvgLoc.y*boardScale;    //right now, this is not technicaly placing along a circle
+            newInkParticle.setInitialCondition(newX, newY, cos(thisAngle)*ofRandom(pixelWiggle), sin(thisAngle)*ofRandom(pixelWiggle));
+            newInkParticle.inkValue = MIN(inkPerParticle, colorInkRefund[i]);
             newInkParticle.col = (i<3) ? dispColor[i] : ofColor::black;
             inkParticles.push_back(newInkParticle);
             //take away from the total
