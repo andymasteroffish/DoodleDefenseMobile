@@ -29,12 +29,16 @@ public:
     void setInitialCondition(float px, float py, float vx, float vy);
     void update();
     void draw();
+    void drawInk();
 	
     void bounceOffWalls();
 	
     bool  bFixed;
 	
     float damping;
+    
+    float inkValue;
+    ofColor col;
     
 protected:
 private:

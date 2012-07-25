@@ -6,6 +6,7 @@ particle::particle(){
 	setInitialCondition(0,0,0,0);
 	damping = 0.05f;
 	bFixed = false;
+    inkValue = 0;   //most particles don't need to know anythign about inkValue
 }
 
 //------------------------------------------------------------
@@ -251,6 +252,10 @@ void particle::draw(){
     ofCircle(pos.x, pos.y, 6);
 }
 
+void particle::drawInk(){
+    ofSetColor(col);
+    ofCircle(pos.x, pos.y, ofGetWidth()*0.0015);
+}
 
 
 //------------------------------------------------------------

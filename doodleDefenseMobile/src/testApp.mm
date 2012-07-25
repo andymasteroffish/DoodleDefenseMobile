@@ -21,7 +21,7 @@ void testApp::setup(){
     boardH=fieldH*sizeIncreaseToBoard;
     
     fieldScale = 10; //this was 7 in the computer verison
-    boardScale = fieldScale/sizeIncreaseToBoard; //these things should not be set manualy since they need to be exact
+    boardScale = fieldScale/sizeIncreaseToBoard;
     
     //setup vector field
     VF.setupField(120, 90,fieldW*fieldScale, fieldH*fieldScale);
@@ -31,18 +31,27 @@ void testApp::setup(){
     //black image
     blackImg.allocate(boardW, boardH);
     blackPixels = new unsigned char [boardW * boardH];
-    blackThreshold = 97;
     
     //set up the images
     wallPixels = new unsigned char [fieldW * fieldH];
     wallImage.allocate(fieldW, fieldH);
     
-    //r,g,b images WILL PROBABLY NEED TO BE DOUBLE RESOLUTION
+    //r,g,b images
     for (int i=0; i<3; i++){
         colorImgs[i].allocate(boardW, boardH);
         colorPixels[i]= new unsigned char [boardW * boardH];
     }
+    
+    //set the colors to display each image
+    dispColor[0].set(255,0,0);
+    dispColor[1].set(0,255,0);
+    dispColor[2].set(0,0,255);
+    
+    //threhsolding info
+    blackThreshold = 97;
+    colorThreshold = 200;
 
+    //display images to actually show the user
     wallDispTex.allocate(boardW, boardH, GL_LUMINANCE_ALPHA);
     wallDispPixels = new unsigned char [boardW * boardH * 2];
     for (int i=0; i<3; i++){
@@ -97,7 +106,7 @@ void testApp::setup(){
     int buttonW=100;
     int buttonH=100;
     for (int i=0; i<5; i++){
-        colorButtons[i].set(ofGetWidth()*0.3+i*(buttonW+10),0, buttonW, buttonH);
+        colorButtons[i].set(ofGetWidth()*0.2+i*(buttonW+10),0, buttonW, buttonH);
     }
 	
 	//testing different views
@@ -113,10 +122,10 @@ void testApp::setup(){
     waveAnimationTime=5;    //flash for x seconds when a wave is finished
     
     //ink values
-    blackInkValue   = 0.2;
-    rInkValue       = 2.5;
-    gInkValue       = 3.5;
-    bInkValue       = 3.0;
+    blackInkValue   = .02;
+    colorInkValue[0] = .25;
+    colorInkValue[1] = .35;
+    colorInkValue[2] = .30;
     
     //getting ink back when towers and walls are erased
     towerRefund=0.7;    //what percentage of the tower's value a player gets back when they kill one
@@ -145,6 +154,10 @@ void testApp::setup(){
     banners[2].loadImage("banners/wave.png");
     banners[3].loadImage("banners/youwin.png");
     banners[4].loadImage("banners/youlose.png");
+    
+    //getting hit
+    damageFlashTime=8;
+    playerHitPic.loadImage("banners/playerHit.png");
     
     //player info pics
     for(int i=0; i<healthStart; i++){
@@ -214,12 +227,12 @@ void testApp::reset(){
     
     //clear any ink coming to the player
     inkParticles.clear();
-    //    
-    //    //set all of the pixels to blank
-    //    for (int i=0; i<fieldW*fieldH; i++){
-    //        wallPixels[i]=255;
-    //    }
-    //    
+    
+    //set all of the pixels to blank
+    for (int i=0; i<fieldW*fieldH; i++){
+        wallPixels[i]=255;
+    }
+    
     playerPause = false;
     noPath=false;
     
@@ -242,7 +255,7 @@ void testApp::reset(){
 void testApp::update(){
     //cout<<"cur wave: "<<curWave<<endl;
     //TESTING
-    //waveComplete = false;
+    waveComplete = false;
     
     //check if there is any reason to pause the game
     if (playerPause || noPath || tooMuchInk  || !gameStarted || waveComplete || fingerDown)
@@ -289,7 +302,8 @@ void testApp::update(){
                 for (int p=0; p<foes[i]->inkVal;p++){
                     particle newInkParticle;
                     newInkParticle.setInitialCondition(foes[i]->p.pos.x,foes[i]->p.pos.y,ofRandom(-5,5),ofRandom(-5,5));
-                    //inkParticles.push_back(newInkParticle);
+                    newInkParticle.inkValue = 1;
+                    inkParticles.push_back(newInkParticle);
                 }
                 //kill it
                 killFoe(i);
@@ -377,34 +391,34 @@ void testApp::update(){
         }
     }
     
-    //    //kil any old bomb animations
-    //    for (int i=bombAnimations.size()-1; i>=0; i--){
-    //        bombAnimations[i].update();
-    //        if (bombAnimations[i].done)
-    //            bombAnimations.erase(bombAnimations.begin()+i);
-    //    }
-    //    
-    //    //update ink particles
-    //    int inkEndX=-175;
-    //    int inkEndY=215;
-    //    for (int i=inkParticles.size()-1; i>=0; i--){
-    //        //reset the particle
-    //        inkParticles[i].resetForce();
-    //        //atract the controler to the next node
-    //        inkParticles[i].addAttractionForce(inkEndX, inkEndY, 10000, 0.4);
-    //        //dampen and update the particle
-    //        inkParticles[i].addDampingForce();
-    //        inkParticles[i].update();
-    //        
-    //        //check if it reached the end
-    //        if (ofDist(inkParticles[i].pos.x, inkParticles[i].pos.y, inkEndX, inkEndY)<20){
-    //            //give the player ink
-    //            totalInk++;
-    //            //kill the particle
-    //            inkParticles.erase(inkParticles.begin()+i);
-    //        }
-    //    }
-    //    
+    //kil any old bomb animations
+    for (int i=bombAnimations.size()-1; i>=0; i--){
+        bombAnimations[i].update();
+        if (bombAnimations[i].done)
+            bombAnimations.erase(bombAnimations.begin()+i);
+    }
+    
+    //update ink particles
+    int inkEndX=ofGetWidth()*0.02;
+    int inkEndY=ofGetHeight()*0.04;
+    for (int i=inkParticles.size()-1; i>=0; i--){
+        //reset the particle
+        inkParticles[i].resetForce();
+        //atract the controler to the next node
+        inkParticles[i].addAttractionForce(inkEndX, inkEndY, 10000, 0.4);
+        //dampen and update the particle
+        inkParticles[i].addDampingForce();
+        inkParticles[i].update();
+        
+        //check if it reached the end
+        if (ofDist(inkParticles[i].pos.x, inkParticles[i].pos.y, inkEndX, inkEndY)<20){
+            //give the player ink
+            totalInk+=inkParticles[i].inkValue;
+            //kill the particle
+            inkParticles.erase(inkParticles.begin()+i);
+        }
+    }
+    
     //update explosions and puffs
     for (int i=explosions.size()-1; i>=0; i--){
         explosions[i].update();
@@ -497,10 +511,6 @@ void testApp::draw(){
     
     ofEnableAlphaBlending();
     
-//    ofPushMatrix();
-//    ofTranslate(boardOffset.x, boardOffset.y);
-    //ofScale(projScale, projScale);
-    
     //show the wall and tower images (right now this features test views)
 //    ofSetColor(255);
 //    if (curView < 3)
@@ -511,17 +521,14 @@ void testApp::draw(){
     //testing the wall image
     //wallImage.draw(ofGetWidth()*0.6, 0, fieldW*2, fieldH*2);
     
-    //show the border
-    ofSetRectMode(OF_RECTMODE_CORNER);
-    ofSetColor(255);
-    borderPics[numEntrances-1].draw(boardOffset.x, boardOffset.y);
-
-    
     //show the game
     drawGame();
     drawPlayerInfo();   //show player stats that live outside of the game area
     
-    //ofPopMatrix();
+    //show the border
+    ofSetRectMode(OF_RECTMODE_CORNER);
+    ofSetColor(255);
+    borderPics[numEntrances-1].draw(boardOffset.x, boardOffset.y);
     
     ofDisableAlphaBlending();
     //set the rect mode back
@@ -537,12 +544,10 @@ void testApp::drawGame(){
     //draw the board
     ofSetColor(10);
     wallDispTex.draw(0, 0, boardW*boardScale, boardH*boardScale);
-    ofSetColor(255,0,0);
-    colorDispTex[0].draw(0,0, boardW*boardScale, boardH*boardScale);
-    ofSetColor(0,255,0);
-    colorDispTex[1].draw(0,0, boardW*boardScale, boardH*boardScale);
-    ofSetColor(0,0,255);
-    colorDispTex[2].draw(0,0, boardW*boardScale, boardH*boardScale);
+    for (int i=0; i<3; i++){
+        ofSetColor(dispColor[i]);
+        colorDispTex[i].draw(0,0, boardW*boardScale, boardH*boardScale);
+    }
     
     ofSetRectMode(OF_RECTMODE_CENTER);
     if(showAllInfo){
@@ -584,9 +589,10 @@ void testApp::drawGame(){
         explosions[i].draw();
     
     //draw ink particles if there are any
-    ofSetColor(150);
+    //ofSetColor(150);
+    ofFill();
     for (int i=0; i<inkParticles.size(); i++)
-        inkParticles[i].draw();
+        inkParticles[i].drawInk();
     
     
      ofPopMatrix();
@@ -656,7 +662,7 @@ void testApp::drawPlayerInfo(){
     ofSetColor(0);
     //make it blink if the player is out if ink
     if (tooMuchInk && ofGetFrameNum()/4%2==0)   ofSetColor(255,0,0);
-    int inktextRightX=ofGetWidth()*0.13;
+    int inktextRightX=ofGetWidth()*0.10;
     int inkTextY=ofGetHeight()*0.05;
     
     thisTextX=inktextRightX-infoFont.stringWidth("Ink Left:")/2;
@@ -699,12 +705,12 @@ void testApp::drawPlayerInfo(){
 //    if (waveComplete)
 //        drawWaveCompleteAnimation();
 //    
-//    //draw red over the game if the player was just hit
-//    if (damageFlashTimer-- >0){
-//        ofSetRectMode(OF_RECTMODE_CORNER);
-//        ofSetColor(255, ofMap(damageFlashTimer, 0, damageFlashTime, 0, 255));
-//        playerHitPic.draw(75,80);
-//    }
+    //draw red over the game if the player was just hit
+    if (damageFlashTimer-- > 0){
+        ofSetRectMode(OF_RECTMODE_CORNER);
+        ofSetColor(255, ofMap(damageFlashTimer, 0, damageFlashTime, 0, 255));
+        playerHitPic.draw(51,179);
+    }
     
 }
 
@@ -730,6 +736,9 @@ void testApp::touchDown(ofTouchEventArgs & touch){
                 curView = i;
             }
         }
+        
+        brushDown(touch);
+        
     }
     
     lastX = touch.x;
@@ -740,12 +749,8 @@ void testApp::touchDown(ofTouchEventArgs & touch){
 //--------------------------------------------------------------
 void testApp::touchMoved(ofTouchEventArgs & touch){
     if (touch.id == 0){
-        
-        if (curBrushColor<=3)
-            brushDown(touch);
+        brushDown(touch);
     
-        if (curBrushColor==4)
-            eraserDown(touch);
     }
     
     lastX = touch.x;
@@ -807,6 +812,7 @@ void testApp::brushDown(ofTouchEventArgs & touch){
     int brushStrength = 100;    //how much it adds at the center
     
     int maxDist = 15*boardScale;
+    if (curBrushColor == 4) maxDist*=2; //eraser gets a bigger brush
     
     //paint into the array
     int brushSize=maxDist/boardScale;
@@ -814,10 +820,10 @@ void testApp::brushDown(ofTouchEventArgs & touch){
     int xMid=relativeX/boardScale;
     int yMid=relativeY/boardScale;
     
-    int xStart=MAX(0,xMid-brushSize);
-    int xEnd=MIN(boardW,xMid+brushSize);
-    int yStart=MAX(0,yMid-brushSize);
-    int yEnd=MIN(boardH,yMid+brushSize);
+    int xStart=MAX(ofMap(mazeLeft,0,fieldW,0,boardW),xMid-brushSize);
+    int xEnd=MIN(ofMap(mazeRight,0,fieldW,0,boardW),xMid+brushSize);
+    int yStart=MAX(ofMap(mazeTop,0,fieldH,0,boardH),yMid-brushSize);
+    int yEnd=MIN(ofMap(mazeBottom,0,fieldH,0,boardH),yMid+brushSize);
     
     //go through and set the pixels being effected by the brush
     for (int col=xStart; col<xEnd; col++){
@@ -827,6 +833,14 @@ void testApp::brushDown(ofTouchEventArgs & touch){
             
             int brushAmount = ofMap(ofDist(relativeX, relativeY, col*boardScale, row*boardScale),0, maxDist, brushStrength, 0, true);
             
+            //store the values of the pixel before anything was changed to see if the pixel crossed any thresholds
+            int prevBlackPixel = blackPixels[pos];
+            int prevColPixels[3];
+            for (int i=0; i<3; i++){
+                prevColPixels[i] = colorPixels[i][pos];
+            }
+            
+            //adjust the pixel values based on the brush and distance
             if (curBrushColor<3){
                 //add to the selected color, take away from all others
                 for (int i=0; i<3; i++){
@@ -835,15 +849,57 @@ void testApp::brushDown(ofTouchEventArgs & touch){
                     else
                         colorPixels[i][pos] = MAX(0, colorPixels[i][pos]-brushAmount);
                 }
-                blackPixels[pos] = MAX(0, blackPixels[pos]-brushAmount);
-            }else{
+                //everything adds to the black pixels
+                blackPixels[pos] = MIN(255, blackPixels[pos]+brushAmount);
+            }else if (curBrushColor==3){
                 //black brush
                 blackPixels[pos] = MIN(255, blackPixels[pos]+brushAmount);
                 //shrink the colored images
                 for (int i=0; i<3; i++)
                     colorPixels[i][pos] = MAX(0, colorPixels[i][pos]-brushAmount);
             }
+            else{
+                //erase
+                blackPixels[pos] = MAX(0, blackPixels[pos]-brushAmount);
+                for (int i=0; i<3; i++)
+                    colorPixels[i][pos] = MAX(0, colorPixels[i][pos]-brushAmount);
+                
+                //update this pixel on the display images
+                for (int i=0; i<3; i++){
+                    colorDispPixels[i][dispPos+1] = MIN(255, colorPixels[i][pos]);
+                }
+                //and the black display image
+                wallDispPixels[dispPos+1] = blackPixels[pos];
+            }
             
+            float pixelWiggle = 5;  //how far from the pixel and ink particle can spawn
+            //check if any pixels crossed a threshold
+            if (prevBlackPixel < blackThreshold && blackPixels[pos] >= blackThreshold){
+                inkUsed += blackInkValue;
+            }
+            if (prevBlackPixel >= blackThreshold && blackPixels[pos] < blackThreshold){
+                //spawn an ink particle to return some ink
+                particle newInkParticle;
+                newInkParticle.setInitialCondition(col*boardScale, row*boardScale, ofRandom(-pixelWiggle,pixelWiggle),ofRandom(-pixelWiggle,pixelWiggle));
+                newInkParticle.inkValue = blackInkValue*wallRefund;
+                newInkParticle.col = ofColor::black;
+                inkParticles.push_back(newInkParticle);
+            }
+            
+            //check if color pixels crossed the threshold
+            for (int i=0; i<3; i++){
+                if (prevColPixels[i] < colorThreshold && colorPixels[i][pos] >= colorThreshold){
+                    inkUsed += colorInkValue[i];
+                }
+                if (prevColPixels[i] >= colorThreshold && colorPixels[i][pos] < colorThreshold){
+                    //spawn an ink particle to return some ink
+                    particle newInkParticle;
+                    newInkParticle.setInitialCondition(col*boardScale, row*boardScale, ofRandom(-pixelWiggle,pixelWiggle),ofRandom(-pixelWiggle,pixelWiggle));
+                    newInkParticle.inkValue = colorInkValue[i]*towerRefund;
+                    newInkParticle.col = dispColor[i];
+                    inkParticles.push_back(newInkParticle);
+                }
+            }
             
             //update this pixel on the display images
             for (int i=0; i<3; i++){
@@ -852,66 +908,20 @@ void testApp::brushDown(ofTouchEventArgs & touch){
             //and the black display image
             wallDispPixels[dispPos+1] = blackPixels[pos];
             
-            //since something changed, flag that we need to alter the game
+            //since soemthing changed, flag that we need to alter the game
             needToConvertDrawingToGame = true;
         }
     }
     
     //set the images
     for (int i=0; i<3; i++){
+        cout<<"set from pix"<<endl;
         colorImgs[i].setFromPixels(colorPixels[i],boardW, boardH);
         colorDispTex[i].loadData(colorDispPixels[i], boardW, boardH, GL_LUMINANCE_ALPHA);
     }
     blackImg.setFromPixels(blackPixels, boardW, boardH);
     wallDispTex.loadData(wallDispPixels, boardW, boardH, GL_LUMINANCE_ALPHA);
     
-}
-void testApp::eraserDown(ofTouchEventArgs & touch){
-        int relativeX = touch.x-boardOffset.x;
-        int relativeY = touch.y-boardOffset.y;
-        
-        int brushStrength = 100;    //how much it removes at the center
-        
-        int maxDist = 30*boardScale;    //eraser is bigger
-        //paint into the array
-        int brushSize=maxDist/boardScale;
-        //get the center of the brush
-        int xMid=relativeX/boardScale;
-        int yMid=relativeY/boardScale;
-        
-        int xStart=MAX(0,xMid-brushSize);
-        int xEnd=MIN(boardW,xMid+brushSize);
-        int yStart=MAX(0,yMid-brushSize);
-        int yEnd=MIN(boardH,yMid+brushSize);
-        
-//        //go through and set the pixels being effected by the brush
-//        for (int col=xStart; col<xEnd; col++){
-//            for (int row=yStart; row<yEnd; row++){
-//                int pos= row*boardW+col;
-//                int rgbPos = row*boardW*3+col*3;
-//                
-//                int brushAmount = ofMap(ofDist(relativeX, relativeY, col*boardScale, row*boardScale),0, maxDist, brushStrength, 0, true);
-//                
-//                //actually erase
-//                if (curBrushColor == 4){
-//                    blackPixels[pos] = MAX(0, blackPixels[pos]-brushAmount);
-//                    for (int i=0; i<3; i++)
-//                        colorPixels[i][pos] = MAX(0, colorPixels[i][pos]-brushAmount);
-//                }
-//                
-//                
-//                //since something changed, flag that we need to alter the game
-//                needToConvertDrawingToGame = true;
-//            }
-//        }
-//        
-//        //set the image
-//        for (int i=0; i<3; i++)
-//            colorImgs[i].setFromPixels(colorPixels[i],boardW, boardH);
-//        blackImg.setFromPixels(blackPixels, boardW, boardH);
-//        
-
-
 }
 
 //--------------------------------------------------------------
@@ -922,8 +932,7 @@ void testApp::convertDrawingToGame(){
     //get the walls
     wallImage.scaleIntoMe(blackImg);
     //wallImage=blackImg;
-    wallImage.threshold(blackThreshold,false);
-    wallImage.invert();
+    wallImage.threshold(blackThreshold,true);
     wallPixels=wallImage.getPixels();
     //thickenWallImage(); //maybe don't need to do this
     setMazeBorders();
@@ -972,8 +981,14 @@ void testApp::convertDrawingToGame(){
     int maxNumberOfBlobs=25;        //how many towers there can be
     
     //expand the pixels in the images 
-    for (int i=0; i<3; i++)
-        colorImgs[i].dilate_3x3();    
+//    for (int i=0; i<3; i++)
+//        colorImgs[i].dilate_3x3();   
+    
+    //threshold the color images before looking for blobs
+    //this will be undone next time the images are set from the pixel arrays
+    for (int i=0; i<3; i++){
+        colorImgs[i].threshold(colorThreshold, false);
+    }
     
     contourFinder.findContours(colorImgs[0], minArea, maxArea, maxNumberOfBlobs, false);
     checkTowers("red");
@@ -1231,15 +1246,15 @@ void testApp::thickenWallImage(){
 //--------------------------------------------------------------
 //draws the borders of the maze into the wall pixels
 void testApp::setMazeBorders(){
-    //ignore anything drawn outside of the maze by painting it white
-    for (int x=0; x<fieldW; x++){
-        for (int y=0; y<fieldH; y++){
-            if ( x<mazeLeft || x>mazeRight || y<mazeTop || y>mazeBottom){
-                int pos=y*fieldW+x;
-                wallPixels[pos]=255;
-            }
-        }
-    }
+//    //ignore anything drawn outside of the maze by painting it white
+//    for (int x=0; x<fieldW; x++){
+//        for (int y=0; y<fieldH; y++){
+//            if ( x<mazeLeft || x>mazeRight || y<mazeTop || y>mazeBottom){
+//                int pos=y*fieldW+x;
+//                wallPixels[pos]=255;
+//            }
+//        }
+//    }
     
     //keep the hole empty
     int hole=mazeLeft+ (mazeRight-mazeLeft)/2;
@@ -1405,13 +1420,12 @@ void testApp::takeDamage(int damage){
     if (health>0)   damageFlashTimer=damageFlashTime; 
     
     health-=damage;
-    //health=MAX(0,health); //IT'S OK IF THE HEALTH GOES BELOW 0
     
     //check if the player is dead
     if (health==0){
-        //        //gray out all towers
-        //        for (int i=0; i<towers.size(); i++)
-        //            towers[i]->playerDead=true;
+        //gray out all towers
+        for (int i=0; i<towers.size(); i++)
+            towers[i]->playerDead=true;
         //play the lose game sound
         SM.playSound("lose");
     }

@@ -10,7 +10,7 @@
 
 void HitTower::typeSetup(){
     cout<<"size: "<< size<<endl;
-    range=size*3.5;           //moderate range
+    range=size*3.5 *1.4;           //moderate range
     
     rechargeTime=1;         //fast recharge
     bulletAtraction=1;//0.5;    //fast bullet

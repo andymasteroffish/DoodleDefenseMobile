@@ -62,7 +62,6 @@ class testApp : public ofxiPhoneApp{
     void reset();
     
     void brushDown(ofTouchEventArgs & touch);
-    void eraserDown(ofTouchEventArgs & touch);
     
     void convertDrawingToGame();    //takes the pixels and reads the game values from them
     void setMazeBorders();
@@ -92,10 +91,6 @@ class testApp : public ofxiPhoneApp{
     float fieldScale; //how much to blow up the wall image
     float boardScale;   //how much to blow up the display image
     
-    //walls
-    ofxCvGrayscaleImage		blackImg;
-    unsigned char *			blackPixels;
-    
     //maze borders in field units
     int mazeTop;
     int mazeBottom;
@@ -103,13 +98,20 @@ class testApp : public ofxiPhoneApp{
     int mazeRight;
     int inkRefund;  //the ink used on the border is given back to the player
     
-    int blackThreshold; //thresholding to get the black marker (along with all other colored markers)
+    int blackThreshold; //thresholding to get the black marker
+    int colorThreshold; //past this threshold, the pixel counts as being used
     
     //images as lists of pixels showing where the marker is
+    //walls
+    //images that get drawn in
+    ofxCvGrayscaleImage		blackImg;
+    unsigned char *			blackPixels;
+    //thresholded images to actually mark off walls
     ofxCvGrayscaleImage 	wallImage;  
     unsigned char *			wallPixels;
     
-    //colored towers    
+    //colored towers   
+    //images that get drawn in
     ofxCvGrayscaleImage     colorImgs[3];
     unsigned char *			colorPixels[3];
     
@@ -118,6 +120,7 @@ class testApp : public ofxiPhoneApp{
     ofTexture colorDispTex[3];
     unsigned char * wallDispPixels;
     ofTexture wallDispTex;
+    ofColor dispColor[3];   //what color to actually tint each color image
     
     ofPoint boardOffset;    //where the gameboard is placed on screen
     
@@ -188,9 +191,7 @@ class testApp : public ofxiPhoneApp{
     
     //ink ussage - how much each pixel costs
     float blackInkValue;
-    float rInkValue;
-    float gInkValue;
-    float bInkValue;
+    float colorInkValue[3];
     
     //getting ink back when a wall is erased
     float wallRefund;

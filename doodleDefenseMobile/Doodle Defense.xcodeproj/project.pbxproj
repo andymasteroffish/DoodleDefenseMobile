@@ -308,14 +308,14 @@
 			children = (
 				0AECA85715B4F9FA00123F00 /* Tower.h */,
 				0AECA85815B4F9FA00123F00 /* Tower.cpp */,
+				0AECA85F15B4F9FA00123F00 /* HitTower.h */,
+				0AECA86015B4F9FA00123F00 /* HitTower.cpp */,
+				0AECA85D15B4F9FA00123F00 /* FreezeTower.h */,
+				0AECA85E15B4F9FA00123F00 /* FreezeTower.cpp */,
 				0AECA85915B4F9FA00123F00 /* BombTower.h */,
 				0AECA85A15B4F9FA00123F00 /* BombTower.cpp */,
 				0AECA85B15B4F9FA00123F00 /* BombAnimation.h */,
 				0AECA85C15B4F9FA00123F00 /* BombAnimation.cpp */,
-				0AECA85D15B4F9FA00123F00 /* FreezeTower.h */,
-				0AECA85E15B4F9FA00123F00 /* FreezeTower.cpp */,
-				0AECA85F15B4F9FA00123F00 /* HitTower.h */,
-				0AECA86015B4F9FA00123F00 /* HitTower.cpp */,
 			);
 			name = Towers;
 			sourceTree = "<group>";
