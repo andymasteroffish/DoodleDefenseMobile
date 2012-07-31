@@ -144,11 +144,15 @@ class testApp : public ofxiPhoneApp{
     bool paused;        //global pause. If any reason is true, this is true
     bool playerPause;   //player pauses the game
     bool noPath;        //becomes true if any foe can't reach the end
-    bool tooMuchInk;    //pauses the game when the player has used more ink than they have
+    //bool tooMuchInk;    //pauses the game when the player has used more ink than they have
     bool gameStarted;   //the camera must have taken at least one image to play the game
     bool fingerDown;
     
     bool fastForward;
+    
+    //showing a warning on screen if the player is out of ink
+    float outOfInkBannerTimer;
+    float outOfInkBannerTime;
     
     //vector field
 	vectorField VF;
@@ -223,6 +227,7 @@ class testApp : public ofxiPhoneApp{
     
     //banners
     ofImage banners[5];
+    ofImage bannerBacks[5];
     ofImage titleBig;
     ofImage playerHitPic;
     
@@ -237,6 +242,10 @@ class testApp : public ofxiPhoneApp{
     
     //debug
     bool showAllInfo;   //shows all of the bullshit lines and data
+    
+    //timing
+    float prevFrameTime;
+    float deltaTime;
     
     //tetsing
     int lastX;

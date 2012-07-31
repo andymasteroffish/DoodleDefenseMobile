@@ -155,6 +155,14 @@ void testApp::setup(){
     banners[2].loadImage("banners/wave.png");
     banners[3].loadImage("banners/youwin.png");
     banners[4].loadImage("banners/youlose.png");
+    bannerBacks[0].loadImage("banners/nopathBack.png");
+    bannerBacks[1].loadImage("banners/outofinkBack.png");
+    bannerBacks[2].loadImage("banners/waveBack.png");
+    bannerBacks[3].loadImage("banners/youwinBack.png");
+    bannerBacks[4].loadImage("banners/youloseBack.png");
+    
+    //showing when player is out of ink
+    outOfInkBannerTime = 1;
     
     //getting hit
     damageFlashTime=8;
@@ -201,6 +209,8 @@ void testApp::setup(){
     fingerDown = false;
     gameStarted = true;
     
+    prevFrameTime = ofGetElapsedTimef();
+    
     reset();
 }
 
@@ -218,7 +228,7 @@ void testApp::reset(){
     health=healthStart;
     totalInk=startInk;
     score=0;
-    tooMuchInk=false;
+    outOfInkBannerTimer=0;
     numEntrances=1;
     nextEntrance=0;
     
@@ -242,7 +252,7 @@ void testApp::reset(){
     curWave=-1;
     wavesDone=false;
     loadFromText();
-    //startNextWave();
+    startNextWave();
     //    
     //    //play the sound
     //    if (ofGetFrameNum()>5)  //don't play the sound when the game first turns on
@@ -256,10 +266,14 @@ void testApp::reset(){
 void testApp::update(){
     //cout<<"cur wave: "<<curWave<<endl;
     //TESTING
-    waveComplete = false;
+    //waveComplete = false;
+    
+    //get delta time
+    deltaTime = ofGetElapsedTimef()-prevFrameTime;
+    prevFrameTime = ofGetElapsedTimef();
     
     //check if there is any reason to pause the game
-    if (playerPause || noPath || tooMuchInk  || !gameStarted || waveComplete || fingerDown)
+    if (playerPause || noPath  || !gameStarted || waveComplete || fingerDown)
         paused=true;
     else
         paused=false;
@@ -471,7 +485,7 @@ void testApp::draw(){
     ofRect(colorButtons[2]);
     ofSetColor(10, 10, 10);
     ofRect(colorButtons[3]);
-    ofSetColor(255, 255, 255);
+    ofSetColor(200, 200, 200);
     ofRect(colorButtons[4]);
     //dot to show the one we're one
     ofSetColor(100);
@@ -501,7 +515,6 @@ void testApp::draw(){
         pausedText = "paused because  ";
         if (playerPause)    pausedText+="player paused  ";
         if (noPath)         pausedText+="no path  ";
-        if (tooMuchInk)     pausedText+="too much ink  ";
         if (!gameStarted)   pausedText+="game not started  ";
         if (waveComplete)   pausedText+="wave complete  ";
         if (fingerDown)     pausedText+="finger down";
@@ -525,12 +538,14 @@ void testApp::draw(){
     
     //show the game
     drawGame();
-    drawPlayerInfo();   //show player stats that live outside of the game area
     
     //show the border
     ofSetRectMode(OF_RECTMODE_CORNER);
     ofSetColor(255);
     borderPics[numEntrances-1].draw(boardOffset.x, boardOffset.y);
+    
+    //show player stats that live outside of the game area
+    drawPlayerInfo();   
     
     ofDisableAlphaBlending();
     //set the rect mode back
@@ -602,36 +617,43 @@ void testApp::drawGame(){
 
 //--------------------------------------------------------------
 void testApp::drawWaveCompleteAnimation(){
-    //    //get the amount of time the animation has played
-    //    float curTime=ofGetElapsedTimef()-waveAnimationStart;
-    //    
-    //    int messageX=615;
-    //    int messageY=-120;
-    //    
-    //    ofColor thisCol;
-    //    thisCol.setHsb(ofRandom(255), 255, 100);
-    //    
-    //    ofSetColor(thisCol);
-    //    
-    //    
-    //    if (wavesDone)
-    //        banners[3].draw(messageX, messageY);
-    //    else {
+    //get the amount of time the animation has played
+    float curTime=ofGetElapsedTimef()-waveAnimationStart;
+    
+    int messageX=boardOffset.x+boardW*boardScale*0.5;
+    int messageY=boardOffset.y+boardH*boardScale*0.5;
+    
+    //ofColor thisCol;
+    //thisCol.setHsb(ofRandom(255), 255, 100);
+    
+    //backing
+    ofSetColor(255,ofMap(sin(ofGetElapsedTimef()*2), -1,1, 120,210));
+    if (wavesDone)
+        bannerBacks[3].draw(messageX, messageY);
+    else {
+        bannerBacks[2].draw(messageX, messageY);
+    }
+    
+    //and the banner proper
+    ofSetColor(ofColor::fromHsb(ofRandom(255), 255, 100));
+    if (wavesDone)
+        banners[3].draw(messageX, messageY);
+    else {
+        banners[2].draw(messageX, messageY);
+    }
+    
+    //    if (curWave+1 != waves.size()){
     //        banners[2].draw(messageX, messageY);
+    //    }else{
+    //        banners[3].draw(messageX, messageY);
+    //        curTime=0;
     //    }
-    //    
-    //    //    if (curWave+1 != waves.size()){
-    //    //        banners[2].draw(messageX, messageY);
-    //    //    }else{
-    //    //        banners[3].draw(messageX, messageY);
-    //    //        curTime=0;
-    //    //    }
-    //    
-    //    //if time is up, return to the game
-    //    if (curTime>waveAnimationTime){
-    //        cout<<"start it I think"<<endl;
-    //        startNextWave();
-    //    }
+    
+    //if time is up, return to the game
+    if (curTime>waveAnimationTime){
+        cout<<"start it I think"<<endl;
+        startNextWave();
+    }
 }
 
 //--------------------------------------------------------------
@@ -651,7 +673,7 @@ void testApp::drawPlayerInfo(){
         healthPicFull[i].draw(xLeft+i*healthPicFull[0].width+i*healthSpacing,healthY, healthPicFull[i].width*tempScale, healthPicFull[i].height*tempScale);
     }
     //end empty life for the life lost
-    for (int i=health; i<healthStart; i++){
+    for (int i=MAX(0,health); i<healthStart; i++){
         healthPicEmpty[0].draw(xLeft+i*healthPicEmpty[0].width+i*healthSpacing,healthY, healthPicEmpty[i].width*tempScale, healthPicEmpty[i].height*tempScale);
     }
     
@@ -662,8 +684,6 @@ void testApp::drawPlayerInfo(){
     //SHOW INK VALUES
     ofFill();
     ofSetColor(0);
-    //make it blink if the player is out if ink
-    if (tooMuchInk && ofGetFrameNum()/4%2==0)   ofSetColor(255,0,0);
     int inktextRightX=ofGetWidth()*0.10;
     int inkTextY=ofGetHeight()*0.05;
     
@@ -682,31 +702,42 @@ void testApp::drawPlayerInfo(){
     for (int i=0; i<waveInfoBoxes.size(); i++){
         waveInfoBoxes[i].draw();
     }
-//    
-//    //BANNERS
-//    //let the player no if there is no path
-//    ofFill();
-//    int messageX=615;
-//    int messageY=-120;
-//    ofSetColor(0,0,0);
-//    if (noPath){
-//        banners[0].draw(messageX, messageY);
-//    }
-//    //let the player know if they used too much ink
-//    if (tooMuchInk){
-//        banners[1].draw(messageX, messageY);
-//    }
-//    //let the player know if they are dead
-//    if (health<=0){
-//        ofSetColor(255,0,0);
-//        if (ofGetFrameNum()/4%2==0) ofSetColor(0);
-//        banners[4].draw(messageX, messageY);
-//    }
-//    
-//    //check if we should be showing the wave complete animation
-//    if (waveComplete)
-//        drawWaveCompleteAnimation();
-//    
+    
+    //BANNERS
+    //let the player no if there is no path
+    ofFill();
+    int messageX=boardOffset.x+boardW*boardScale*0.5;
+    int messageY=ofGetHeight()*0.2;
+    ofSetColor(0,0,0);
+    if (noPath){
+        ofSetColor(255,ofMap(sin(ofGetElapsedTimef()*2), -1,1, 120,210));
+        bannerBacks[0].draw(messageX, messageY);
+        ofSetColor(0);
+        banners[0].draw(messageX, messageY);
+    }
+    //let the player know if they used too much ink
+    if (outOfInkBannerTimer > 0){
+        float alpha = ofMap(outOfInkBannerTimer, outOfInkBannerTime, 0, 255,0);
+        ofSetColor(255,alpha-40);
+        bannerBacks[1].draw(messageX, messageY);
+        ofSetColor(0,alpha);
+        banners[1].draw(messageX, messageY);
+        outOfInkBannerTimer-=deltaTime;
+    }
+    //let the player know if they are dead
+    if (health<=0){
+        float deathMessageY=boardOffset.y+boardH*boardScale*0.3;
+        ofSetColor(255,ofMap(sin(ofGetElapsedTimef()*2), -1,1, 120,210));
+        bannerBacks[4].draw(messageX, deathMessageY);
+        ofSetColor(255,0,0);
+        if (ofGetFrameNum()/4%2==0) ofSetColor(0);
+        banners[4].draw(messageX, deathMessageY);
+    }
+    
+    //check if we should be showing the wave complete animation
+    if (waveComplete)
+        drawWaveCompleteAnimation();
+    
     //draw red over the game if the player was just hit
     if (damageFlashTimer-- > 0){
         ofSetRectMode(OF_RECTMODE_CORNER);
@@ -808,6 +839,9 @@ void testApp::deviceOrientationChanged(int newOrientation){
 }
 
 void testApp::brushDown(ofTouchEventArgs & touch){
+    //get out immediatly if the player is dead
+    if (health<=0)  return;
+    
     int relativeX = touch.x-boardOffset.x;
     int relativeY = touch.y-boardOffset.y;
     
@@ -838,7 +872,10 @@ void testApp::brushDown(ofTouchEventArgs & touch){
     for (int col=xStart; col<xEnd; col++){
         for (int row=yStart; row<yEnd; row++){
             //if there is no ink left to use, just get out
-            if (inkUsed > totalInk && curBrushColor!=4) break;
+            if (inkUsed > totalInk && curBrushColor!=4){ 
+                outOfInkBannerTimer = outOfInkBannerTime;
+                break;
+            }
             
             //figure out where in the arrays this pixel is
             int pos= row*boardW+col;
@@ -1373,6 +1410,7 @@ void testApp::startNextWave(){
 
 //--------------------------------------------------------------
 void testApp::endWave(){
+    cout<<"END DAT WAVE"<<endl;
     waveComplete=true;
     waveAnimationStart=ofGetElapsedTimef();
     
