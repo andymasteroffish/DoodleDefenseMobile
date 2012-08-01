@@ -59,24 +59,6 @@ void testApp::setup(){
         colorDispPixels[i] = new unsigned char [boardW * boardH * 2];
     }
     
-    //clear them
-    for (int i=0; i<boardW*boardH; i++){
-        blackPixels[i] = 0;
-        colorPixels[0][i] = 0;
-        colorPixels[1][i] = 0;
-        colorPixels[2][i] = 0;
-    }
-
-    
-    for (int i=0; i<boardW * boardH * 2; i+=2){
-        wallDispPixels[i]   = 255;
-        wallDispPixels[i+1] = 0;
-        for (int k=0; k<3; k++){
-            colorDispPixels[k][i]   = 255;
-            colorDispPixels[k][i+1] = 0;
-        }
-    }
-    
     //set the maze border
     mazeTop=4;
     mazeBottom=fieldH-4;
@@ -122,10 +104,11 @@ void testApp::setup(){
     waveAnimationTime=5;    //flash for x seconds when a wave is finished
     
     //ink values
-    blackInkValue   = .02;
-    colorInkValue[0] = .25;
-    colorInkValue[1] = .35;
-    colorInkValue[2] = .30;
+    float relativeInkScale = 0.5;   //for adjusting the overall cost of things
+    blackInkValue   = .02 *relativeInkScale;
+    colorInkValue[0] = .25 *relativeInkScale;
+    colorInkValue[1] = .35 *relativeInkScale;
+    colorInkValue[2] = .30 *relativeInkScale;
     
     //getting ink back when towers and walls are erased
     towerRefund=0.7;    //what percentage of the tower's value a player gets back when they kill one
@@ -243,6 +226,29 @@ void testApp::reset(){
     for (int i=0; i<fieldW*fieldH; i++){
         wallPixels[i]=255;
     }
+    
+    //clear all of the images
+    for (int i=0; i<boardW*boardH; i++){
+        blackPixels[i] = 0;
+        colorPixels[0][i] = 0;
+        colorPixels[1][i] = 0;
+        colorPixels[2][i] = 0;
+    }
+    for (int i=0; i<boardW * boardH * 2; i+=2){
+        wallDispPixels[i]   = 255;
+        wallDispPixels[i+1] = 0;
+        for (int k=0; k<3; k++){
+            colorDispPixels[k][i]   = 255;
+            colorDispPixels[k][i+1] = 0;
+        }
+    }
+    //set the images
+    for (int i=0; i<3; i++){
+        colorImgs[i].setFromPixels(colorPixels[i],boardW, boardH);
+        colorDispTex[i].loadData(colorDispPixels[i], boardW, boardH, GL_LUMINANCE_ALPHA);
+    }
+    blackImg.setFromPixels(blackPixels, boardW, boardH);
+    wallDispTex.loadData(wallDispPixels, boardW, boardH, GL_LUMINANCE_ALPHA);
     
     playerPause = false;
     noPath=false;
@@ -808,8 +814,11 @@ void testApp::touchDoubleTap(ofTouchEventArgs & touch){
     if (touch.x<60 && touch.y>ofGetHeight()-60)
         showAllInfo = !showAllInfo;
     
-    else
+    if (touch.x>ofGetWidth()-60 && touch.y>ofGetHeight()-60)
         spawnFoe("norm", 1);
+    
+    if (touch.x<60 && touch.y<60)
+        reset();
     
 }
 

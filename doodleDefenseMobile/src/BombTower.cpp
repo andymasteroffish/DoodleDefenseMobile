@@ -9,10 +9,10 @@
 #include "BombTower.h"
 
 void BombTower::typeSetup(){
-    range=size*4.5 *1.4;           //large range
+    range=size*4.5 *mobileRangeIncrease;           //large range
     
     rechargeTime=60;         //slow recharge
-    bulletAtraction=0.6;//0.3;    //slow bullet
+    bulletAtraction=0.6;    //slow bullet
     bulletDamage=30;        //huge damage
     
     type="green";

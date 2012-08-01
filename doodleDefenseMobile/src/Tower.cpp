@@ -9,7 +9,8 @@
 #include "Tower.h"
 
 void Tower::setup(float x, float y, float _size, int _idNum){
-    setNewPos(x,y,_size);
+    mobileRangeIncrease=1.7;
+    
     idNum=_idNum;
     
     //values that will be the same for all towers
@@ -24,7 +25,11 @@ void Tower::setup(float x, float y, float _size, int _idNum){
     
     rangePadding=13;    //slightly increase the range for determining what can be shot
     
+    
+    cout<<"setup"<<endl;
+    
     //everything else is handled by the type specific setup, called in setNewPos
+    setNewPos(x,y,_size);
     
 }
 

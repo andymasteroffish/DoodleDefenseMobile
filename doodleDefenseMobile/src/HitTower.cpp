@@ -10,11 +10,11 @@
 
 void HitTower::typeSetup(){
     cout<<"size: "<< size<<endl;
-    range=size*3.5 *1.4;           //moderate range
+    range=size*3.5 *mobileRangeIncrease;           //moderate range
     
     rechargeTime=1;         //fast recharge
     bulletAtraction=1;//0.5;    //fast bullet
-    bulletDamage=size/2;        //moderate damage based on tower size
+    bulletDamage=size*0.75;        //moderate damage based on tower size
     
     type="red";
 }

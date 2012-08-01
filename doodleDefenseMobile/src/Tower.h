@@ -62,6 +62,9 @@ public:
     //I DON'T THINK THIS IS BEING USED
     int idNum;
     
+    //giving towers a larger range in DD mobile
+    float mobileRangeIncrease;
+    
 };
 
 
