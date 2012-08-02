@@ -135,6 +135,8 @@ class testApp : public ofxiPhoneApp{
     ofRectangle viewButtons[5];
     int curView;
     
+    ofRectangle pauseButton;
+    
     //images to display as the boarders
     ofImage borderPics[2];
     

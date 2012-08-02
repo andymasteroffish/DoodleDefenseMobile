@@ -90,6 +90,9 @@ void testApp::setup(){
     for (int i=0; i<5; i++){
         colorButtons[i].set(ofGetWidth()*0.2+i*(buttonW+10),0, buttonW, buttonH);
     }
+    
+    //pause button
+    pauseButton.set(ofGetWidth()*0.2+5*(buttonW+10),0, buttonW, buttonH);
 	
 	//testing different views
     for (int i=0; i<5; i++){
@@ -319,13 +322,6 @@ void testApp::update(){
             }
             //remove it if it is dead
             else if (foes[i]->dead){
-                //spawn ink particles
-                for (int p=0; p<foes[i]->inkVal;p++){
-                    particle newInkParticle;
-                    newInkParticle.setInitialCondition(foes[i]->p.pos.x,foes[i]->p.pos.y,ofRandom(-5,5),ofRandom(-5,5));
-                    newInkParticle.inkValue = 1;
-                    inkParticles.push_back(newInkParticle);
-                }
                 //kill it
                 killFoe(i);
                 //play the sound
@@ -496,6 +492,11 @@ void testApp::draw(){
     //dot to show the one we're one
     ofSetColor(100);
     ofCircle(colorButtons[curBrushColor].x+colorButtons[0].width/2, colorButtons[curBrushColor].y+colorButtons[0].height/2, 20);
+    
+    //pause button
+    ofNoFill();
+    ofSetColor(0, 0, 0);
+    ofRect(pauseButton);
     
     //view select buttons
     ofNoFill();
@@ -774,6 +775,10 @@ void testApp::touchDown(ofTouchEventArgs & touch){
             if (viewButtons[i].inside(touch.x,touch.y)){
                 curView = i;
             }
+        }
+        
+        if (pauseButton.inside(touch.x,touch.y)){
+            playerPause = !playerPause;
         }
         
         brushDown(touch);
@@ -1483,6 +1488,15 @@ void testApp::killFoe(int num){
     Explosion newExplosion;
     newExplosion.setup(foes[num]->p.pos, &explosionPic);
     explosions.push_back(newExplosion);
+    
+    //spawn ink particles
+    for (int p=0; p<foes[num]->inkVal;p++){
+        particle newInkParticle;
+        newInkParticle.setInitialCondition(foes[num]->p.pos.x,foes[num]->p.pos.y,ofRandom(-5,5),ofRandom(-5,5));
+        newInkParticle.inkValue = 1;
+        newInkParticle.col.set(0, 0, 0);
+        inkParticles.push_back(newInkParticle);
+    }
     
     //go through and find any towers targetting this foe and remove the target
     for (int i=0; i<towers.size(); i++){
