@@ -15,8 +15,8 @@ void testApp::setup(){
     
     //size of the grid the game is played on
     float sizeIncreaseToBoard = 7;
-    fieldW=80;
-    fieldH=60;
+    fieldW=FIELD_W;
+    fieldH=FIELD_H;
     boardW=fieldW*sizeIncreaseToBoard;
     boardH=fieldH*sizeIncreaseToBoard;
     
@@ -48,7 +48,7 @@ void testApp::setup(){
     dispColor[2].set(0,0,255);
     
     //threhsolding info
-    blackThreshold = 97;
+    blackThreshold = 40;
     colorThreshold = 200;
 
     //display images to actually show the user
@@ -72,9 +72,9 @@ void testApp::setup(){
     goalY[0]=boardH*boardScale*0.5;
     
     startX[1]=boardW*boardScale*0.5;
-    startY[1]=boardH*boardScale*0.01;
+    startY[1]=boardH*boardScale*0.02;
     goalX[1]=boardW*boardScale*0.5;
-    goalY[1]=boardH*boardScale*0.99;
+    goalY[1]=boardH*boardScale*0.98;
     
     //border
     borderPics[0].loadImage("walls1Entrance.png");
@@ -577,11 +577,18 @@ void testApp::drawGame(){
     if(showAllInfo){
 
         //go through the images and draw them all out to the screen
+        
         for (int x=0; x<fieldW; x++){
             for (int y=0; y<fieldH; y++){
                 int pos=y*fieldW+x;
+                ofSetColor(0,100,200);
                 if (wallPixels[pos]==0){
-                    ofSetColor(0,100,200);
+                    ofRect(x*fieldScale, y*fieldScale, fieldScale, fieldScale);
+                }
+                
+                //draw if this is part of the route from the left
+                if (routeFromLeftGrid[x][y].x != -2){
+                    ofSetColor(200,100,0);
                     ofRect(x*fieldScale, y*fieldScale, fieldScale, fieldScale);
                 }
             }
@@ -598,9 +605,10 @@ void testApp::drawGame(){
     
     //show the foes
     for (int i=0; i<foes.size(); i++){
+        foes[i]->draw();
         if (showAllInfo)
             foes[i]->drawDebug();
-        foes[i]->draw();
+        
     }
     
     //draw the bomb animations if there are any
@@ -707,7 +715,7 @@ void testApp::drawPlayerInfo(){
     //draw the wave info boxes
     ofSetRectMode(OF_RECTMODE_CENTER);
     for (int i=0; i<waveInfoBoxes.size(); i++){
-        waveInfoBoxes[i].draw();
+        //waveInfoBoxes[i].draw();
     }
     
     //BANNERS
@@ -862,6 +870,7 @@ void testApp::brushDown(ofTouchEventArgs & touch){
     int brushStrength = 100;    //how much it adds at the center
     
     int maxDist = 15*boardScale;
+    if (curBrushColor == 3) maxDist*=0.5;   //black can be smaller
     if (curBrushColor == 4) maxDist*=2; //eraser gets a bigger brush
     
     //keeping track of how much ink refund (if any) was generated
@@ -1022,26 +1031,13 @@ void testApp::convertDrawingToGame(){
     //thickenWallImage(); //maybe don't need to do this
     setMazeBorders();
     
-    //pathfinding for the foes
-    if (foes.size()>0){
-        for (int i=foes.size()-1; i>=0; i--){
-            //it would be way better to check each foe's current locaiton against the path made by tempFoe, but it just isn't fucking working.
-            foes[i]->findPath();
-            
-            //pause the game if this foe can't reach the end
-            if (!foes[i]->pathFound){
-                noPath=true;
-                SM.playSound("error");  //play the sound
-                cout<<"NO PATH. GET OUT"<<endl;
-                return;
-            }
-            //you could also, create a temp foe at the end, and check to see if it can make it to the start
-            
-        }
+    //do path finding for the foes
+    if (findPathsForFoes()){
+        //if we got this far, there is a path
+        noPath=false;
+    }else{
+        return; //stop checking
     }
-    
-    //if we got this far, there is a path
-    noPath=false;
     
     VF.clear();
     //add some repulsion from each wall
@@ -1207,18 +1203,80 @@ void testApp::convertDrawingToGame(){
 //        if (tooMuchInk)    cout<<"TOO MUCH INK"<<endl;
 //        if (noPath)        cout<<"NO PATH"<<endl;
 //    }
-    cout<<"this many towers: "<<towers.size()<<endl;   
+    //cout<<"this many towers: "<<towers.size()<<endl;   
+}
+
+//--------------------------------------------------------------
+bool testApp::findPathsForFoes(){
+    //routeFromLeft.clear();  //get rid of the old route
+    //create a temp foe to find a path for us
+    NormFoe tempFoe;
+    //give the foe all of the info it needs
+    tempFoe.setup(&VF, startX[0], startY[0], goalX[0], goalY[0], fieldScale, fieldW, fieldH,0);
+    tempFoe.wallPixels=wallPixels;
+    tempFoe.findPath();
+    
+    //if there is no path for this guy, pause the game
+    if (!tempFoe.pathFound){
+        return false;
+    }else{
+        //clear the grid
+        for (int x=0; x<FIELD_W; x++){
+            for (int y=0; y<FIELD_H; y++){
+                routeFromLeftGrid[x][y].set(-2,-2); //-2 means it's not active
+            }
+        }
+        
+        //transfer the info about the path it's using to the tile vector and grid
+        for (int i=0; i<tempFoe.route.size(); i++){
+            tile newTile(tempFoe.route[i]->x,tempFoe.route[i]->y);
+            //routeFromLeft.push_back(newTile);   //saving the tile may not matter
+            //mark it in the grid
+            //each grid location saves the alocation of the parent
+            if (i<tempFoe.route.size()-1)
+                routeFromLeftGrid[newTile.x][newTile.y].set(tempFoe.route[i+1]->x,tempFoe.route[i+1]->y); 
+            //the origin is marked as -1,-1
+            else
+                routeFromLeftGrid[newTile.x][newTile.y].set(-1,1); 
+        }
+        
+    }
+    
+    //pathfinding for the foes
+    if (foes.size()>0){
+        for (int i=foes.size()-1; i>=0; i--){
+            
+            //see if they can hop on the existing route
+            bool standardRouteOK = foes[i]->checkExistingRoute(routeFromLeftGrid);
+            
+            if (!standardRouteOK){
+                //if that doens't work, have the foe find its own path
+                foes[i]->findPath();
+                
+                //pause the game if this foe can't reach the end
+                if (!foes[i]->pathFound){
+                    noPath=true;
+                    SM.playSound("error");  //play the sound
+                    cout<<"NO PATH. GET OUT"<<endl;
+                    return false;
+                }
+            }
+        }
+    }
+    
+    
+    return true;
 }
 
 //--------------------------------------------------------------
 //checks the contour finder for blobs and updates the towers based on them
 void testApp::checkTowers(string type){
-    cout<<"checking "<<type<<endl;
+    //cout<<"checking "<<type<<endl;
     //if there is a blob inside of another blob, then it was not a full circle and should not be considerred
     vector <int> skip;
     float minDist=5;
     
-    cout<<"num blobs: "<<contourFinder.nBlobs<<endl;
+    //cout<<"num blobs: "<<contourFinder.nBlobs<<endl;
     
     //JUST USE the holes boolean in the blob. JESUS
     for (int i = 0; i < contourFinder.nBlobs; i++){

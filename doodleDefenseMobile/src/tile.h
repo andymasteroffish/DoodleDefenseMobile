@@ -22,7 +22,14 @@ public:
     
     tile * parent;  //pointer to the parent tile
     
+    tile(){
+        //nothign needs to be here
+    }
     
+    tile(int _x, int _y){
+        x=_x;
+        y=_y;
+    }
     
     
 };

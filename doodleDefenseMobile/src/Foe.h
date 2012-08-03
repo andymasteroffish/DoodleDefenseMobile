@@ -31,9 +31,12 @@ public:
     void standardFindPath();
     void setNextNode();
     int getDistToGoal(int x, int y);
-    bool checkExistingRoute(vector<tile *> & existing);          //compares a route to see if it can be used
+    //bool checkExistingRoute(vector<tile *> & existing);          //compares a route to see if it can be used
     void clearPathfindingLists();
     void freeze(int time);
+    
+    bool checkExistingRoute(ofPoint (&routeGrid)[80][60]);
+    ofPoint checkProximityToExistingRoute(ofPoint (&routeGrid)[80][60]);
     
     //drawing the field
     float fieldScale;   //how mush the field must be blown up to match the screen

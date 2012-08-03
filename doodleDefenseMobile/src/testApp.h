@@ -64,6 +64,7 @@ class testApp : public ofxiPhoneApp{
     void brushDown(ofTouchEventArgs & touch);
     
     void convertDrawingToGame();    //takes the pixels and reads the game values from them
+    bool findPathsForFoes();
     void setMazeBorders();
     void thickenWallImage();    //KILL THIS
     
@@ -82,6 +83,8 @@ class testApp : public ofxiPhoneApp{
     bool retina;
     
     //size of the openCV image the game data is taken from
+    #define FIELD_W 80
+    #define FIELD_H 60
     int fieldW;
     int fieldH;
     //size of the image show to the player
@@ -252,5 +255,9 @@ class testApp : public ofxiPhoneApp{
     //tetsing
     int lastX;
     int lastY;
+    
+    //tetsing pathfinding
+    //vector<tile> routeFromLeft;
+    ofPoint routeFromLeftGrid[FIELD_W][FIELD_H];
 
 };

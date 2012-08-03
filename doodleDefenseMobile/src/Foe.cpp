@@ -224,7 +224,7 @@ void Foe::drawDebug(){
         
         ofPopMatrix();
         
-        ofSetColor(0);
+        ofSetHexColor(0x52E2F2);
         moveParticle.draw();
     }
 }
@@ -253,11 +253,8 @@ void Foe::setNextNode(){
     int tileY= MIN( fieldH-1, MAX(0, route[nextNode]->y));
     
     //set the particle position
-    //    moveParticle.pos.x=route[nextNode]->x*fieldScale;
-    //    moveParticle.pos.y=route[nextNode]->y*fieldScale;
     moveParticle.pos.x=tileX*fieldScale;
     moveParticle.pos.y=tileY*fieldScale;
-    
     
     moveAtraction=speed;
     
@@ -274,35 +271,78 @@ void Foe::setNextNode(){
 }
 
 //------------------------------------------------------------
-//returns true if the existing path can be used by this foe
-// prevents us from having to do a costly path finding search
-bool Foe::checkExistingRoute(vector<tile *> & existing){
-    //float minDist=30;   //how far a node on the route can be and still be considerred valid
-    
-    if (nextNode<route.size()){
-        for (int i=0; i<existing.size(); i++){
-            if (route[nextNode]->x == existing[i]->x && route[nextNode]->y == existing[i]->y){
-                //we have a match!
-                //clear out route out
-                clearPathfindingLists();
-                //set route to be this one
-                for (int k=0; k<existing.size(); k++){
-                    tile * newNode;
-                    newNode=existing[k];
-                    route.push_back(newNode);
-                }
-                openList=route;
-                //and start next Node where we found this
-                nextNode=i;
-                
-                //return true
-                return true;
-            }
-        }
+//make sure stealth foes don't check this
+bool Foe::checkExistingRoute(ofPoint (&routeGrid)[80][60]){
+    //do some error checking
+    if (routeGrid[goalX][goalY].x == -2 && routeGrid[goalX][goalY].y == -2){
+        cout<<"we got big problems: the foe's goal wasn't on the route map"<<endl;
+        return false;
     }
     
-    return false;
+    //see if the foe is already on the natural path
+    int foeFieldX = route[nextNode]->x;
+    int foeFieldY = route[nextNode]->y;
     
+    ofPoint connectingPos;  //if the foe is on or near the path, this is the point where the path meets the foe
+    
+    if ( routeGrid[foeFieldX][foeFieldY].x != -2 && routeGrid[foeFieldX][foeFieldY].y != -2){
+        cout<<"shit my dad, I'm on the path"<<endl;
+        connectingPos.set(foeFieldX, foeFieldY);
+    }else{
+        cout<<"Oh fuck, I'm not on the path. Try growing out to meet the path "<<endl;
+        connectingPos = checkProximityToExistingRoute(routeGrid);
+        if (connectingPos.x == -1 && connectingPos.y == -1)
+            return false;
+        
+        //if we get here, a viable connecting point was found
+        return false;   //still testing
+    }
+    
+    //the foe's next position is on the path!
+    clearPathfindingLists();    //get rid of the path finding data
+    
+    //add to the positions on the route lists in reverse order, starting at the goal
+    //tile newTile(goalX,goalY);
+    tile * goalTile = new tile(goalX,goalY);
+    //adding to clsoed list first and not route directly, because data in closed list gets deleted, route does not. No memory leaks, please
+    closedList.push_back(goalTile);     
+    
+    //go through adding each tile until we get to the one the foe is on now
+    ofPoint nextPos = routeGrid[goalX][goalY];
+    while (connectingPos!=nextPos){
+        //add this loaction to the list
+        tile * newTile = new tile((int)nextPos.x, (int)nextPos.y);
+        closedList.push_back(newTile);
+        //advance to the next one
+        nextPos= routeGrid[newTile->x][newTile->y];
+    }
+    
+    //now add all of these points to the route vector
+    route.clear();
+    for (int i=0; i<closedList.size(); i++){
+        route.push_back(closedList[i]);
+    }
+    
+    //reset the next node to start from the beginning
+    nextNode=route.size()-1;
+    setNextNode();
+
+    return true;
+}
+
+//THIS WILL NEED A LIST OF POINTS IN BETWEEN THE FOE AND THE CONENCTING POINT TO BE ADDED AT THE END
+ofPoint Foe::checkProximityToExistingRoute(ofPoint (&routeGrid)[80][60]){
+    ofPoint connectingPoint(-1,-1); //assume that no connecting point will be found
+    
+    int distToCheck = 8;    //how far the route can be from the foe and still be found
+    
+    vector<tile *> unexplored;      //all tiles that need to be checked, even once explored will be here
+    vector<tile *> explored;
+    
+    int foeFieldX = route[nextNode]->x;
+    int foeFieldY = route[nextNode]->y;
+    
+    return connectingPoint;
 }
 
 //------------------------------------------------------------
