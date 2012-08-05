@@ -61,7 +61,7 @@ class testApp : public ofxiPhoneApp{
     //game functions
     void reset();
     
-    void brushDown(ofTouchEventArgs & touch);
+    void brushDown(float touchX, float touchY);
     
     void convertDrawingToGame();    //takes the pixels and reads the game values from them
     bool findPathsForFoes();

@@ -225,6 +225,8 @@ void testApp::reset(){
     //clear any ink coming to the player
     inkParticles.clear();
     
+    inkUsed = 0;
+    
     //set all of the pixels to blank
     for (int i=0; i<fieldW*fieldH; i++){
         wallPixels[i]=255;
@@ -796,7 +798,7 @@ void testApp::touchDown(ofTouchEventArgs & touch){
             playerPause = !playerPause;
         }
         
-        brushDown(touch);
+        brushDown(touch.x, touch.y);
         
     }
     
@@ -808,7 +810,22 @@ void testApp::touchDown(ofTouchEventArgs & touch){
 //--------------------------------------------------------------
 void testApp::touchMoved(ofTouchEventArgs & touch){
     if (touch.id == 0){
-        brushDown(touch);
+        
+        //if the finger moved fast, there could be blank space between where the two brush events are called
+        //point spacing shows the aproximate number of pixels that shuld be betweene ach call to brushDown
+        //if the finger further than this distance away from the last recorded position, create points along that line
+        float pointSpacing = 6;
+        
+        float distanceToLastPos = ofDist(touch.x, touch.y, lastX, lastY);
+        int numSpacedPoints = distanceToLastPos/pointSpacing;
+        
+        //get the distance between each individual point as rise and run
+        float rise = (touch.y-lastY)/(numSpacedPoints+1);
+        float run = (touch.x-lastX)/(numSpacedPoints+1);
+        
+        for (int i=0; i<numSpacedPoints+1; i++){
+            brushDown(lastX + i*run, lastY + i*rise);
+        }
     
     }
     
@@ -867,12 +884,12 @@ void testApp::deviceOrientationChanged(int newOrientation){
     
 }
 
-void testApp::brushDown(ofTouchEventArgs & touch){
+void testApp::brushDown(float touchX, float touchY){
     //get out immediatly if the player is dead
     if (health<=0)  return;
     
-    int relativeX = touch.x-boardOffset.x;
-    int relativeY = touch.y-boardOffset.y;
+    int relativeX = touchX-boardOffset.x;
+    int relativeY = touchY-boardOffset.y;
     
     int brushStrength = 100;    //how much it adds at the center
     
