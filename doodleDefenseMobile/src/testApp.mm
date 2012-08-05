@@ -215,7 +215,7 @@ void testApp::reset(){
     totalInk=startInk;
     score=0;
     outOfInkBannerTimer=0;
-    numEntrances=1;
+    numEntrances=2;
     nextEntrance=0;
     
     fastForward = false;
@@ -574,6 +574,7 @@ void testApp::drawGame(){
     }
     
     ofSetRectMode(OF_RECTMODE_CENTER);
+    //DRAW OUT THE DEBUG INFO IF THIS IS TURNED ON
     if(showAllInfo){
 
         //go through the images and draw them all out to the screen
@@ -591,6 +592,12 @@ void testApp::drawGame(){
                     ofSetColor(200,100,0);
                     ofRect(x*fieldScale, y*fieldScale, fieldScale, fieldScale);
                 }
+                //or part of the route form the top
+                if (routeFromTopGrid[x][y].x != -2){
+                    ofSetHexColor(0xed21ef);
+                    ofRect(x*fieldScale, y*fieldScale, fieldScale, fieldScale);
+                }
+                
             }
         }
         
@@ -1208,36 +1215,57 @@ void testApp::convertDrawingToGame(){
 
 //--------------------------------------------------------------
 bool testApp::findPathsForFoes(){
-    //routeFromLeft.clear();  //get rid of the old route
-    //create a temp foe to find a path for us
-    NormFoe tempFoe;
-    //give the foe all of the info it needs
-    tempFoe.setup(&VF, startX[0], startY[0], goalX[0], goalY[0], fieldScale, fieldW, fieldH,0);
-    tempFoe.wallPixels=wallPixels;
-    tempFoe.findPath();
+    //create a pair of temp foes to find paths for us
+    NormFoe tempFoeLeft;
+    NormFoe tempFoeTop;
     
-    //if there is no path for this guy, pause the game
-    if (!tempFoe.pathFound){
+    //give the foes all of the info they need
+    //for left
+    tempFoeLeft.setup(&VF, startX[0], startY[0], goalX[0], goalY[0], fieldScale, fieldW, fieldH,0);
+    tempFoeLeft.wallPixels=wallPixels;
+    tempFoeLeft.findPath();
+    //from top
+    tempFoeTop.setup(&VF, startX[1], startY[1], goalX[1], goalY[1], fieldScale, fieldW, fieldH,0);
+    tempFoeTop.wallPixels=wallPixels;
+    tempFoeTop.findPath();
+    
+    //if there is no path for either foe, pause the game
+    if (!tempFoeLeft.pathFound || !tempFoeTop.pathFound){
         return false;
-    }else{
-        //clear the grid
+    }
+    
+    //otherwise fill up our route grids
+    else{
+        //clear the grids
         for (int x=0; x<FIELD_W; x++){
             for (int y=0; y<FIELD_H; y++){
                 routeFromLeftGrid[x][y].set(-2,-2); //-2 means it's not active
+                routeFromTopGrid[x][y].set(-2,-2); 
             }
         }
         
-        //transfer the info about the path it's using to the tile vector and grid
-        for (int i=0; i<tempFoe.route.size(); i++){
-            tile newTile(tempFoe.route[i]->x,tempFoe.route[i]->y);
-            //routeFromLeft.push_back(newTile);   //saving the tile may not matter
+        //transfer the info about the path the left to right foe is using to the tile vector and grid
+        for (int i=0; i<tempFoeLeft.route.size(); i++){
+            tile newTile(tempFoeLeft.route[i]->x,tempFoeLeft.route[i]->y);
             //mark it in the grid
             //each grid location saves the alocation of the parent
-            if (i<tempFoe.route.size()-1)
-                routeFromLeftGrid[newTile.x][newTile.y].set(tempFoe.route[i+1]->x,tempFoe.route[i+1]->y); 
+            if (i<tempFoeLeft.route.size()-1)
+                routeFromLeftGrid[newTile.x][newTile.y].set(tempFoeLeft.route[i+1]->x,tempFoeLeft.route[i+1]->y); 
             //the origin is marked as -1,-1
             else
                 routeFromLeftGrid[newTile.x][newTile.y].set(-1,1); 
+        }
+        
+        //transfer the info for the top to bottom foe
+        for (int i=0; i<tempFoeTop.route.size(); i++){
+            tile newTile(tempFoeTop.route[i]->x,tempFoeTop.route[i]->y);
+            //mark it in the grid
+            //each grid location saves the alocation of the parent
+            if (i<tempFoeTop.route.size()-1)
+                routeFromTopGrid[newTile.x][newTile.y].set(tempFoeTop.route[i+1]->x,tempFoeTop.route[i+1]->y); 
+            //the origin is marked as -1,-1
+            else
+                routeFromTopGrid[newTile.x][newTile.y].set(-1,1); 
         }
         
     }
@@ -1246,11 +1274,25 @@ bool testApp::findPathsForFoes(){
     if (foes.size()>0){
         for (int i=foes.size()-1; i>=0; i--){
             
-            //see if they can hop on the existing route
-            bool standardRouteOK = foes[i]->checkExistingRoute(routeFromLeftGrid);
+            //first, if nothing was erased, chekc if their current path is still clear
+            bool curPathOK = false;
+            if (curBrushColor != 4){
+                curPathOK = foes[i]->checkRouteForObstruction();
+                if (curPathOK)
+                    cout<<"I was able to use my old route!"<<endl;
+            }
             
-            if (!standardRouteOK){
-                //if that doens't work, have the foe find its own path
+            //if that didn't work, see if they can hop on the existing route
+            bool standardRouteOK = false;
+            if (!curPathOK){
+                if (foes[i]->horizontalGoal)
+                    standardRouteOK = foes[i]->checkExistingRoute(routeFromLeftGrid);
+                else
+                    standardRouteOK = foes[i]->checkExistingRoute(routeFromTopGrid);
+            }
+            
+            //if that doens't work, have the foe find its own path
+            if (!curPathOK && !standardRouteOK){
                 foes[i]->findPath();
                 
                 //pause the game if this foe can't reach the end
@@ -1542,20 +1584,24 @@ void testApp::spawnFoe(string name, int level){
 
 //--------------------------------------------------------------
 void testApp::killFoe(int num){
-    //spawn an explosion
-    Explosion newExplosion;
-    newExplosion.setup(foes[num]->p.pos, &explosionPic);
-    explosions.push_back(newExplosion);
-    
-    //spawn ink particles
-    for (int p=0; p<foes[num]->inkVal;p++){
-        particle newInkParticle;
-        newInkParticle.setInitialCondition(foes[num]->p.pos.x,foes[num]->p.pos.y,ofRandom(-5,5),ofRandom(-5,5));
-        newInkParticle.inkValue = 1;
-        newInkParticle.col.set(0, 0, 0);
-        inkParticles.push_back(newInkParticle);
+    //spawn an explosion and amke ink if it didn't reach the end
+    if (!foes[num]->reachedTheEnd){
+        Explosion newExplosion;
+        newExplosion.setup(foes[num]->p.pos, &explosionPic);
+        explosions.push_back(newExplosion);
+        
+        //spawn ink particles
+        for (int p=0; p<foes[num]->inkVal;p++){
+            particle newInkParticle;
+            newInkParticle.setInitialCondition(foes[num]->p.pos.x,foes[num]->p.pos.y,ofRandom(-5,5),ofRandom(-5,5));
+            newInkParticle.inkValue = 1;
+            newInkParticle.col.set(0, 0, 0);
+            inkParticles.push_back(newInkParticle);
+        }
+
     }
-    
+        
+        
     //go through and find any towers targetting this foe and remove the target
     for (int i=0; i<towers.size(); i++){
         if (towers[i]->target==foes[num]){

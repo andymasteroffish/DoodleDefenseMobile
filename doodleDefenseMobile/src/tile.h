@@ -22,6 +22,8 @@ public:
     
     tile * parent;  //pointer to the parent tile
     
+    int depth;      //how far this tile is from the origin. This is only used when trying to grow out from the foes current posiiton to reach a standard path
+    
     tile(){
         //nothign needs to be here
     }

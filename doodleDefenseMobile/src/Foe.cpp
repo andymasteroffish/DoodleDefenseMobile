@@ -10,7 +10,6 @@
 
 //------------------------------------------------------------
 void Foe::setup(vectorField * _vf, float x, float y, float _goalX, float _goalY, float _fieldScale, int _fieldW, int _fieldH, int level){
-    cout<<endl<<"foe setup start: "<<ofGetElapsedTimef()<<endl;
     VF=_vf;
     p.pos.x=x;
     p.pos.y=y;
@@ -31,6 +30,9 @@ void Foe::setup(vectorField * _vf, float x, float y, float _goalX, float _goalY,
     //set the goal THIS IS IN FIELD UNITS
     goalX=_goalX/fieldScale;
     goalY=_goalY/fieldScale;
+    
+    if (goalX>65)   horizontalGoal = true;
+    else            horizontalGoal = false;
     
     //set it that it has not gone through any tiles yet
     justBacktracked=false;
@@ -212,6 +214,10 @@ void Foe::drawDebug(){
                     for (int i=0; i<route.size()-1; i++)
                         ofLine(route[i]->x, route[i]->y,route[i+1]->x, route[i+1]->y);
                 }
+                //animate a ball moving along the path
+                if (route.size()>0){
+                    ofCircle(route[ofGetFrameNum()%route.size()]->x, route[ofGetFrameNum()%route.size()]->y, 1);
+                }
             }
         }
         else{
@@ -272,7 +278,11 @@ void Foe::setNextNode(){
 
 //------------------------------------------------------------
 //make sure stealth foes don't check this
-bool Foe::checkExistingRoute(ofPoint (&routeGrid)[80][60]){
+bool Foe::checkExistingRoute(ofPoint (&routeGrid)[FIELD_W][FIELD_H]){
+//    //reset the  particle
+    p.vel.set(0,0);
+    p.frc.set(0,0);
+    
     //do some error checking
     if (routeGrid[goalX][goalY].x == -2 && routeGrid[goalX][goalY].y == -2){
         cout<<"we got big problems: the foe's goal wasn't on the route map"<<endl;
@@ -284,18 +294,25 @@ bool Foe::checkExistingRoute(ofPoint (&routeGrid)[80][60]){
     int foeFieldY = route[nextNode]->y;
     
     ofPoint connectingPos;  //if the foe is on or near the path, this is the point where the path meets the foe
+    vector<tile *> pathToRoute; //YOU NEED TO DELETE EVERYTHING IN HERE WHEN IT'S DONE
     
     if ( routeGrid[foeFieldX][foeFieldY].x != -2 && routeGrid[foeFieldX][foeFieldY].y != -2){
         cout<<"shit my dad, I'm on the path"<<endl;
         connectingPos.set(foeFieldX, foeFieldY);
+        //path to Route will be empty because the foe is already on the route
     }else{
         cout<<"Oh fuck, I'm not on the path. Try growing out to meet the path "<<endl;
-        connectingPos = checkProximityToExistingRoute(routeGrid);
-        if (connectingPos.x == -1 && connectingPos.y == -1)
+        pathToRoute = checkProximityToExistingRoute(routeGrid);
+        if (pathToRoute.size()==0){
+            cout<<"couldn't grow out"<<endl;
             return false;
+        }
+        cout<<"Shit yes  could grow out. path size: "<<pathToRoute.size()<<endl;
         
         //if we get here, a viable connecting point was found
-        return false;   //still testing
+        connectingPos.set( pathToRoute[0]->x, pathToRoute[0]->y);
+        
+        //return false;
     }
     
     //the foe's next position is on the path!
@@ -323,26 +340,157 @@ bool Foe::checkExistingRoute(ofPoint (&routeGrid)[80][60]){
         route.push_back(closedList[i]);
     }
     
+    //if there was an aditional path to get to the route, add those now too (in reverse order)
+//    for (int i=pathToRoute.size()-1; i>=0; i--){
+//        route.push_back(pathToRoute[i]);
+//        cout<<"I added a b-boy to the path"<<endl;
+//    }
+    for (int i=0; i<pathToRoute.size(); i++){
+        route.push_back(pathToRoute[i]);
+        cout<<"I added a b-boy to the path"<<endl;
+    }
+    
     //reset the next node to start from the beginning
-    nextNode=route.size()-1;
+    nextNode=route.size();
     setNextNode();
 
     return true;
 }
 
 //THIS WILL NEED A LIST OF POINTS IN BETWEEN THE FOE AND THE CONENCTING POINT TO BE ADDED AT THE END
-ofPoint Foe::checkProximityToExistingRoute(ofPoint (&routeGrid)[80][60]){
+vector<tile *> Foe::checkProximityToExistingRoute(ofPoint (&routeGrid)[FIELD_W][FIELD_H]){
     ofPoint connectingPoint(-1,-1); //assume that no connecting point will be found
     
     int distToCheck = 8;    //how far the route can be from the foe and still be found
     
-    vector<tile *> unexplored;      //all tiles that need to be checked, even once explored will be here
+    vector<tile *> unexplored;     
     vector<tile *> explored;
     
+    //get the starting point
     int foeFieldX = route[nextNode]->x;
     int foeFieldY = route[nextNode]->y;
     
-    return connectingPoint;
+    //add that point to the unexplored list
+    tile * startTile = new tile(foeFieldX, foeFieldY);  //this tile ahs no parent
+    startTile->depth = 0;
+    unexplored.push_back(startTile);
+    
+    bool pathFoundToRoute = false;
+    //keep searching until we run out of tiles or find a path
+    while (!pathFoundToRoute && unexplored.size()>0) {
+        
+        tile * current=unexplored[0];
+        //move this pointer to the explroed list now
+        explored.push_back(current);
+        unexplored.erase(unexplored.begin());
+        
+        //if this tile is on the route, we're done
+        if (routeGrid[current->x][current->y].x != -2 && routeGrid[current->x][current->y].y != -2){
+            cout<<"found it!"<<endl;
+            pathFoundToRoute = true;
+        }
+        
+        //if this is tile is as far as we're willing to search, don't explore further from here
+        bool tooFar = false;
+        if (current->depth>= distToCheck){
+            tooFar = true;
+        }
+        
+        //if not, keep expanding the search
+        if (!pathFoundToRoute && !tooFar){
+            //check the 8 tiles around this one
+            for (int x=-1; x<=1; x++){
+                for (int y=-1; y<=1; y++){
+                    int xPos=current->x+x;
+                    int yPos=current->y+y;
+                    //make sure this tile is not the current one or off the grid
+                    if (xPos>=0 && xPos<fieldW && yPos>=0 && yPos<fieldH && (x!=0 || y!=0) ){
+                        int pixelPos=yPos*fieldW+xPos;   
+                        //check if the tile is impassible
+                        if (wallPixels[pixelPos]==255){     //255 is a clear tile that can be moved through
+                            //don't add any tile that is adjacent to a wall
+                            //this is to help keep the path a little less hugging one wall
+                            bool nextToWall=false;
+                            for (int x2=-1; x2<=1; x2++){
+                                for (int y2=-1; y2<=1; y2++){
+                                    int pixelPos2=(yPos+y2)*fieldW+(xPos+x2);
+                                    if (wallPixels[pixelPos2]==0)
+                                        nextToWall=true;
+                                }
+                            }
+                            
+                            if (!nextToWall){
+                                //check that the tile is not already in the explroed or unexplroed lists
+                                bool inList=false;  //assume it isn't
+                                for (int i=0; i<unexplored.size(); i++){
+                                    if (unexplored[i]->x==xPos && unexplored[i]->y==yPos)
+                                        inList=true;
+                                }
+                                for (int i=0; i<explored.size(); i++){
+                                    if (explored[i]->x==xPos && explored[i]->y==yPos)
+                                        inList=true;
+                                }
+                                
+                                //if it isn't in any one of those lists, make a tile for it and add it to unexplroed
+                                if (!inList){
+                                    tile * newTile = new tile(xPos,yPos);
+                                    newTile->parent = current;
+                                    newTile->depth = current->depth+1;
+                                    unexplored.push_back(newTile);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+        }
+    }
+    
+    //if a path was found, add those points so the foe can reach the standard route
+    //this will start on the last thing added to the explored vector
+    //tile * path = explored[explored.size()-1];
+    vector<tile *> pathToRoute;
+    
+    if (pathFoundToRoute){
+        pathToRoute.push_back( explored[explored.size()-1] );   //add the connecting pos
+        while (pathToRoute[pathToRoute.size()-1]->x != foeFieldX && pathToRoute[pathToRoute.size()-1]->y != foeFieldY){
+            cout<<"adding parent of"<<pathToRoute[pathToRoute.size()-1]->x<<","<<pathToRoute[pathToRoute.size()-1]->y<<endl;
+            pathToRoute.push_back( pathToRoute[pathToRoute.size()-1]->parent );
+            
+        }
+        
+        //set the connecting point to be useful
+        connectingPoint.set(pathToRoute[0]->x, pathToRoute[0]->y);
+        cout<<"connecting point: "<<connectingPoint.x<<","<<connectingPoint.y<<endl;
+    }
+    
+    //clear the vectors
+    while (unexplored.size()){
+        delete unexplored[0];
+        unexplored.erase(unexplored.begin());
+    }
+    
+    int killNum = 0;
+    while (explored.size() > pathToRoute.size()){
+        //make sure we don't delet part of the path to the standard route
+        bool partOfPath = false;
+        for (int i=0; i<pathToRoute.size(); i++){
+            if (explored[killNum] == pathToRoute[i]){
+                cout<<"don't kill me; I'm on the path"<<endl;
+                partOfPath = true;
+                killNum++;
+            }
+        }
+        
+        if (!partOfPath){
+            delete explored[killNum];
+            explored.erase(explored.begin()+killNum);
+        }
+    }
+
+    
+    return pathToRoute;
 }
 
 //------------------------------------------------------------
@@ -511,8 +659,40 @@ void Foe::standardFindPath(){
         standardFindPath(); //try again recursievly
     }
     
-    cout<<"time to find path: "<<ofGetElapsedTimef()-startTime<<endl;
-    cout<<"time when path was found: "<<ofGetElapsedTimef()<<endl;
+    //cout<<"time to find path: "<<ofGetElapsedTimef()-startTime<<endl;
+    //cout<<"time when path was found: "<<ofGetElapsedTimef()<<endl;
+}
+
+//--------------------------------------------------------------
+//goes thorugh the route the foe has now and returns true if none of the tiles on the route are obstructed or next to an obstructions
+bool Foe::checkRouteForObstruction(){
+    
+    //error checking 
+    if (nextNode>route.size()){
+        cout<<"We got problems: nextNode was larger than route.size()"<<endl;
+        return false;
+    }
+    
+    for (int i=0; i<nextNode; i++){
+        int pixelPos=route[i]->y*fieldW+route[i]->x; 
+        
+        //check if the tile is impassible
+        if (wallPixels[pixelPos]==255){
+            //return false if this tile is clear, but an adjacent one isn't
+            for (int x2=-1; x2<=1; x2++){
+                for (int y2=-1; y2<=1; y2++){
+                    int pixelPos2=(route[i]->y+y2)*fieldW+(route[i]->x+x2);
+                    if (wallPixels[pixelPos2]==0)
+                        return false;   //this tile is impassible because there is a tile next to it that is a wall
+                }
+            }
+        }else{
+            return false;   //this tile itself has become impassible
+        }
+    }
+    
+    
+    return true;
 }
 
 //--------------------------------------------------------------

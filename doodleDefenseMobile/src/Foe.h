@@ -35,8 +35,11 @@ public:
     void clearPathfindingLists();
     void freeze(int time);
     
-    bool checkExistingRoute(ofPoint (&routeGrid)[80][60]);
-    ofPoint checkProximityToExistingRoute(ofPoint (&routeGrid)[80][60]);
+    #define FIELD_W 80
+    #define FIELD_H 60
+    bool checkExistingRoute(ofPoint (&routeGrid)[FIELD_W][FIELD_H]);
+    vector<tile *> checkProximityToExistingRoute(ofPoint (&routeGrid)[FIELD_W][FIELD_H]);
+    bool checkRouteForObstruction();
     
     //drawing the field
     float fieldScale;   //how mush the field must be blown up to match the screen
@@ -64,6 +67,7 @@ public:
     bool pathFound;
     //where the foe is trying to get to in field units
     int goalX, goalY;
+    bool horizontalGoal;    //true if this foe is tyring to go from left to right
     //measuring distance for pathfinding
     int horzDist;
     int diagDist;
@@ -97,10 +101,7 @@ public:
     float nextFrameTime;
     float displayAngle;
     float turnSpeed;    //percentage to zeno toward the current angle
-    
-    //testing
-    //bool firstUpdate;
-    //bool firstDraw;
+
 };
 
 

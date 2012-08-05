@@ -191,6 +191,10 @@ class testApp : public ofxiPhoneApp{
     ofImage stealthFoePic[2][NUM_FOE_FRAMES]; 
     ofImage immuneRedFoePic[2][NUM_FOE_FRAMES]; 
     
+    //optimizing pathfinding by finding the best route from the start to the exit and seeing which foes can hop on board
+    ofPoint routeFromLeftGrid[FIELD_W][FIELD_H];
+    ofPoint routeFromTopGrid[FIELD_W][FIELD_H];
+    
     //explosions and poofs from hitting foes
     ofImage explosionPic;
     vector <Explosion> explosions;
@@ -255,9 +259,5 @@ class testApp : public ofxiPhoneApp{
     //tetsing
     int lastX;
     int lastY;
-    
-    //tetsing pathfinding
-    //vector<tile> routeFromLeft;
-    ofPoint routeFromLeftGrid[FIELD_W][FIELD_H];
 
 };
