@@ -1304,7 +1304,7 @@ bool testApp::findPathsForFoes(){
     if (foes.size()>0){
         for (int i=foes.size()-1; i>=0; i--){
             
-            //first, if nothing was erased, chekc if their current path is still clear
+            //first, if nothing was erased, check if their current path is still clear
             bool curPathOK = false;
             if (curBrushColor != 4){
                 curPathOK = foes[i]->checkRouteForObstruction();

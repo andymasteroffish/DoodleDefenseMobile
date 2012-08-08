@@ -280,6 +280,10 @@ void Foe::setNextNode(){
 //------------------------------------------------------------
 //make sure stealth foes don't check this
 bool Foe::checkExistingRoute(ofPoint (&routeGrid)[FIELD_W][FIELD_H]){
+    //the stealth foe should not worry about this
+    if (type=="stealth")
+        return false;
+    
     //reset the  particle
     p.vel.set(0,0);
     p.frc.set(0,0);
@@ -649,18 +653,19 @@ void Foe::standardFindPath(){
     }
     
     //If it looks like the foe was inked over trying to move along path
-    int minListSize=3;  //how small the closed list must be to move along the path
-    if (!pathFound && closedList.size()<minListSize && nextNode>2){
-        cout<<"I WAS BLOCKED"<<endl;
-        setNextNode();  //go to the next node
-        p.pos=moveParticle.pos; //move the foe there
-        
-        //keep the foe in the maze in case garbage values are returned
-        p.pos.x=CLAMP(p.pos.x,11*fieldScale,155*fieldScale);
-        p.pos.y=CLAMP(p.pos.y,11*fieldScale,115*fieldScale);
-        
-        standardFindPath(); //try again recursievly
-    }
+    //THIS JUST FUCKS EVERYTHING UP
+//    int minListSize=3;  //how small the closed list must be to move along the path
+//    if (!pathFound && closedList.size()<minListSize && nextNode>2){
+//        cout<<"I WAS BLOCKED"<<endl;
+//        setNextNode();  //go to the next node
+//        p.pos=moveParticle.pos; //move the foe there
+//        
+//        //keep the foe in the maze in case garbage values are returned
+//        p.pos.x=CLAMP(p.pos.x,11*fieldScale,155*fieldScale);
+//        p.pos.y=CLAMP(p.pos.y,11*fieldScale,115*fieldScale);
+//        
+//        standardFindPath(); //try again recursievly
+//    }
     
     //cout<<"time to find path: "<<ofGetElapsedTimef()-startTime<<endl;
     //cout<<"time when path was found: "<<ofGetElapsedTimef()<<endl;
@@ -669,6 +674,10 @@ void Foe::standardFindPath(){
 //--------------------------------------------------------------
 //goes thorugh the route the foe has now and returns true if none of the tiles on the route are obstructed or next to an obstructions
 bool Foe::checkRouteForObstruction(){
+    
+    //stealth foes can ignore this
+    if (type=="stealth")
+        return true;
     
     //error checking 
     if (nextNode>route.size()){
