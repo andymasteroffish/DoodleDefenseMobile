@@ -255,6 +255,14 @@ void testApp::reset(){
     blackImg.setFromPixels(blackPixels, boardW, boardH);
     wallDispTex.loadData(wallDispPixels, boardW, boardH, GL_LUMINANCE_ALPHA);
     
+    //clear the route grids
+    for (int x=0; x<FIELD_W; x++){
+        for (int y=0; y<FIELD_H; y++){
+            routeFromLeftGrid[x][y].set(-2,-2); //-2 means it's not active
+            routeFromTopGrid[x][y].set(-2,-2); 
+        }
+    }
+    
     playerPause = false;
     noPath=false;
     
@@ -1060,6 +1068,8 @@ void testApp::convertDrawingToGame(){
         //if we got this far, there is a path
         noPath=false;
     }else{
+        noPath=true;
+        SM.playSound("error");  //play the sound
         return; //stop checking
     }
     
@@ -1232,6 +1242,7 @@ void testApp::convertDrawingToGame(){
 
 //--------------------------------------------------------------
 bool testApp::findPathsForFoes(){
+    cout<<"path finding that ish"<<endl;
     //create a pair of temp foes to find paths for us
     NormFoe tempFoeLeft;
     NormFoe tempFoeTop;
@@ -1253,7 +1264,7 @@ bool testApp::findPathsForFoes(){
     
     //otherwise fill up our route grids
     else{
-        //clear the grids
+        //clear the route grids
         for (int x=0; x<FIELD_W; x++){
             for (int y=0; y<FIELD_H; y++){
                 routeFromLeftGrid[x][y].set(-2,-2); //-2 means it's not active
@@ -1285,6 +1296,8 @@ bool testApp::findPathsForFoes(){
                 routeFromTopGrid[newTile.x][newTile.y].set(-1,1); 
         }
         
+        cout<<"filled those dirty grids"<<endl;
+        
     }
     
     //pathfinding for the foes
@@ -1314,8 +1327,6 @@ bool testApp::findPathsForFoes(){
                 
                 //pause the game if this foe can't reach the end
                 if (!foes[i]->pathFound){
-                    noPath=true;
-                    SM.playSound("error");  //play the sound
                     cout<<"NO PATH. GET OUT"<<endl;
                     return false;
                 }
@@ -1557,32 +1568,32 @@ void testApp::endWave(){
 
 //--------------------------------------------------------------
 void testApp::spawnFoe(string name, int level){ 
-    //    if (name=="fast"){
-    //        FastFoe * newFoe=new FastFoe;
-    //        newFoe->setPics(fastFoePic[0], fastFoePic[1]);
-    //        foes.push_back(newFoe);
-    //    }
-    //    else if (name=="stealth"){
-    //        StealthFoe * newFoe=new StealthFoe;
-    //        newFoe->setPics(stealthFoePic[0], stealthFoePic[1]);
-    //        foes.push_back(newFoe);
-    //    }
-    //    else if (name=="immune_red"){
-    //        ImmuneRedFoe * newFoe=new ImmuneRedFoe;
-    //        newFoe->setPics(immuneRedFoePic[0], immuneRedFoePic[1]);
-    //        foes.push_back(newFoe);
-    //    }
-    //    else if (name=="heavy"){
-    //        HeavyFoe * newFoe=new HeavyFoe;
-    //        newFoe->setPics(heavyFoePic[0], heavyFoePic[1]);
-    //        foes.push_back(newFoe);
-    //    }
-    //    else {  //assume anything that didn't ahve one of the above names is a normal foe
-    NormFoe * newFoe=new NormFoe;
-    newFoe->setPics(normFoePic[0], normFoePic[1]);
-    //add it to the vector
-    foes.push_back(newFoe);
-    //    }
+    if (name=="fast"){
+        FastFoe * newFoe=new FastFoe;
+        newFoe->setPics(fastFoePic[0], fastFoePic[1]);
+        foes.push_back(newFoe);
+    }
+    else if (name=="stealth"){
+        StealthFoe * newFoe=new StealthFoe;
+        newFoe->setPics(stealthFoePic[0], stealthFoePic[1]);
+        foes.push_back(newFoe);
+    }
+    else if (name=="immune_red"){
+        ImmuneRedFoe * newFoe=new ImmuneRedFoe;
+        newFoe->setPics(immuneRedFoePic[0], immuneRedFoePic[1]);
+        foes.push_back(newFoe);
+    }
+    else if (name=="heavy"){
+        HeavyFoe * newFoe=new HeavyFoe;
+        newFoe->setPics(heavyFoePic[0], heavyFoePic[1]);
+        foes.push_back(newFoe);
+    }
+    else {  //assume anything that didn't ahve one of the above names is a normal foe
+        NormFoe * newFoe=new NormFoe;
+        newFoe->setPics(normFoePic[0], normFoePic[1]);
+        //add it to the vector
+        foes.push_back(newFoe);
+    }
     
     //give the foe all of the info it needs
     int entrance=nextEntrance;
@@ -1591,12 +1602,30 @@ void testApp::spawnFoe(string name, int level){
     foes[foes.size()-1]->wallPixels=wallPixels;
     foes[foes.size()-1]->showAllInfo=&showAllInfo;
     foes[foes.size()-1]->paused=&paused;
-    foes[foes.size()-1]->findPath();
+    //foes[foes.size()-1]->findPath();
     
-    //if there is no path for this guy, pause the game
-    if (!foes[foes.size()-1]->pathFound){
-        noPath=true;
+    //see if they can hop on the existing route
+    bool standardRouteOK = false;
+    if (!noPath){
+        if (foes[foes.size()-1]->horizontalGoal){
+            cout<<"horz search"<<endl;
+            standardRouteOK = foes[foes.size()-1]->checkExistingRoute(routeFromLeftGrid);
+        }else
+            standardRouteOK = foes[foes.size()-1]->checkExistingRoute(routeFromTopGrid);
     }
+    
+    //if that doens't work, have the foe find its own path
+    if (!standardRouteOK){
+        foes[foes.size()-1]->findPath();
+        
+        //pause the game if this foe can't reach the end
+        if (!foes[foes.size()-1]->pathFound){
+            noPath=true;
+            SM.playSound("error");  //play the sound
+            cout<<"NO PATH. GET OUT"<<endl;
+        }
+    }
+    
 }
 
 //--------------------------------------------------------------

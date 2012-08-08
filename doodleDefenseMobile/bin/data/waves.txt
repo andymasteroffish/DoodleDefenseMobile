@@ -1,6 +1,6 @@
 new 1
 dur 5000
-add norm 10
+add fast 10
 col norm
 mes TESTING
 

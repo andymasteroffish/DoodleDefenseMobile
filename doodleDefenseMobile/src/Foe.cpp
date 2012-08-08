@@ -47,6 +47,7 @@ void Foe::setup(vectorField * _vf, float x, float y, float _goalX, float _goalY,
     dead=false;
     reachedTheEnd=false;
     endBolt=false;
+    pathFound = true;
     freezeTimer=0;
     
     //default game vals
@@ -279,7 +280,7 @@ void Foe::setNextNode(){
 //------------------------------------------------------------
 //make sure stealth foes don't check this
 bool Foe::checkExistingRoute(ofPoint (&routeGrid)[FIELD_W][FIELD_H]){
-//    //reset the  particle
+    //reset the  particle
     p.vel.set(0,0);
     p.frc.set(0,0);
     
@@ -289,9 +290,17 @@ bool Foe::checkExistingRoute(ofPoint (&routeGrid)[FIELD_W][FIELD_H]){
         return false;
     }
     
+    
     //see if the foe is already on the natural path
-    int foeFieldX = route[nextNode]->x;
-    int foeFieldY = route[nextNode]->y;
+    int foeFieldX;
+    int foeFieldY;
+    if (nextNode>=0 && nextNode<route.size()){
+        foeFieldX = route[nextNode]->x;
+        foeFieldY = route[nextNode]->y;
+    }else{
+        foeFieldX = p.pos.x/fieldScale;
+        foeFieldY = p.pos.y/fieldScale;
+    }
     
     ofPoint connectingPos;  //if the foe is on or near the path, this is the point where the path meets the foe
     vector<tile *> pathToRoute; //YOU NEED TO DELETE EVERYTHING IN HERE WHEN IT'S DONE
@@ -311,8 +320,6 @@ bool Foe::checkExistingRoute(ofPoint (&routeGrid)[FIELD_W][FIELD_H]){
         
         //if we get here, a viable connecting point was found
         connectingPos.set( pathToRoute[0]->x, pathToRoute[0]->y);
-        
-        //return false;
     }
     
     //the foe's next position is on the path!
@@ -340,11 +347,7 @@ bool Foe::checkExistingRoute(ofPoint (&routeGrid)[FIELD_W][FIELD_H]){
         route.push_back(closedList[i]);
     }
     
-    //if there was an aditional path to get to the route, add those now too (in reverse order)
-//    for (int i=pathToRoute.size()-1; i>=0; i--){
-//        route.push_back(pathToRoute[i]);
-//        cout<<"I added a b-boy to the path"<<endl;
-//    }
+    //if there was an aditional path to get to the route, add those now too
     for (int i=0; i<pathToRoute.size(); i++){
         route.push_back(pathToRoute[i]);
         cout<<"I added a b-boy to the path"<<endl;
@@ -497,7 +500,7 @@ vector<tile *> Foe::checkProximityToExistingRoute(ofPoint (&routeGrid)[FIELD_W][
 //attempt to find a path
 void Foe::standardFindPath(){
     //testing how long it takes
-    float startTime = ofGetElapsedTimef();
+    //float startTime = ofGetElapsedTimef();
     
     int startX=p.pos.x/fieldScale;
     int startY=p.pos.y/fieldScale;
