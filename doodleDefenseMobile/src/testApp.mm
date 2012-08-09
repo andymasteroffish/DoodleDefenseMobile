@@ -402,11 +402,13 @@ void testApp::update(){
             //if this is a bomb tower, check if it just hit
             if(towers[i]->bombHit){
                 towers[i]->bombHit=false;
+                cout<<endl;
                 
                 //find all of the foes in range of the bullet and damage them
                 for (int k=0; k<foes.size(); k++){
                     if (towers[i]->bullet.pos.distance(foes[k]->p.pos)<towers[i]->blastRadius){
                         foes[k]->hp-=towers[i]->bulletDamage;
+                        cout<<"I got hit dang"<<endl;
                     }
                 }
                 
@@ -629,9 +631,9 @@ void testApp::drawGame(){
     }
     
     //draw the bomb animations if there are any
-    //    ofFill();
-    //    for (int i=0; i<bombAnimations.size(); i++)
-    //        bombAnimations[i].draw();
+    ofFill();
+    for (int i=0; i<bombAnimations.size(); i++)
+        bombAnimations[i].draw();
     
     //draw explosions and puffs
     for (int i=0; i<explosions.size(); i++)
@@ -1080,7 +1082,7 @@ void testApp::convertDrawingToGame(){
             int wallX=i%fieldW;
             int wallY=floor(i/fieldW);
             
-            VF.addOutwardCircle(wallX*fieldScale, wallY*fieldScale, 20, 0.3);
+            VF.addOutwardCircle(wallX*fieldScale, wallY*fieldScale, 25, 0.6);
         }
     }
     

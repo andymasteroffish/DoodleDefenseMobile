@@ -1,6 +1,6 @@
 new 1
 dur 20
-add stealth 10
+add north 10
 col norm
 mes TESTING
 

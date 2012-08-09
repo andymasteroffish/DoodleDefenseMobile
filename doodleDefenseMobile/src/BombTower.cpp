@@ -17,7 +17,7 @@ void BombTower::typeSetup(){
     
     type="green";
     
-    blastRadius=size*4;
+    blastRadius=size*7 *mobileRangeIncrease;
 }
 
 void BombTower::draw(){
