@@ -9,17 +9,22 @@
 #ifndef ofxKinectExample_SoundManager_h
 #define ofxKinectExample_SoundManager_h
 
+#import <AVFoundation/AVFoundation.h>
 #include "ofMain.h"
+#include "ofxiPhone.h"
+#include "ofxiPhoneExtras.h"
 
 class SoundManager{
 public:
 
     void setup();
-    void loadSound(string fileName, string refrenceName, float volume);
+    void loadSound(string fileName, string fileType, string refrenceName, float volume);
     bool playSound(string refrenceName);
     
     vector<string>        soundNames;
-    vector<ofSoundPlayer> sounds;
+    vector<AVAudioPlayer*> sounds;
+    
+    bool muteSoundEffects;
     
 };
 

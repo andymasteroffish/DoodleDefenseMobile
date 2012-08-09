@@ -11,20 +11,20 @@
 		0A8B006115AFA1FA00561FF7 /* spring.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0A8B005C15AFA1FA00561FF7 /* spring.cpp */; };
 		0A8B006215AFA1FA00561FF7 /* vectorField.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0A8B005E15AFA1FA00561FF7 /* vectorField.cpp */; };
 		0A8B006815AFA30300561FF7 /* Foe.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0A8B006515AFA30300561FF7 /* Foe.cpp */; };
-		0A8B006915AFA30300561FF7 /* NormFoe.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0A8B006715AFA30300561FF7 /* NormFoe.cpp */; };
+		0A8B006915AFA30300561FF7 /* NormFoe.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0A8B006715AFA30300561FF7 /* NormFoe.mm */; };
 		0A8B006C15AFB3E000561FF7 /* Explosion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0A8B006B15AFB3E000561FF7 /* Explosion.cpp */; };
-		0A8B006F15AFB43100561FF7 /* SoundManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0A8B006E15AFB43100561FF7 /* SoundManager.cpp */; };
+		0A8B006F15AFB43100561FF7 /* SoundManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0A8B006E15AFB43100561FF7 /* SoundManager.mm */; };
 		0AA305A615AF9A880043A0B8 /* Wave.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA305A415AF9A880043A0B8 /* Wave.cpp */; };
 		0AA305A915AF9B070043A0B8 /* WaveInfoBox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA305A715AF9B070043A0B8 /* WaveInfoBox.cpp */; };
-		0AECA85215B4F9DD00123F00 /* FastFoe.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AECA84B15B4F9DD00123F00 /* FastFoe.cpp */; };
-		0AECA85315B4F9DD00123F00 /* StealthFoe.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AECA84D15B4F9DD00123F00 /* StealthFoe.cpp */; };
-		0AECA85415B4F9DD00123F00 /* ImmuneRedFoe.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AECA84F15B4F9DD00123F00 /* ImmuneRedFoe.cpp */; };
-		0AECA85515B4F9DD00123F00 /* HeavyFoe.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AECA85115B4F9DD00123F00 /* HeavyFoe.cpp */; };
-		0AECA86115B4F9FA00123F00 /* Tower.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AECA85815B4F9FA00123F00 /* Tower.cpp */; };
-		0AECA86215B4F9FA00123F00 /* BombTower.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AECA85A15B4F9FA00123F00 /* BombTower.cpp */; };
-		0AECA86315B4F9FA00123F00 /* BombAnimation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AECA85C15B4F9FA00123F00 /* BombAnimation.cpp */; };
-		0AECA86415B4F9FA00123F00 /* FreezeTower.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AECA85E15B4F9FA00123F00 /* FreezeTower.cpp */; };
-		0AECA86515B4F9FA00123F00 /* HitTower.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AECA86015B4F9FA00123F00 /* HitTower.cpp */; };
+		0AECA85215B4F9DD00123F00 /* FastFoe.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0AECA84B15B4F9DD00123F00 /* FastFoe.mm */; };
+		0AECA85315B4F9DD00123F00 /* StealthFoe.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0AECA84D15B4F9DD00123F00 /* StealthFoe.mm */; };
+		0AECA85415B4F9DD00123F00 /* ImmuneRedFoe.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0AECA84F15B4F9DD00123F00 /* ImmuneRedFoe.mm */; };
+		0AECA85515B4F9DD00123F00 /* HeavyFoe.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0AECA85115B4F9DD00123F00 /* HeavyFoe.mm */; };
+		0AECA86115B4F9FA00123F00 /* Tower.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0AECA85815B4F9FA00123F00 /* Tower.mm */; };
+		0AECA86215B4F9FA00123F00 /* BombTower.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0AECA85A15B4F9FA00123F00 /* BombTower.mm */; };
+		0AECA86315B4F9FA00123F00 /* BombAnimation.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0AECA85C15B4F9FA00123F00 /* BombAnimation.mm */; };
+		0AECA86415B4F9FA00123F00 /* FreezeTower.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0AECA85E15B4F9FA00123F00 /* FreezeTower.mm */; };
+		0AECA86515B4F9FA00123F00 /* HitTower.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0AECA86015B4F9FA00123F00 /* HitTower.mm */; };
 		169d3c72fde6c5590a1616f500a456b4 /* ofxCvFloatImage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7b6a03390302d5a2c9f0e4ab630ae8d6 /* ofxCvFloatImage.cpp */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
@@ -88,34 +88,34 @@
 		0A8B006415AFA30300561FF7 /* Foe.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Foe.h; sourceTree = "<group>"; };
 		0A8B006515AFA30300561FF7 /* Foe.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Foe.cpp; sourceTree = "<group>"; };
 		0A8B006615AFA30300561FF7 /* NormFoe.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NormFoe.h; sourceTree = "<group>"; };
-		0A8B006715AFA30300561FF7 /* NormFoe.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NormFoe.cpp; sourceTree = "<group>"; };
+		0A8B006715AFA30300561FF7 /* NormFoe.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NormFoe.mm; sourceTree = "<group>"; };
 		0A8B006A15AFB3E000561FF7 /* Explosion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Explosion.h; sourceTree = "<group>"; };
 		0A8B006B15AFB3E000561FF7 /* Explosion.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Explosion.cpp; sourceTree = "<group>"; };
 		0A8B006D15AFB43100561FF7 /* SoundManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundManager.h; sourceTree = "<group>"; };
-		0A8B006E15AFB43100561FF7 /* SoundManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SoundManager.cpp; sourceTree = "<group>"; };
+		0A8B006E15AFB43100561FF7 /* SoundManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = SoundManager.mm; sourceTree = "<group>"; };
 		0AA305A415AF9A880043A0B8 /* Wave.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Wave.cpp; sourceTree = "<group>"; };
 		0AA305A515AF9A880043A0B8 /* Wave.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Wave.h; sourceTree = "<group>"; };
 		0AA305A715AF9B070043A0B8 /* WaveInfoBox.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WaveInfoBox.cpp; sourceTree = "<group>"; };
 		0AA305A815AF9B070043A0B8 /* WaveInfoBox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WaveInfoBox.h; sourceTree = "<group>"; };
 		0AA305AA15AF9CB20043A0B8 /* tile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tile.h; sourceTree = "<group>"; };
 		0AECA84A15B4F9DD00123F00 /* FastFoe.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FastFoe.h; sourceTree = "<group>"; };
-		0AECA84B15B4F9DD00123F00 /* FastFoe.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FastFoe.cpp; sourceTree = "<group>"; };
+		0AECA84B15B4F9DD00123F00 /* FastFoe.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = FastFoe.mm; sourceTree = "<group>"; };
 		0AECA84C15B4F9DD00123F00 /* StealthFoe.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StealthFoe.h; sourceTree = "<group>"; };
-		0AECA84D15B4F9DD00123F00 /* StealthFoe.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StealthFoe.cpp; sourceTree = "<group>"; };
+		0AECA84D15B4F9DD00123F00 /* StealthFoe.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = StealthFoe.mm; sourceTree = "<group>"; };
 		0AECA84E15B4F9DD00123F00 /* ImmuneRedFoe.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImmuneRedFoe.h; sourceTree = "<group>"; };
-		0AECA84F15B4F9DD00123F00 /* ImmuneRedFoe.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImmuneRedFoe.cpp; sourceTree = "<group>"; };
+		0AECA84F15B4F9DD00123F00 /* ImmuneRedFoe.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ImmuneRedFoe.mm; sourceTree = "<group>"; };
 		0AECA85015B4F9DD00123F00 /* HeavyFoe.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HeavyFoe.h; sourceTree = "<group>"; };
-		0AECA85115B4F9DD00123F00 /* HeavyFoe.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HeavyFoe.cpp; sourceTree = "<group>"; };
+		0AECA85115B4F9DD00123F00 /* HeavyFoe.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = HeavyFoe.mm; sourceTree = "<group>"; };
 		0AECA85715B4F9FA00123F00 /* Tower.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Tower.h; sourceTree = "<group>"; };
-		0AECA85815B4F9FA00123F00 /* Tower.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Tower.cpp; sourceTree = "<group>"; };
+		0AECA85815B4F9FA00123F00 /* Tower.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Tower.mm; sourceTree = "<group>"; };
 		0AECA85915B4F9FA00123F00 /* BombTower.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BombTower.h; sourceTree = "<group>"; };
-		0AECA85A15B4F9FA00123F00 /* BombTower.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BombTower.cpp; sourceTree = "<group>"; };
+		0AECA85A15B4F9FA00123F00 /* BombTower.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = BombTower.mm; sourceTree = "<group>"; };
 		0AECA85B15B4F9FA00123F00 /* BombAnimation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BombAnimation.h; sourceTree = "<group>"; };
-		0AECA85C15B4F9FA00123F00 /* BombAnimation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BombAnimation.cpp; sourceTree = "<group>"; };
+		0AECA85C15B4F9FA00123F00 /* BombAnimation.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = BombAnimation.mm; sourceTree = "<group>"; };
 		0AECA85D15B4F9FA00123F00 /* FreezeTower.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FreezeTower.h; sourceTree = "<group>"; };
-		0AECA85E15B4F9FA00123F00 /* FreezeTower.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FreezeTower.cpp; sourceTree = "<group>"; };
+		0AECA85E15B4F9FA00123F00 /* FreezeTower.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = FreezeTower.mm; sourceTree = "<group>"; };
 		0AECA85F15B4F9FA00123F00 /* HitTower.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HitTower.h; sourceTree = "<group>"; };
-		0AECA86015B4F9FA00123F00 /* HitTower.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HitTower.cpp; sourceTree = "<group>"; };
+		0AECA86015B4F9FA00123F00 /* HitTower.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = HitTower.mm; sourceTree = "<group>"; };
 		0cf0aa3895d28e97d8a1e4a938976234 /* ground_truth.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ground_truth.h; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv2/flann/ground_truth.h; sourceTree = SOURCE_ROOT; };
 		114b872696817cc33990fc83feb1259e /* imgproc.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = imgproc.hpp; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv2/imgproc/imgproc.hpp; sourceTree = SOURCE_ROOT; };
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -290,15 +290,15 @@
 				0A8B006415AFA30300561FF7 /* Foe.h */,
 				0A8B006515AFA30300561FF7 /* Foe.cpp */,
 				0A8B006615AFA30300561FF7 /* NormFoe.h */,
-				0A8B006715AFA30300561FF7 /* NormFoe.cpp */,
+				0A8B006715AFA30300561FF7 /* NormFoe.mm */,
 				0AECA84A15B4F9DD00123F00 /* FastFoe.h */,
-				0AECA84B15B4F9DD00123F00 /* FastFoe.cpp */,
+				0AECA84B15B4F9DD00123F00 /* FastFoe.mm */,
 				0AECA84C15B4F9DD00123F00 /* StealthFoe.h */,
-				0AECA84D15B4F9DD00123F00 /* StealthFoe.cpp */,
+				0AECA84D15B4F9DD00123F00 /* StealthFoe.mm */,
 				0AECA84E15B4F9DD00123F00 /* ImmuneRedFoe.h */,
-				0AECA84F15B4F9DD00123F00 /* ImmuneRedFoe.cpp */,
+				0AECA84F15B4F9DD00123F00 /* ImmuneRedFoe.mm */,
 				0AECA85015B4F9DD00123F00 /* HeavyFoe.h */,
-				0AECA85115B4F9DD00123F00 /* HeavyFoe.cpp */,
+				0AECA85115B4F9DD00123F00 /* HeavyFoe.mm */,
 			);
 			name = Foes;
 			sourceTree = "<group>";
@@ -307,15 +307,15 @@
 			isa = PBXGroup;
 			children = (
 				0AECA85715B4F9FA00123F00 /* Tower.h */,
-				0AECA85815B4F9FA00123F00 /* Tower.cpp */,
+				0AECA85815B4F9FA00123F00 /* Tower.mm */,
 				0AECA85F15B4F9FA00123F00 /* HitTower.h */,
-				0AECA86015B4F9FA00123F00 /* HitTower.cpp */,
+				0AECA86015B4F9FA00123F00 /* HitTower.mm */,
 				0AECA85D15B4F9FA00123F00 /* FreezeTower.h */,
-				0AECA85E15B4F9FA00123F00 /* FreezeTower.cpp */,
+				0AECA85E15B4F9FA00123F00 /* FreezeTower.mm */,
 				0AECA85915B4F9FA00123F00 /* BombTower.h */,
-				0AECA85A15B4F9FA00123F00 /* BombTower.cpp */,
+				0AECA85A15B4F9FA00123F00 /* BombTower.mm */,
 				0AECA85B15B4F9FA00123F00 /* BombAnimation.h */,
-				0AECA85C15B4F9FA00123F00 /* BombAnimation.cpp */,
+				0AECA85C15B4F9FA00123F00 /* BombAnimation.mm */,
 			);
 			name = Towers;
 			sourceTree = "<group>";
@@ -588,7 +588,7 @@
 				0A8B006A15AFB3E000561FF7 /* Explosion.h */,
 				0A8B006B15AFB3E000561FF7 /* Explosion.cpp */,
 				0A8B006D15AFB43100561FF7 /* SoundManager.h */,
-				0A8B006E15AFB43100561FF7 /* SoundManager.cpp */,
+				0A8B006E15AFB43100561FF7 /* SoundManager.mm */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
@@ -799,18 +799,18 @@
 				0A8B006115AFA1FA00561FF7 /* spring.cpp in Sources */,
 				0A8B006215AFA1FA00561FF7 /* vectorField.cpp in Sources */,
 				0A8B006815AFA30300561FF7 /* Foe.cpp in Sources */,
-				0A8B006915AFA30300561FF7 /* NormFoe.cpp in Sources */,
+				0A8B006915AFA30300561FF7 /* NormFoe.mm in Sources */,
 				0A8B006C15AFB3E000561FF7 /* Explosion.cpp in Sources */,
-				0A8B006F15AFB43100561FF7 /* SoundManager.cpp in Sources */,
-				0AECA85215B4F9DD00123F00 /* FastFoe.cpp in Sources */,
-				0AECA85315B4F9DD00123F00 /* StealthFoe.cpp in Sources */,
-				0AECA85415B4F9DD00123F00 /* ImmuneRedFoe.cpp in Sources */,
-				0AECA85515B4F9DD00123F00 /* HeavyFoe.cpp in Sources */,
-				0AECA86115B4F9FA00123F00 /* Tower.cpp in Sources */,
-				0AECA86215B4F9FA00123F00 /* BombTower.cpp in Sources */,
-				0AECA86315B4F9FA00123F00 /* BombAnimation.cpp in Sources */,
-				0AECA86415B4F9FA00123F00 /* FreezeTower.cpp in Sources */,
-				0AECA86515B4F9FA00123F00 /* HitTower.cpp in Sources */,
+				0A8B006F15AFB43100561FF7 /* SoundManager.mm in Sources */,
+				0AECA85215B4F9DD00123F00 /* FastFoe.mm in Sources */,
+				0AECA85315B4F9DD00123F00 /* StealthFoe.mm in Sources */,
+				0AECA85415B4F9DD00123F00 /* ImmuneRedFoe.mm in Sources */,
+				0AECA85515B4F9DD00123F00 /* HeavyFoe.mm in Sources */,
+				0AECA86115B4F9FA00123F00 /* Tower.mm in Sources */,
+				0AECA86215B4F9FA00123F00 /* BombTower.mm in Sources */,
+				0AECA86315B4F9FA00123F00 /* BombAnimation.mm in Sources */,
+				0AECA86415B4F9FA00123F00 /* FreezeTower.mm in Sources */,
+				0AECA86515B4F9FA00123F00 /* HitTower.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

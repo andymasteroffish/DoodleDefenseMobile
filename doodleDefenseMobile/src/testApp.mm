@@ -172,16 +172,6 @@ void testApp::setup(){
     
     //load the sounds
     SM.setup();
-//    SM.loadSound("audio/BOMB.wav", "bomb", 1);
-//    SM.loadSound("audio/ENEMYEXPLODES.wav", "enemyDeath", 0.6);
-//    SM.loadSound("audio/ERROR.wav", "error", 1);
-//    SM.loadSound("audio/FREEZE.wav", "freeze", 0.3);
-//    SM.loadSound("audio/HIT.wav", "hit", 0.4);
-//    SM.loadSound("audio/LOSEGAME2.wav", "playerHit", 1);
-//    SM.loadSound("audio/SHOT.wav", "shoot", 0.6);
-//    SM.loadSound("audio/TRIUMPH4.wav", "beatWave", 1);
-//    SM.loadSound("audio/NEWLOSE1.wav", "lose", 1);
-//    SM.loadSound("audio/STARTGAME.wav", "start", 1);
     
     //fonts
     string fontName="JolenesHand-Regular.ttf";
