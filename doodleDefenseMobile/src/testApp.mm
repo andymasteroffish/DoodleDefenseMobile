@@ -20,6 +20,8 @@ void testApp::setup(){
     boardW=fieldW*sizeIncreaseToBoard;
     boardH=fieldH*sizeIncreaseToBoard;
     
+    cout<<"board size: "<<boardW<<" X "<<boardH<<endl;
+    
     fieldScale = 10; //this was 7 in the computer verison
     boardScale = fieldScale/sizeIncreaseToBoard;
     
@@ -205,7 +207,7 @@ void testApp::reset(){
     totalInk=startInk;
     score=0;
     outOfInkBannerTimer=0;
-    numEntrances=2;
+    numEntrances=1;
     nextEntrance=0;
     
     fastForward = false;
@@ -288,7 +290,7 @@ void testApp::update(){
         paused=false;
     
     int numUpdates=1;
-    if (fastForward)    numUpdates=6;
+    if (fastForward)    numUpdates=3;
     for (int i=0; i<numUpdates; i++){
         //manage the current wave
         if (curWave>=0 && !wavesDone){
@@ -398,7 +400,6 @@ void testApp::update(){
                 for (int k=0; k<foes.size(); k++){
                     if (towers[i]->bullet.pos.distance(foes[k]->p.pos)<towers[i]->blastRadius){
                         foes[k]->hp-=towers[i]->bulletDamage;
-                        cout<<"I got hit dang"<<endl;
                     }
                 }
                 
@@ -567,14 +568,6 @@ void testApp::drawGame(){
     ofPushMatrix();
     ofTranslate(boardOffset.x, boardOffset.y);
     
-    //draw the board
-    ofSetColor(10);
-    wallDispTex.draw(0, 0, boardW*boardScale, boardH*boardScale);
-    for (int i=0; i<3; i++){
-        ofSetColor(dispColor[i]);
-        colorDispTex[i].draw(0,0, boardW*boardScale, boardH*boardScale);
-    }
-    
     ofSetRectMode(OF_RECTMODE_CENTER);
     //DRAW OUT THE DEBUG INFO IF THIS IS TURNED ON
     if(showAllInfo){
@@ -612,6 +605,18 @@ void testApp::drawGame(){
     for (int i=0; i<towers.size(); i++)
         towers[i]->draw();
     
+    //draw the board
+    ofSetRectMode(OF_RECTMODE_CORNER);
+    //black walls
+    ofSetColor(10);
+    wallDispTex.draw(0,0, boardW*boardScale, boardH*boardScale);
+    //collored bits
+    for (int i=0; i<3; i++){
+        ofSetColor(dispColor[i]);
+        colorDispTex[i].draw(0,0, boardW*boardScale, boardH*boardScale);
+    }
+    
+    ofSetRectMode(OF_RECTMODE_CENTER);
     //show the foes
     for (int i=0; i<foes.size(); i++){
         foes[i]->draw();
@@ -724,7 +729,7 @@ void testApp::drawPlayerInfo(){
     //draw the wave info boxes
     ofSetRectMode(OF_RECTMODE_CENTER);
     for (int i=0; i<waveInfoBoxes.size(); i++){
-        //waveInfoBoxes[i].draw();
+        waveInfoBoxes[i].draw();
     }
     
     //BANNERS
@@ -788,17 +793,22 @@ void testApp::touchDown(ofTouchEventArgs & touch){
             }
         }
         
-        for (int i=0; i<5; i++){
-            if (viewButtons[i].inside(touch.x,touch.y)){
-                curView = i;
-            }
+//        for (int i=0; i<5; i++){
+//            if (viewButtons[i].inside(touch.x,touch.y)){
+//                curView = i;
+//            }
+//        }
+        
+        if (viewButtons[0].inside(touch.x,touch.y)){
+            fastForward=!fastForward;
         }
         
         if (pauseButton.inside(touch.x,touch.y)){
             playerPause = !playerPause;
         }
         
-        brushDown(touch.x, touch.y);
+        if (!playerPause)
+            brushDown(touch.x, touch.y);
         
     }
     
@@ -809,7 +819,7 @@ void testApp::touchDown(ofTouchEventArgs & touch){
 
 //--------------------------------------------------------------
 void testApp::touchMoved(ofTouchEventArgs & touch){
-    if (touch.id == 0){
+    if (touch.id == 0 && !playerPause){
         
         //if the finger moved fast, there could be blank space between where the two brush events are called
         //point spacing shows the aproximate number of pixels that shuld be betweene ach call to brushDown
@@ -839,8 +849,6 @@ void testApp::touchUp(ofTouchEventArgs & touch){
     if (touch.id == 0){
         if (needToConvertDrawingToGame){
             convertDrawingToGame();
-        }else{
-            cout<<"fuck your sad ass"<<endl;
         }
         fingerDown = false;
     }
@@ -895,7 +903,7 @@ void testApp::brushDown(float touchX, float touchY){
     
     int maxDist = 15*boardScale;
     if (curBrushColor == 3) maxDist*=0.5;   //black can be smaller
-    if (curBrushColor == 4) maxDist*=2; //eraser gets a bigger brush
+    if (curBrushColor == 4) maxDist*=0.5;   //eraser gets a smaller brush
     
     //keeping track of how much ink refund (if any) was generated
     //float blackInkRefund=0;
@@ -1234,7 +1242,6 @@ void testApp::convertDrawingToGame(){
 
 //--------------------------------------------------------------
 bool testApp::findPathsForFoes(){
-    cout<<"path finding that ish"<<endl;
     //create a pair of temp foes to find paths for us
     NormFoe tempFoeLeft;
     NormFoe tempFoeTop;
@@ -1288,8 +1295,6 @@ bool testApp::findPathsForFoes(){
                 routeFromTopGrid[newTile.x][newTile.y].set(-1,1); 
         }
         
-        cout<<"filled those dirty grids"<<endl;
-        
     }
     
     //pathfinding for the foes
@@ -1300,8 +1305,6 @@ bool testApp::findPathsForFoes(){
             bool curPathOK = false;
             if (curBrushColor != 4){
                 curPathOK = foes[i]->checkRouteForObstruction();
-                if (curPathOK)
-                    cout<<"I was able to use my old route!"<<endl;
             }
             
             //if that didn't work, see if they can hop on the existing route
@@ -1600,7 +1603,6 @@ void testApp::spawnFoe(string name, int level){
     bool standardRouteOK = false;
     if (!noPath){
         if (foes[foes.size()-1]->horizontalGoal){
-            cout<<"horz search"<<endl;
             standardRouteOK = foes[foes.size()-1]->checkExistingRoute(routeFromLeftGrid);
         }else
             standardRouteOK = foes[foes.size()-1]->checkExistingRoute(routeFromTopGrid);

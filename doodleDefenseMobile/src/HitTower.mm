@@ -14,8 +14,9 @@ void HitTower::typeSetup(){
     
     rechargeTime=1;         //fast recharge
     bulletAtraction=1;//0.5;    //fast bullet
-    bulletDamage=size*0.75;        //moderate damage based on tower size
+    bulletDamage=size*0.85;        //moderate damage based on tower size
     
+    cout<<"bullet damage: "<<bulletDamage<<endl;
     type="red";
 }
 

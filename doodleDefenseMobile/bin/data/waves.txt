@@ -1,10 +1,4 @@
 new 1
-dur 20
-add north 10
-col norm
-mes TESTING
-
-new 1
 dur 50
 add norm 15
 col norm
