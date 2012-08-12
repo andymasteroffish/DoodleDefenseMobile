@@ -310,17 +310,17 @@ bool Foe::checkExistingRoute(ofPoint (&routeGrid)[FIELD_W][FIELD_H]){
     vector<tile *> pathToRoute; //YOU NEED TO DELETE EVERYTHING IN HERE WHEN IT'S DONE
     
     if ( routeGrid[foeFieldX][foeFieldY].x != -2 && routeGrid[foeFieldX][foeFieldY].y != -2){
-        cout<<"shit my dad, I'm on the path"<<endl;
+        //cout<<"shit my dad, I'm on the path"<<endl;
         connectingPos.set(foeFieldX, foeFieldY);
         //path to Route will be empty because the foe is already on the route
     }else{
-        cout<<"Oh fuck, I'm not on the path. Try growing out to meet the path "<<endl;
+        //cout<<"Oh fuck, I'm not on the path. Try growing out to meet the path "<<endl;
         pathToRoute = checkProximityToExistingRoute(routeGrid);
         if (pathToRoute.size()==0){
             cout<<"couldn't grow out"<<endl;
             return false;
         }
-        cout<<"Shit yes  could grow out. path size: "<<pathToRoute.size()<<endl;
+        //cout<<"Shit yes  could grow out. path size: "<<pathToRoute.size()<<endl;
         
         //if we get here, a viable connecting point was found
         connectingPos.set( pathToRoute[0]->x, pathToRoute[0]->y);
@@ -354,7 +354,6 @@ bool Foe::checkExistingRoute(ofPoint (&routeGrid)[FIELD_W][FIELD_H]){
     //if there was an aditional path to get to the route, add those now too
     for (int i=0; i<pathToRoute.size(); i++){
         route.push_back(pathToRoute[i]);
-        cout<<"I added a b-boy to the path"<<endl;
     }
     
     //reset the next node to start from the beginning
@@ -393,7 +392,6 @@ vector<tile *> Foe::checkProximityToExistingRoute(ofPoint (&routeGrid)[FIELD_W][
         
         //if this tile is on the route, we're done
         if (routeGrid[current->x][current->y].x != -2 && routeGrid[current->x][current->y].y != -2){
-            cout<<"found it!"<<endl;
             pathFoundToRoute = true;
         }
         
@@ -462,14 +460,13 @@ vector<tile *> Foe::checkProximityToExistingRoute(ofPoint (&routeGrid)[FIELD_W][
     if (pathFoundToRoute){
         pathToRoute.push_back( explored[explored.size()-1] );   //add the connecting pos
         while (pathToRoute[pathToRoute.size()-1]->x != foeFieldX && pathToRoute[pathToRoute.size()-1]->y != foeFieldY){
-            cout<<"adding parent of"<<pathToRoute[pathToRoute.size()-1]->x<<","<<pathToRoute[pathToRoute.size()-1]->y<<endl;
             pathToRoute.push_back( pathToRoute[pathToRoute.size()-1]->parent );
             
         }
         
         //set the connecting point to be useful
         connectingPoint.set(pathToRoute[0]->x, pathToRoute[0]->y);
-        cout<<"connecting point: "<<connectingPoint.x<<","<<connectingPoint.y<<endl;
+        //cout<<"connecting point: "<<connectingPoint.x<<","<<connectingPoint.y<<endl;
     }
     
     //clear the vectors
@@ -484,7 +481,6 @@ vector<tile *> Foe::checkProximityToExistingRoute(ofPoint (&routeGrid)[FIELD_W][
         bool partOfPath = false;
         for (int i=0; i<pathToRoute.size(); i++){
             if (explored[killNum] == pathToRoute[i]){
-                cout<<"don't kill me; I'm on the path"<<endl;
                 partOfPath = true;
                 killNum++;
             }

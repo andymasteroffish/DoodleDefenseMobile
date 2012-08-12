@@ -240,6 +240,9 @@ class testApp : public ofxiPhoneApp{
     ofImage titleBig;
     ofImage playerHitPic;
     
+    //background pic
+    ofImage backgroundPic;
+    
     //fonts
 	ofTrueTypeFont infoFontSmall;
     ofTrueTypeFont infoFont;

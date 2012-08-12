@@ -3,7 +3,6 @@
 
 //--------------------------------------------------------------
 void testApp::setup(){	
-    cout<<ofGetWidth()<<" X "<<ofGetHeight()<<endl;
     
     retina = false; //TESTING
 	
@@ -12,6 +11,8 @@ void testApp::setup(){
 	ofSetFrameRate(30);
     
 	ofBackground(255,255,255);
+    
+    cout<<ofGetWidth()<<" X "<<ofGetHeight()<<endl;
     
     //size of the grid the game is played on
     float sizeIncreaseToBoard = 7;
@@ -61,6 +62,28 @@ void testApp::setup(){
         colorDispPixels[i] = new unsigned char [boardW * boardH * 2];
     }
     
+    cout<<"about to load"<<endl;
+    //load in the paper texture and set the greycscale part of the pictures
+    ofImage paperPic;
+    paperPic.loadImage("paper/paperTexture.jpg");
+    paperPic.setImageType(OF_IMAGE_GRAYSCALE);
+    
+    cout<<"make the pixels"<<endl;
+    
+    unsigned char *	paperPixels = paperPic.getPixels();
+    
+    cout<<"ste the pixels"<<endl;
+    for (int i=0; i<boardW * boardH * 2; i+=2){
+        wallDispPixels[i]   = 255-paperPixels[i/2];
+        //wallDispPixels[i+1] = 0;
+        for (int k=0; k<3; k++){
+            colorDispPixels[k][i]   = paperPixels[i/2];
+            //colorDispPixels[k][i+1] = 0;
+        }
+    }
+    
+    cout<<"squel"<<endl;
+    
     //set the maze border
     mazeTop=4;
     mazeBottom=fieldH-4;
@@ -83,7 +106,7 @@ void testApp::setup(){
     borderPics[1].loadImage("walls2Entrance.png");
     
     //for calculating what counts as a tower
-    maxCompactness = 1.3;
+    maxCompactness = 1.6;
     
     //color selection
     curBrushColor = 3;
@@ -109,9 +132,9 @@ void testApp::setup(){
     waveAnimationTime=5;    //flash for x seconds when a wave is finished
     
     //ink values
-    float relativeInkScale = 0.5;   //for adjusting the overall cost of things
+    float relativeInkScale = 0.4;   //for adjusting the overall cost of things
     blackInkValue   = .02 *relativeInkScale;
-    colorInkValue[0] = .25 *relativeInkScale;
+    colorInkValue[0] = .23 *relativeInkScale;
     colorInkValue[1] = .35 *relativeInkScale;
     colorInkValue[2] = .30 *relativeInkScale;
     
@@ -148,6 +171,9 @@ void testApp::setup(){
     bannerBacks[2].loadImage("banners/waveBack.png");
     bannerBacks[3].loadImage("banners/youwinBack.png");
     bannerBacks[4].loadImage("banners/youloseBack.png");
+    
+    //background
+    backgroundPic.loadImage("paper/paperBacking.jpg");
     
     //showing when player is out of ink
     outOfInkBannerTime = 1;
@@ -232,10 +258,10 @@ void testApp::reset(){
         colorPixels[2][i] = 0;
     }
     for (int i=0; i<boardW * boardH * 2; i+=2){
-        wallDispPixels[i]   = 255;
+        //wallDispPixels[i]   = 255;
         wallDispPixels[i+1] = 0;
         for (int k=0; k<3; k++){
-            colorDispPixels[k][i]   = 255;
+            //colorDispPixels[k][i]   = 255;
             colorDispPixels[k][i+1] = 0;
         }
     }
@@ -426,7 +452,7 @@ void testApp::update(){
         //reset the particle
         inkParticles[i].resetForce();
         //atract the controler to the next node
-        inkParticles[i].addAttractionForce(inkEndX, inkEndY, ofGetWidth()*1.5, 0.8);
+        inkParticles[i].addAttractionForce(inkEndX, inkEndY, ofGetWidth()*1.5, 0.95);
         //dampen and update the particle
         inkParticles[i].addDampingForce();
         inkParticles[i].update();
@@ -478,7 +504,7 @@ void testApp::update(){
 //--------------------------------------------------------------
 void testApp::draw(){	
 	ofSetColor(255);
-    
+    backgroundPic.draw(0,0);
     
     //color selection buttons
     ofFill();
@@ -608,7 +634,7 @@ void testApp::drawGame(){
     //draw the board
     ofSetRectMode(OF_RECTMODE_CORNER);
     //black walls
-    ofSetColor(10);
+    ofSetColor(255);
     wallDispTex.draw(0,0, boardW*boardScale, boardH*boardScale);
     //collored bits
     for (int i=0; i<3; i++){
@@ -902,8 +928,15 @@ void testApp::brushDown(float touchX, float touchY){
     int brushStrength = 100;    //how much it adds at the center
     
     int maxDist = 15*boardScale;
-    if (curBrushColor == 3) maxDist*=0.5;   //black can be smaller
-    if (curBrushColor == 4) maxDist*=0.5;   //eraser gets a smaller brush
+    
+    //black gets a smaller but more powerful brush
+    if (curBrushColor == 3){ 
+        maxDist*=0.4;   //black can be smaller
+        brushStrength = 255;
+    }
+    
+    //eraser gets a smaller brush
+    if (curBrushColor == 4) maxDist*=0.5;   
     
     //keeping track of how much ink refund (if any) was generated
     //float blackInkRefund=0;
