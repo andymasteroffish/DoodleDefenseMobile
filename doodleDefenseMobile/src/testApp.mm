@@ -656,6 +656,10 @@ void testApp::drawGame(){
     for (int i=0; i<bombAnimations.size(); i++)
         bombAnimations[i].draw();
     
+    //draw the bullets beign shot by towers (if any)
+    for (int i=0; i<towers.size(); i++)
+        towers[i]->drawBullet();
+    
     //draw explosions and puffs
     for (int i=0; i<explosions.size(); i++)
         explosions[i].draw();

@@ -21,6 +21,7 @@ public:
     virtual void typeSetup(){}
     void update();
     virtual void draw(){}
+    void drawBullet();
     void setNewPos(float x, float y, float _size);
     void fire(Foe * _target);    //shoots a bullet 
     virtual void hitTarget(){}

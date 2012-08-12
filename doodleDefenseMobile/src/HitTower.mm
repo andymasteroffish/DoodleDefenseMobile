@@ -29,11 +29,6 @@ void HitTower::draw(){
         ofCircle(pos.x, pos.y, range);
     }
     
-    ofSetColor(0);
-    if (shooting){
-        bullet.draw();
-    }
-    
 }
 
 void HitTower::hitTarget(){

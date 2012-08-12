@@ -119,5 +119,11 @@ void Tower::fire(Foe * _target){
     
 }
 
+void Tower::drawBullet(){
+    ofSetColor(0);
+    if (shooting){
+        bullet.draw();
+    }
+}
 
 
