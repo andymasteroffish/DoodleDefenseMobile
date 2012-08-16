@@ -108,8 +108,13 @@ void testApp::setup(){
     
     //color selection
     curBrushColor = 3;
-    int buttonW=80;
-    int buttonH=80;
+    colorButtonPics[0].loadImage("buttons/game/hitTower.png");
+    colorButtonPics[1].loadImage("buttons/game/bombTower.png");
+    colorButtonPics[2].loadImage("buttons/game/freezeTower.png");
+    colorButtonPics[3].loadImage("buttons/game/wall.png");
+    colorButtonPics[4].loadImage("buttons/game/eraser.png");
+    int buttonW=colorButtonPics[0].width;
+    int buttonH=colorButtonPics[0].height;
     for (int i=0; i<5; i++){
         colorButtons[i].set(ofGetWidth()*0.2+i*(buttonW+10),0, buttonW, buttonH);
     }
@@ -525,23 +530,19 @@ void testApp::draw(){
      ofEnableAlphaBlending();
     
     //color selection buttons
-    ofFill();
-    ofSetColor(200, 10, 10);
-    ofRect(colorButtons[0]);
-    ofSetColor(10, 200, 10);
-    ofRect(colorButtons[1]);
-    ofSetColor(10, 10, 200);
-    ofRect(colorButtons[2]);
-    ofSetColor(10, 10, 10);
-    ofRect(colorButtons[3]);
-    ofSetColor(200, 200, 200);
-    ofRect(colorButtons[4]);
-    //dot to show the one we're one
-    ofSetColor(100);
-    ofCircle(colorButtons[curBrushColor].x+colorButtons[0].width/2, colorButtons[curBrushColor].y+colorButtons[0].height/2, 20);
+    ofSetRectMode(OF_RECTMODE_CORNER);
+    ofSetColor(255);
+    for (int i=0; i<5; i++)
+        colorButtonPics[i].draw(colorButtons[i].x, colorButtons[i].y);
+    //show the one that has been selected
+    ofPushMatrix();
+    ofTranslate(colorButtons[curBrushColor].x+colorButtonPics[curBrushColor].width/2, colorButtons[curBrushColor].y+colorButtonPics[curBrushColor].height/2);
+    ofScale(1.2,1.2);
+    ofSetColor(200,120);
+    colorButtonPics[curBrushColor].draw(-colorButtonPics[curBrushColor].width/2,-colorButtonPics[curBrushColor].height/2);
+    ofPopMatrix();
     
     //game buttons
-    ofSetRectMode(OF_RECTMODE_CORNER);
     ofNoFill();
     ofSetColor(255);
     pauseButtonPic.draw(pauseButton.x, pauseButton.y);

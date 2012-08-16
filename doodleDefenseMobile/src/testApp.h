@@ -133,6 +133,7 @@ class testApp : public ofxiPhoneApp{
 
     //selecting color
     ofRectangle colorButtons[5];
+    ofImage colorButtonPics[5];
     
     //debug switching between views
     ofRectangle viewButtons[5];
