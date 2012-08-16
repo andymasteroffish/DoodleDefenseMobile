@@ -72,7 +72,6 @@ void testApp::setup(){
     
     unsigned char *	paperPixels = paperPic.getPixels();
     
-    cout<<"ste the pixels"<<endl;
     for (int i=0; i<boardW * boardH * 2; i+=2){
         wallDispPixels[i]   = 255-paperPixels[i/2];
         //wallDispPixels[i+1] = 0;
@@ -82,7 +81,6 @@ void testApp::setup(){
         }
     }
     
-    cout<<"squel"<<endl;
     
     //set the maze border
     mazeTop=4;
@@ -110,14 +108,26 @@ void testApp::setup(){
     
     //color selection
     curBrushColor = 3;
-    int buttonW=100;
-    int buttonH=100;
+    int buttonW=80;
+    int buttonH=80;
     for (int i=0; i<5; i++){
         colorButtons[i].set(ofGetWidth()*0.2+i*(buttonW+10),0, buttonW, buttonH);
     }
     
-    //pause button
-    pauseButton.set(ofGetWidth()*0.2+5*(buttonW+10),0, buttonW, buttonH);
+    //game buttons
+    pauseButtonPic.loadImage("buttons/game/pauseButton.png");
+    pauseButton.set(ofGetWidth()*0.01,ofGetHeight()*0.8, pauseButtonPic.width, pauseButtonPic.height);
+    fastForwardButtonPic.loadImage("buttons/game/fastForwardButton.png");
+    fastForwardButton.set(ofGetWidth()*0.01,ofGetHeight()*0.7, fastForwardButtonPic.width, fastForwardButtonPic.height);
+    
+    
+    //pause screen buttons
+    pauseScreenButtonPics[0].loadImage("buttons/pauseScreen/play.png");
+    pauseScreenButtonPics[1].loadImage("buttons/pauseScreen/quit.png");
+    pauseScreenButtonPics[2].loadImage("buttons/pauseScreen/howToPlay.png");
+    for (int i=0; i<3; i++){
+        pauseScreenButtons[i].set(ofGetWidth()/2-pauseScreenButtonPics[i].width/2, ofGetHeight()*0.42+ofGetHeight()*0.19*i, pauseScreenButtonPics[i].width, pauseScreenButtonPics[i].height);
+    }
 	
 	//testing different views
     for (int i=0; i<5; i++){
@@ -166,11 +176,13 @@ void testApp::setup(){
     banners[2].loadImage("banners/wave.png");
     banners[3].loadImage("banners/youwin.png");
     banners[4].loadImage("banners/youlose.png");
+    banners[5].loadImage("banners/paused.png");
     bannerBacks[0].loadImage("banners/nopathBack.png");
     bannerBacks[1].loadImage("banners/outofinkBack.png");
     bannerBacks[2].loadImage("banners/waveBack.png");
     bannerBacks[3].loadImage("banners/youwinBack.png");
     bannerBacks[4].loadImage("banners/youloseBack.png");
+    bannerBacks[5].loadImage("banners/pausedBack.png");
     
     //background
     backgroundPic.loadImage("paper/paperBacking.jpg");
@@ -222,8 +234,12 @@ void testApp::setup(){
 void testApp::reset(){ 
     
     //clear out any foes if there are any
-    for (int i=foes.size()-1; i>=0; i--)
+    for (int i=foes.size()-1; i>=0; i--){
+        //set the reached the end flag so they don't spawn an exlosion
+        foes[i]->reachedTheEnd=true;
+        //kill them
         killFoe(i);
+    }
     
     //set all towers to think the player is alive
     for (int i=0; i<towers.size(); i++)
@@ -233,7 +249,7 @@ void testApp::reset(){
     totalInk=startInk;
     score=0;
     outOfInkBannerTimer=0;
-    numEntrances=1;
+    numEntrances=2; //TESTING
     nextEntrance=0;
     
     fastForward = false;
@@ -506,6 +522,8 @@ void testApp::draw(){
 	ofSetColor(255);
     backgroundPic.draw(0,0);
     
+     ofEnableAlphaBlending();
+    
     //color selection buttons
     ofFill();
     ofSetColor(200, 10, 10);
@@ -522,26 +540,28 @@ void testApp::draw(){
     ofSetColor(100);
     ofCircle(colorButtons[curBrushColor].x+colorButtons[0].width/2, colorButtons[curBrushColor].y+colorButtons[0].height/2, 20);
     
-    //pause button
+    //game buttons
+    ofSetRectMode(OF_RECTMODE_CORNER);
     ofNoFill();
-    ofSetColor(0, 0, 0);
-    ofRect(pauseButton);
+    ofSetColor(255);
+    pauseButtonPic.draw(pauseButton.x, pauseButton.y);
+    fastForwardButtonPic.draw(fastForwardButton.x, fastForwardButton.y);
     
-    //view select buttons
-    ofNoFill();
-    ofSetColor(200, 10, 10);
-    ofRect(viewButtons[0]);
-    ofSetColor(10, 200, 10);
-    ofRect(viewButtons[1]);
-    ofSetColor(10, 10, 200);
-    ofRect(viewButtons[2]);
-    ofSetColor(10);
-    ofRect(viewButtons[3]);
-    ofSetColor(220);
-    ofRect(viewButtons[4]);
+//    //view select buttons
+//    ofNoFill();
+//    ofSetColor(200, 10, 10);
+//    ofRect(viewButtons[0]);
+//    ofSetColor(10, 200, 10);
+//    ofRect(viewButtons[1]);
+//    ofSetColor(10, 10, 200);
+//    ofRect(viewButtons[2]);
+//    ofSetColor(10);
+//    ofRect(viewButtons[3]);
+//    ofSetColor(220);
+//    ofRect(viewButtons[4]);
     
-    ofSetColor(200, 10, 10);
-    ofRect(colorButtons[0]);
+//    ofSetColor(200, 10, 10);
+//    ofRect(colorButtons[0]);
     
     //debug info
     ofSetColor(255,100,100);
@@ -557,20 +577,6 @@ void testApp::draw(){
     }
     ofDrawBitmapString(pausedText, 100, ofGetHeight()-2);
     
-    //below this from the computer verison:
-    
-    
-    ofEnableAlphaBlending();
-    
-    //show the wall and tower images (right now this features test views)
-//    ofSetColor(255);
-//    if (curView < 3)
-//        colorImgs[curView].draw(boardOffset.x, boardOffset.y, boardW*boardScale, boardH*boardScale);
-//    if (curView == 3)
-//        blackImg.draw(boardOffset.x, boardOffset.y, boardW*boardScale, boardH*boardScale);
-    
-    //testing the wall image
-    //wallImage.draw(ofGetWidth()*0.6, 0, fieldW*2, fieldH*2);
     
     //show the game
     drawGame();
@@ -582,6 +588,32 @@ void testApp::draw(){
     
     //show player stats that live outside of the game area
     drawPlayerInfo();   
+    
+    //show the pause screen if it's up
+    if (playerPause){
+        //fade out the screen a bit
+        ofSetRectMode(OF_RECTMODE_CORNER);
+        ofSetColor(255,220);
+        backgroundPic.draw(0,0);
+        
+        ofSetRectMode(OF_RECTMODE_CENTER);
+        int bannerX = ofGetWidth()*0.5;
+        int bannerY =ofGetHeight()*0.2;
+        
+        ofSetColor(255,ofMap(sin(ofGetElapsedTimef()*2), -1,1, 140,250));
+        bannerBacks[5].draw(bannerX, bannerY);
+        ofSetColor(0);
+        banners[5].draw(bannerX, bannerY);
+        
+        //draw the buttons
+        ofSetRectMode(OF_RECTMODE_CORNER);
+        ofSetColor(255);
+        for (int i=0; i<3; i++){
+            pauseScreenButtonPics[i].draw(pauseScreenButtons[i].x, pauseScreenButtons[i].y);
+        }
+        
+        
+    }
     
     ofDisableAlphaBlending();
     //set the rect mode back
@@ -817,28 +849,23 @@ void testApp::touchDown(ofTouchEventArgs & touch){
     if (touch.id == 0){
         fingerDown = true;
         
-        for (int i=0; i<5; i++){
-            if (colorButtons[i].inside(touch.x,touch.y)){
-                curBrushColor = i;
+        if (!playerPause){
+            for (int i=0; i<5; i++){
+                if (colorButtons[i].inside(touch.x,touch.y)){
+                    curBrushColor = i;
+                }
             }
-        }
-        
-//        for (int i=0; i<5; i++){
-//            if (viewButtons[i].inside(touch.x,touch.y)){
-//                curView = i;
-//            }
-//        }
-        
-        if (viewButtons[0].inside(touch.x,touch.y)){
-            fastForward=!fastForward;
-        }
-        
-        if (pauseButton.inside(touch.x,touch.y)){
-            playerPause = !playerPause;
-        }
-        
-        if (!playerPause)
+            
+            if (fastForwardButton.inside(touch.x,touch.y)){
+                fastForward=!fastForward;
+            }
+            
+            if (pauseButton.inside(touch.x,touch.y)){
+                playerPause = !playerPause;
+            }
+            
             brushDown(touch.x, touch.y);
+        }
         
     }
     
@@ -881,6 +908,21 @@ void testApp::touchUp(ofTouchEventArgs & touch){
             convertDrawingToGame();
         }
         fingerDown = false;
+    }
+    
+    //check for the pause screen buttons if that's what's up
+    if (playerPause){
+        
+        if (pauseScreenButtons[0].inside(touch.x,touch.y)){
+            playerPause=false;
+        }
+        if (pauseScreenButtons[1].inside(touch.x,touch.y)){
+            reset();
+        }
+        if (pauseScreenButtons[2].inside(touch.x,touch.y)){
+            cout<<"how to play"<<endl;
+        }
+        
     }
 }
 

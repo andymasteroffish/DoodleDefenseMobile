@@ -138,7 +138,12 @@ class testApp : public ofxiPhoneApp{
     ofRectangle viewButtons[5];
     int curView;
     
+    //game buttons
+    ofImage pauseButtonPic;
     ofRectangle pauseButton;
+    ofImage fastForwardButtonPic;
+    ofRectangle fastForwardButton;
+    
     
     //images to display as the boarders
     ofImage borderPics[2];
@@ -235,10 +240,14 @@ class testApp : public ofxiPhoneApp{
     ofImage waveInfoPics[NUM_WAVE_INFO_BOX_PICS];        //images for the boxes
     
     //banners
-    ofImage banners[5];
-    ofImage bannerBacks[5];
+    ofImage banners[6];
+    ofImage bannerBacks[6];
     ofImage titleBig;
     ofImage playerHitPic;
+    
+    //pause screen buttons
+    ofRectangle pauseScreenButtons[3];
+    ofImage pauseScreenButtonPics[3];
     
     //background pic
     ofImage backgroundPic;
