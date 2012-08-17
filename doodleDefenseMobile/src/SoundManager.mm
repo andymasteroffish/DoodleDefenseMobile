@@ -29,7 +29,6 @@ void SoundManager::setup(){
 
 //adds an external file to the vector of sound effects
 void SoundManager::loadSound(string fileName, string fileType, string refrenceName, float volume){
-    cout<<"load "<<fileName<<"."<<fileType<<endl;
     //load the sound
     AVAudioPlayer *audioPlayer1;
     NSURL *url = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:ofxStringToNSString(fileName) ofType:ofxStringToNSString(fileType)]];

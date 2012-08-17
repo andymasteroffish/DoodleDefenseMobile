@@ -17,6 +17,8 @@ void FreezeTower::typeSetup(){
     
     freezeTime=300;      //how long the foe stays frozen
     
+    bulletCol.setHex(0x5999FF);
+    
     type="blue";
 }
 

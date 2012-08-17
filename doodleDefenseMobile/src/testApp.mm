@@ -119,6 +119,9 @@ void testApp::setup(){
         colorButtons[i].set(ofGetWidth()*0.2+i*(buttonW+10),0, buttonW, buttonH);
     }
     
+    //bullet image
+    bulletPic.loadImage("bullets/bullet.png");
+    
     //game buttons
     pauseButtonPic.loadImage("buttons/game/pauseButton.png");
     pauseButton.set(ofGetWidth()*0.01,ofGetHeight()*0.8, pauseButtonPic.width, pauseButtonPic.height);
@@ -531,38 +534,24 @@ void testApp::draw(){
     
     //color selection buttons
     ofSetRectMode(OF_RECTMODE_CORNER);
-    ofSetColor(255);
-    for (int i=0; i<5; i++)
-        colorButtonPics[i].draw(colorButtons[i].x, colorButtons[i].y);
     //show the one that has been selected
     ofPushMatrix();
     ofTranslate(colorButtons[curBrushColor].x+colorButtonPics[curBrushColor].width/2, colorButtons[curBrushColor].y+colorButtonPics[curBrushColor].height/2);
     ofScale(1.2,1.2);
-    ofSetColor(200,120);
+    ofSetColor(255,120);
     colorButtonPics[curBrushColor].draw(-colorButtonPics[curBrushColor].width/2,-colorButtonPics[curBrushColor].height/2);
     ofPopMatrix();
+    //then draw all of them
+    ofSetColor(255);
+    for (int i=0; i<5; i++)
+        colorButtonPics[i].draw(colorButtons[i].x, colorButtons[i].y);
     
     //game buttons
     ofNoFill();
     ofSetColor(255);
     pauseButtonPic.draw(pauseButton.x, pauseButton.y);
     fastForwardButtonPic.draw(fastForwardButton.x, fastForwardButton.y);
-    
-//    //view select buttons
-//    ofNoFill();
-//    ofSetColor(200, 10, 10);
-//    ofRect(viewButtons[0]);
-//    ofSetColor(10, 200, 10);
-//    ofRect(viewButtons[1]);
-//    ofSetColor(10, 10, 200);
-//    ofRect(viewButtons[2]);
-//    ofSetColor(10);
-//    ofRect(viewButtons[3]);
-//    ofSetColor(220);
-//    ofRect(viewButtons[4]);
-    
-//    ofSetColor(200, 10, 10);
-//    ofRect(colorButtons[0]);
+
     
     //debug info
     ofSetColor(255,100,100);
@@ -671,7 +660,9 @@ void testApp::drawGame(){
     wallDispTex.draw(0,0, boardW*boardScale, boardH*boardScale);
     //collored bits
     for (int i=0; i<3; i++){
-        ofSetColor(dispColor[i]);
+        //grey out the drawing if the player is dead
+        if (health>0)   ofSetColor(dispColor[i]);
+        else            ofSetColor(200);
         colorDispTex[i].draw(0,0, boardW*boardScale, boardH*boardScale);
     }
     
@@ -754,7 +745,7 @@ void testApp::drawPlayerInfo(){
     //draw health
     ofSetRectMode(OF_RECTMODE_CORNER);
     float xCenter=boardOffset.x + boardW*boardScale*0.5;
-    float healthY=boardOffset.y + boardH*boardScale + ofGetHeight()*0.01;
+    float healthY=boardOffset.y + boardH*boardScale;
     float healthWidth=boardW*boardScale;
     float xLeft=xCenter-healthWidth/2;
     float healthSpacing= (healthWidth - healthStart*healthPicFull[0].width)/healthStart;
@@ -1472,7 +1463,7 @@ void testApp::checkTowers(string type){
             if (!towerHere){
                 if (type=="red"){
                     HitTower * newTower=new HitTower();
-                    newTower->setup(contourFinder.blobs[i].centroid.x*boardScale, contourFinder.blobs[i].centroid.y*boardScale, size*boardScale, ++towerID);
+                    newTower->setup(contourFinder.blobs[i].centroid.x*boardScale, contourFinder.blobs[i].centroid.y*boardScale, size*boardScale, ++towerID, &bulletPic);
                     newTower->showAllInfo=&showAllInfo;
                     newTower->paused=&paused;
                     newTower->SM= &SM;
@@ -1480,7 +1471,7 @@ void testApp::checkTowers(string type){
                 }
                 if (type=="green"){
                     BombTower * newTower=new BombTower();
-                    newTower->setup(contourFinder.blobs[i].centroid.x*boardScale, contourFinder.blobs[i].centroid.y*boardScale, size*boardScale, ++towerID);
+                    newTower->setup(contourFinder.blobs[i].centroid.x*boardScale, contourFinder.blobs[i].centroid.y*boardScale, size*boardScale, ++towerID, &bulletPic);
                     newTower->showAllInfo=&showAllInfo;
                     newTower->paused=&paused;
                     newTower->SM= &SM;
@@ -1488,7 +1479,7 @@ void testApp::checkTowers(string type){
                 }
                 if (type=="blue"){
                     FreezeTower * newTower=new FreezeTower();
-                    newTower->setup(contourFinder.blobs[i].centroid.x*boardScale, contourFinder.blobs[i].centroid.y*boardScale, size*boardScale, ++towerID);
+                    newTower->setup(contourFinder.blobs[i].centroid.x*boardScale, contourFinder.blobs[i].centroid.y*boardScale, size*boardScale, ++towerID, &bulletPic);
                     newTower->showAllInfo=&showAllInfo;
                     newTower->paused=&paused;
                     newTower->SM= &SM;

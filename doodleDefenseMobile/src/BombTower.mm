@@ -17,6 +17,8 @@ void BombTower::typeSetup(){
     
     type="green";
     
+    bulletCol.setHex(0x188C25);
+    
     blastRadius=size*6.5 *mobileRangeIncrease;
 }
 

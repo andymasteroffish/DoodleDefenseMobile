@@ -222,6 +222,8 @@ class testApp : public ofxiPhoneApp{
     float towerRefund;  //percentage of the value of the tower that the user gets back if they erase one
     float maxCompactness;   //how far the blob can be from being a circle and still be counted
     
+    ofImage bulletPic;
+    
     //vector to hold the bomb animations
     vector<BombAnimation> bombAnimations;
     

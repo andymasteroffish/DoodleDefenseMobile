@@ -16,6 +16,8 @@ void HitTower::typeSetup(){
     bulletAtraction=1;//0.5;    //fast bullet
     bulletDamage=size*0.85;        //moderate damage based on tower size
     
+    bulletCol.setHex(0xCF1515);
+    
     cout<<"bullet damage: "<<bulletDamage<<endl;
     type="red";
 }

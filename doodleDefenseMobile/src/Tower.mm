@@ -8,10 +8,12 @@
 
 #include "Tower.h"
 
-void Tower::setup(float x, float y, float _size, int _idNum){
+void Tower::setup(float x, float y, float _size, int _idNum, ofImage * _bulletPic){
     mobileRangeIncrease=1.7;
     
     idNum=_idNum;
+    
+    bulletPic=_bulletPic;
     
     //values that will be the same for all towers
     found=true;
@@ -120,9 +122,10 @@ void Tower::fire(Foe * _target){
 }
 
 void Tower::drawBullet(){
-    ofSetColor(0);
     if (shooting){
-        bullet.draw();
+        ofSetColor(bulletCol);
+        bulletPic->draw(bullet.pos.x-bulletPic->width/2, bullet.pos.y-bulletPic->height/2);
+        //bullet.draw();
     }
 }
 

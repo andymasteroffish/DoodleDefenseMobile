@@ -17,7 +17,7 @@
 class Tower{
 public:
     
-    void setup(float x, float y, float _size, int _idNum);
+    void setup(float x, float y, float _size, int _idNum, ofImage * _bulletPic);
     virtual void typeSetup(){}
     void update();
     virtual void draw(){}
@@ -52,8 +52,10 @@ public:
     particle bullet;
     Foe * target;
     float bulletAtraction;
-    
     float bulletDamage;
+    
+    ofColor bulletCol;
+    ofImage * bulletPic;
     
     //special values for bomb tower
     float blastRadius;  //how much will be effected when the bullet hits
