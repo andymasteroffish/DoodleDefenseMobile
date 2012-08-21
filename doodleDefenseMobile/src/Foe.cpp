@@ -205,23 +205,20 @@ void Foe::drawDebug(){
         ofPushMatrix();
         ofScale(fieldScale,fieldScale); 
         
-        
-        
-        if (pathFound){
-            if (showAllInfo){
-                ofSetColor(0,255,0);
-                ofSetLineWidth(2);
-                if (route.size()>3){
-                    for (int i=0; i<route.size()-1; i++)
-                        ofLine(route[i]->x, route[i]->y,route[i+1]->x, route[i+1]->y);
-                }
-                //animate a ball moving along the path
-                if (route.size()>0){
-                    ofCircle(route[ofGetFrameNum()%route.size()]->x, route[ofGetFrameNum()%route.size()]->y, 1);
-                }
+        if (showAllInfo){
+            ofSetColor(0,255,0);
+            ofSetLineWidth(2);
+            if (route.size()>3){
+                for (int i=0; i<route.size()-1; i++)
+                    ofLine(route[i]->x, route[i]->y,route[i+1]->x, route[i+1]->y);
+            }
+            //animate a ball moving along the path
+            if (route.size()>0){
+                ofCircle(route[ofGetFrameNum()%route.size()]->x, route[ofGetFrameNum()%route.size()]->y, 1);
             }
         }
-        else{
+        
+        if (!pathFound){
             //otherwise draw the area explored
             ofSetColor(255,0,0,20);
             for (int i=0; i<closedList.size()-1; i++)
@@ -296,15 +293,8 @@ bool Foe::checkExistingRoute(ofPoint (&routeGrid)[FIELD_W][FIELD_H]){
     
     
     //see if the foe is already on the natural path
-    int foeFieldX;
-    int foeFieldY;
-    if (nextNode>=0 && nextNode<route.size() && false){ //TESTING BUT THIS SEEMS TO WORK AND SOLVE SOME PROBLEMS
-        foeFieldX = route[nextNode]->x;
-        foeFieldY = route[nextNode]->y;
-    }else{
-        foeFieldX = p.pos.x/fieldScale;
-        foeFieldY = p.pos.y/fieldScale;
-    }
+    int foeFieldX = p.pos.x/fieldScale;
+    int foeFieldY = p.pos.y/fieldScale;
     
     ofPoint connectingPos;  //if the foe is on or near the path, this is the point where the path meets the foe
     vector<tile *> pathToRoute; //YOU NEED TO DELETE EVERYTHING IN HERE WHEN IT'S DONE
@@ -376,8 +366,9 @@ vector<tile *> Foe::checkProximityToExistingRoute(ofPoint (&routeGrid)[FIELD_W][
     vector<tile *> explored;
     
     //get the starting point
-    int foeFieldX = route[nextNode]->x;
-    int foeFieldY = route[nextNode]->y;
+    int foeFieldX = p.pos.x/fieldScale;
+    int foeFieldY = p.pos.y/fieldScale;
+    
     
     //add that point to the unexplored list
     tile * startTile = new tile(foeFieldX, foeFieldY);  //this tile ahs no parent
@@ -501,6 +492,7 @@ vector<tile *> Foe::checkProximityToExistingRoute(ofPoint (&routeGrid)[FIELD_W][
 //------------------------------------------------------------
 //attempt to find a path
 void Foe::standardFindPath(){
+    cout<<"doin' it MY WAY"<<endl;
     //testing how long it takes
     //float startTime = ofGetElapsedTimef();
     
@@ -515,8 +507,6 @@ void Foe::standardFindPath(){
     
     //add the start tile to the openList
     tile * start = new tile();
-    //    startX=testo.p.pos.x;
-    //    startY=testo.p.pos.y;
     start->x=startX;
     start->y=startY;
     start->g=0;
@@ -648,25 +638,9 @@ void Foe::standardFindPath(){
         setNextNode();
     }else{
         pathFound=false;
+        route.clear();  //remove whatever confused route it may have stubled upon while searching
     }
-    
-    //If it looks like the foe was inked over trying to move along path
-    //THIS JUST FUCKS EVERYTHING UP
-//    int minListSize=3;  //how small the closed list must be to move along the path
-//    if (!pathFound && closedList.size()<minListSize && nextNode>2){
-//        cout<<"I WAS BLOCKED"<<endl;
-//        setNextNode();  //go to the next node
-//        p.pos=moveParticle.pos; //move the foe there
-//        
-//        //keep the foe in the maze in case garbage values are returned
-//        p.pos.x=CLAMP(p.pos.x,11*fieldScale,155*fieldScale);
-//        p.pos.y=CLAMP(p.pos.y,11*fieldScale,115*fieldScale);
-//        
-//        standardFindPath(); //try again recursievly
-//    }
-    
-    //cout<<"time to find path: "<<ofGetElapsedTimef()-startTime<<endl;
-    //cout<<"time when path was found: "<<ofGetElapsedTimef()<<endl;
+
 }
 
 //--------------------------------------------------------------
@@ -684,6 +658,7 @@ bool Foe::checkRouteForObstruction(){
     }
     
     for (int i=0; i<nextNode; i++){
+        cout<<"i: "<<i<<"  next Node: "<<nextNode<<"   route size: "<<route.size()<<endl;
         int pixelPos=route[i]->y*fieldW+route[i]->x; 
         
         //check if the tile is impassible
