@@ -175,8 +175,9 @@ void testApp::setup(){
         immuneRedFoePic[1][i].loadImage("foePics/immune/ifill"+ofToString(i+1)+".png");
     }
     
-    //explosion and puff images
+    //other images for foes
     explosionPic.loadImage("misc/explosionFill.png");
+    foeExclamationPic.loadImage("misc/exclamation.png");
     
     //banners
     banners[0].loadImage("banners/nopath.png");
@@ -670,9 +671,9 @@ void testApp::drawGame(){
     //show the foes
     for (int i=0; i<foes.size(); i++){
         foes[i]->draw();
+        
         if (showAllInfo)
             foes[i]->drawDebug();
-        
     }
     
     //draw the bomb animations if there are any
@@ -687,6 +688,19 @@ void testApp::drawGame(){
     //draw explosions and puffs
     for (int i=0; i<explosions.size(); i++)
         explosions[i].draw();
+    
+    //show exclamations if there is no path
+    if (noPath){
+        for (int i=0; i<foes.size(); i++){
+            //if they have no path, show the exclamation point
+            if (!foes[i]->pathFound){
+                ofSetColor(255);
+                float xPos = foes[i]->p.pos.x+ofGetWidth()*0.01 + ofNoise(i*100, ofGetElapsedTimef()/3)*ofGetWidth()*0.005;
+                float yPos = foes[i]->p.pos.y-ofGetWidth()*0.04 - ofNoise(i, ofGetElapsedTimef()/3)*ofGetWidth()*0.01;
+                foeExclamationPic.draw(xPos, yPos);
+            }
+        }
+    }
     
     //draw ink particles if there are any
     //ofSetColor(150);
@@ -1376,6 +1390,10 @@ bool testApp::findPathsForFoes(){
             bool curPathOK = false;
             if (curBrushColor != 4){
                 curPathOK = foes[i]->checkRouteForObstruction();
+                
+                if (curPathOK){
+                    cout<<"using current path"<<endl;
+                }
             }
             
             //if that didn't work, see if they can hop on the existing route
@@ -1385,6 +1403,10 @@ bool testApp::findPathsForFoes(){
                     standardRouteOK = foes[i]->checkExistingRoute(routeFromLeftGrid);
                 else
                     standardRouteOK = foes[i]->checkExistingRoute(routeFromTopGrid);
+                
+                if (standardRouteOK){
+                    cout<<"using standard route"<<endl;
+                }
             }
             
             //if that doens't work, have the foe find its own path

@@ -298,7 +298,7 @@ bool Foe::checkExistingRoute(ofPoint (&routeGrid)[FIELD_W][FIELD_H]){
     //see if the foe is already on the natural path
     int foeFieldX;
     int foeFieldY;
-    if (nextNode>=0 && nextNode<route.size()){
+    if (nextNode>=0 && nextNode<route.size() && false){ //TESTING BUT THIS SEEMS TO WORK AND SOLVE SOME PROBLEMS
         foeFieldX = route[nextNode]->x;
         foeFieldY = route[nextNode]->y;
     }else{
@@ -309,8 +309,10 @@ bool Foe::checkExistingRoute(ofPoint (&routeGrid)[FIELD_W][FIELD_H]){
     ofPoint connectingPos;  //if the foe is on or near the path, this is the point where the path meets the foe
     vector<tile *> pathToRoute; //YOU NEED TO DELETE EVERYTHING IN HERE WHEN IT'S DONE
     
+    cout<<"foe fieldX: "<<foeFieldX<<"  foe field y: "<<foeFieldY<<endl;
+    cout<<"next node: "<<nextNode<<"   route size: "<<route.size()<<endl;
     if ( routeGrid[foeFieldX][foeFieldY].x != -2 && routeGrid[foeFieldX][foeFieldY].y != -2){
-        //cout<<"shit my dad, I'm on the path"<<endl;
+        cout<<"shit my dad, I'm already on the path"<<endl;
         connectingPos.set(foeFieldX, foeFieldY);
         //path to Route will be empty because the foe is already on the route
     }else{
@@ -320,7 +322,7 @@ bool Foe::checkExistingRoute(ofPoint (&routeGrid)[FIELD_W][FIELD_H]){
             cout<<"couldn't grow out"<<endl;
             return false;
         }
-        //cout<<"Shit yes  could grow out. path size: "<<pathToRoute.size()<<endl;
+        cout<<"Shit yes  could grow out. path size: "<<pathToRoute.size()<<endl;
         
         //if we get here, a viable connecting point was found
         connectingPos.set( pathToRoute[0]->x, pathToRoute[0]->y);
@@ -360,6 +362,7 @@ bool Foe::checkExistingRoute(ofPoint (&routeGrid)[FIELD_W][FIELD_H]){
     nextNode=route.size();
     setNextNode();
 
+    pathFound = true;
     return true;
 }
 
@@ -491,7 +494,6 @@ vector<tile *> Foe::checkProximityToExistingRoute(ofPoint (&routeGrid)[FIELD_W][
             explored.erase(explored.begin()+killNum);
         }
     }
-
     
     return pathToRoute;
 }

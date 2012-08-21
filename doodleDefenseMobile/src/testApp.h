@@ -197,6 +197,9 @@ class testApp : public ofxiPhoneApp{
     ofImage stealthFoePic[2][NUM_FOE_FRAMES]; 
     ofImage immuneRedFoePic[2][NUM_FOE_FRAMES]; 
     
+    //exclamation pic
+    ofImage foeExclamationPic;
+    
     //optimizing pathfinding by finding the best route from the start to the exit and seeing which foes can hop on board
     ofPoint routeFromLeftGrid[FIELD_W][FIELD_H];
     ofPoint routeFromTopGrid[FIELD_W][FIELD_H];
