@@ -203,6 +203,8 @@ class testApp : public ofxiPhoneApp{
     //optimizing pathfinding by finding the best route from the start to the exit and seeing which foes can hop on board
     ofPoint routeFromLeftGrid[FIELD_W][FIELD_H];
     ofPoint routeFromTopGrid[FIELD_W][FIELD_H];
+    NormFoe tempFoeLeft;
+    NormFoe tempFoeTop;
     
     //explosions and poofs from hitting foes
     ofImage explosionPic;

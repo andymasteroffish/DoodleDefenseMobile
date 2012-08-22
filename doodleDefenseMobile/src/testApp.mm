@@ -550,7 +550,18 @@ void testApp::draw(){
     //game buttons
     ofNoFill();
     ofSetColor(255);
+    //pause buttons
     pauseButtonPic.draw(pauseButton.x, pauseButton.y);
+    //if the fast forward button has been selected, show it again behind itself
+    if (fastForward){
+        ofPushMatrix();
+        ofTranslate(fastForwardButton.x+fastForwardButtonPic.width/2, fastForwardButton.y+fastForwardButtonPic.height/2);
+        ofScale(1.2,1.2);
+        ofSetColor(255,120);
+        fastForwardButtonPic.draw(-fastForwardButtonPic.width/2,-fastForwardButtonPic.height/2);
+        ofPopMatrix();
+    }
+    ofSetColor(255);
     fastForwardButtonPic.draw(fastForwardButton.x, fastForwardButton.y);
 
     
@@ -650,6 +661,17 @@ void testApp::drawGame(){
         VF.draw();
     }
     
+    //show the explored area of the tempFoes if they could not find a path
+    if (noPath){
+        ofFill();
+        if (tempFoeTop.showPath){
+            tempFoeTop.drawExplored();
+        }
+        if (tempFoeLeft.showPath){
+            tempFoeLeft.drawExplored();
+        }
+    }
+    
     //show the towers
     for (int i=0; i<towers.size(); i++)
         towers[i]->draw();
@@ -695,8 +717,8 @@ void testApp::drawGame(){
             //if they have no path, show the exclamation point
             if (!foes[i]->pathFound){
                 ofSetColor(255);
-                float xPos = foes[i]->p.pos.x+ofGetWidth()*0.01 + ofNoise(i*100, ofGetElapsedTimef()/3)*ofGetWidth()*0.005;
-                float yPos = foes[i]->p.pos.y-ofGetWidth()*0.04 - ofNoise(i, ofGetElapsedTimef()/3)*ofGetWidth()*0.01;
+                float xPos = foes[i]->p.pos.x+ofGetWidth()*0.005 + ofNoise(i*100, ofGetElapsedTimef()/3)*ofGetWidth()*0.005;
+                float yPos = foes[i]->p.pos.y-ofGetWidth()*0.03 - ofNoise(i, ofGetElapsedTimef()/3)*ofGetWidth()*0.01;
                 foeExclamationPic.draw(xPos, yPos);
             }
         }
@@ -804,7 +826,7 @@ void testApp::drawPlayerInfo(){
     //let the player no if there is no path
     ofFill();
     int messageX=boardOffset.x+boardW*boardScale*0.5;
-    int messageY=ofGetHeight()*0.2;
+    int messageY=ofGetHeight()*0.25;
     ofSetColor(0,0,0);
     if (noPath){
         ofSetColor(255,ofMap(sin(ofGetElapsedTimef()*2), -1,1, 120,210));
@@ -1328,8 +1350,8 @@ void testApp::convertDrawingToGame(){
 //--------------------------------------------------------------
 bool testApp::findPathsForFoes(){
     //create a pair of temp foes to find paths for us
-    NormFoe tempFoeLeft;
-    NormFoe tempFoeTop;
+    //NormFoe tempFoeLeft;
+    //NormFoe tempFoeTop;
     
     //give the foes all of the info they need
     //for left
@@ -1343,6 +1365,15 @@ bool testApp::findPathsForFoes(){
     
     //if there is no path for either foe, pause the game
     if (!tempFoeLeft.pathFound || !tempFoeTop.pathFound){
+        //go through and mark every foe as hot having a path
+        for (int i=0; i<foes.size(); i++){
+            //if the foe's guide couldn't make it to the end, mark that they coudl not find a path
+            if ((!tempFoeLeft.pathFound && foes[i]->horizontalGoal) || (!tempFoeTop.pathFound && !foes[i]->horizontalGoal)){
+                foes[i]->pathFound=false;
+                //foes[i]->clearPathfindingLists();
+            }
+        }
+        
         return false;
     }
     

@@ -72,6 +72,9 @@ public:
     int horzDist;
     int diagDist;
     
+    //highlighting what has been explored so that player can see where the foe got stuck
+    bool showPath;
+    
     //keeping track of where the foe has been to punish players who draw a wall and remove it to force the foe to back track
     bool tilesExplored[160][120];   //hardcoding the fieldWidth, fieldHeight
     float reexploredTileSpeedBonus;

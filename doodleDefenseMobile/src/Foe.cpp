@@ -177,7 +177,7 @@ void Foe::standardDraw(){
     
     
     //have it flash if there is no path
-    if (!pathFound){
+    if (showPath){
         drawExplored();
     }
     
@@ -200,37 +200,37 @@ void Foe::standardDraw(){
 //------------------------------------------------------------
 void Foe::drawDebug(){
     //draw the path if one was found
-    if (*showAllInfo){
+    //if (*showAllInfo){
         
-        ofPushMatrix();
-        ofScale(fieldScale,fieldScale); 
-        
-        if (showAllInfo){
-            ofSetColor(0,255,0);
-            ofSetLineWidth(2);
-            if (route.size()>3){
-                for (int i=0; i<route.size()-1; i++)
-                    ofLine(route[i]->x, route[i]->y,route[i+1]->x, route[i+1]->y);
-            }
-            //animate a ball moving along the path
-            if (route.size()>0){
-                ofCircle(route[ofGetFrameNum()%route.size()]->x, route[ofGetFrameNum()%route.size()]->y, 1);
-            }
+    ofPushMatrix();
+    ofScale(fieldScale,fieldScale); 
+    
+    if (showAllInfo){
+        ofSetColor(0,255,0);
+        ofSetLineWidth(2);
+        if (route.size()>3){
+            for (int i=0; i<route.size()-1; i++)
+                ofLine(route[i]->x, route[i]->y,route[i+1]->x, route[i+1]->y);
         }
-        
-        if (!pathFound){
-            //otherwise draw the area explored
-            ofSetColor(255,0,0,20);
-            for (int i=0; i<closedList.size()-1; i++)
-                ofRect(closedList[i]->x,closedList[i]->y,2,2);
-            //ofLine(route[i]->x, route[i]->y,route[i+1]->x, route[i+1]->y);
+        //animate a ball moving along the path
+        if (route.size()>0){
+            ofCircle(route[ofGetFrameNum()%route.size()]->x, route[ofGetFrameNum()%route.size()]->y, 1);
         }
-        
-        ofPopMatrix();
-        
-        ofSetHexColor(0x52E2F2);
-        moveParticle.draw();
     }
+    
+    if (!pathFound){
+        //otherwise draw the area explored
+        ofSetColor(255,0,0,20);
+        for (int i=0; i<closedList.size()-1; i++)
+            ofRect(closedList[i]->x,closedList[i]->y,2,2);
+        //ofLine(route[i]->x, route[i]->y,route[i+1]->x, route[i+1]->y);
+    }
+    
+    ofPopMatrix();
+    
+    ofSetHexColor(0x52E2F2);
+    moveParticle.draw();
+    //}
 }
 
 //------------------------------------------------------------
@@ -277,6 +277,8 @@ void Foe::setNextNode(){
 //------------------------------------------------------------
 //make sure stealth foes don't check this
 bool Foe::checkExistingRoute(ofPoint (&routeGrid)[FIELD_W][FIELD_H]){
+    showPath=false;
+    
     //the stealth foe should not worry about this
     if (type=="stealth")
         return false;
@@ -493,8 +495,8 @@ vector<tile *> Foe::checkProximityToExistingRoute(ofPoint (&routeGrid)[FIELD_W][
 //attempt to find a path
 void Foe::standardFindPath(){
     cout<<"doin' it MY WAY"<<endl;
-    //testing how long it takes
-    //float startTime = ofGetElapsedTimef();
+    
+    showPath=false;
     
     int startX=p.pos.x/fieldScale;
     int startY=p.pos.y/fieldScale;
@@ -638,6 +640,7 @@ void Foe::standardFindPath(){
         setNextNode();
     }else{
         pathFound=false;
+        showPath=true;
         route.clear();  //remove whatever confused route it may have stubled upon while searching
     }
 
@@ -646,6 +649,7 @@ void Foe::standardFindPath(){
 //--------------------------------------------------------------
 //goes thorugh the route the foe has now and returns true if none of the tiles on the route are obstructed or next to an obstructions
 bool Foe::checkRouteForObstruction(){
+    showPath=false;
     
     //stealth foes can ignore this
     if (type=="stealth")
@@ -658,7 +662,6 @@ bool Foe::checkRouteForObstruction(){
     }
     
     for (int i=0; i<nextNode; i++){
-        cout<<"i: "<<i<<"  next Node: "<<nextNode<<"   route size: "<<route.size()<<endl;
         int pixelPos=route[i]->y*fieldW+route[i]->x; 
         
         //check if the tile is impassible
