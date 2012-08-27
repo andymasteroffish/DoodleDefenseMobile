@@ -116,7 +116,7 @@ void testApp::setup(){
     int buttonW=colorButtonPics[0].width;
     int buttonH=colorButtonPics[0].height;
     for (int i=0; i<5; i++){
-        colorButtons[i].set(ofGetWidth()*0.2+i*(buttonW+10),0, buttonW, buttonH);
+        colorButtons[i].set(ofGetWidth()*0.2+i*(buttonW+10),ofGetHeight()*0.01, buttonW, buttonH);
     }
     
     //bullet image
@@ -804,16 +804,12 @@ void testApp::drawPlayerInfo(){
     ofFill();
     ofSetColor(0);
     int inktextRightX=ofGetWidth()*0.10;
-    int inkTextY=ofGetHeight()*0.05;
+    int inkTextY=ofGetHeight()*0.07;
     
     thisTextX=inktextRightX-infoFont.stringWidth("Ink Left:")/2;
     infoFont.drawString("Ink Left:",thisTextX,inkTextY);
-    inkTextY+=infoFontBig.getLineHeight();
-    
-    //thisTextX=inktextRightX-infoFontBig.stringWidth(ofToString((int)(totalInk-inkUsed))+"/"+ofToString((int)totalInk));
     thisTextX=inktextRightX-infoFontBig.stringWidth(ofToString((int)(totalInk-inkUsed)))/2;
-    infoFontBig.drawString(ofToString((int)(totalInk-inkUsed)),thisTextX,inkTextY);
-    inkTextY+=infoFontBig.getLineHeight();
+    infoFontBig.drawString(ofToString((int)(totalInk-inkUsed)),thisTextX,inkTextY+ofGetHeight()*0.04);
     
     
     //draw the wave info boxes
@@ -1124,7 +1120,7 @@ void testApp::brushDown(float touchX, float touchY){
     }
     
     //spit out some ink pixels if ink was refunded
-    float inkPerParticle = 0.5;
+    float inkPerParticle = 1.5;
     float pixelWiggle = ofGetWidth()*0.01;  //the force with which the particle can spawn
     
     //get the average locaiton of any refunds that hapenned
