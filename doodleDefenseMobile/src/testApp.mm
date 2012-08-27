@@ -123,10 +123,10 @@ void testApp::setup(){
     bulletPic.loadImage("bullets/bullet.png");
     
     //game buttons
-    pauseButtonPic.loadImage("buttons/game/pauseButton.png");
-    pauseButton.set(ofGetWidth()*0.01,ofGetHeight()*0.8, pauseButtonPic.width, pauseButtonPic.height);
     fastForwardButtonPic.loadImage("buttons/game/fastForwardButton.png");
-    fastForwardButton.set(ofGetWidth()*0.01,ofGetHeight()*0.7, fastForwardButtonPic.width, fastForwardButtonPic.height);
+    fastForwardButton.set(ofGetWidth()*0.87, ofGetHeight()*0.64, fastForwardButtonPic.width, fastForwardButtonPic.height);
+    pauseButtonPic.loadImage("buttons/game/pauseButton.png");
+    pauseButton.set(fastForwardButton.x, ofGetHeight()*0.77, pauseButtonPic.width, pauseButtonPic.height);
     
     
     //pause screen buttons
