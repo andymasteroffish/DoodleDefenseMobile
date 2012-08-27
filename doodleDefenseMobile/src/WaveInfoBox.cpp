@@ -42,11 +42,11 @@ void WaveInfoBox::setup(int _waveNum, string _message, ofImage * _backPic, ofTru
     fallSpeed=8;
     
     //set up how to display the text
-    waveTextOffset.x = -boxW/2 + 15;
-    waveTextOffset.y = -boxH/2 + ofGetHeight()*0.04;
+    waveTextOffset.x = -boxW/2 + ofGetWidth()*0.015;
+    waveTextOffset.y = -boxH/2 + ofGetHeight()*0.045;
     
-    messageTextOffset.x = -boxW/2 + 30;
-    messageTextOffset.y = -boxH/2 + ofGetHeight()*0.07;
+    messageTextOffset.x = -boxW/2 + ofGetWidth()*0.02;
+    messageTextOffset.y = -boxH/2 + ofGetHeight()*0.085;
 }
 
 
@@ -61,8 +61,8 @@ void WaveInfoBox::draw(){
     
     //write the text
     ofSetColor(0,0,0, alpha);
-    waveFont->drawString("Wave #"+ofToString(waveNum), pos.x +waveTextOffset.x, pos.y+waveTextOffset.y);
-    messageFont->drawString(message, pos.x +messageTextOffset.x, pos.y+messageTextOffset.y);
+    waveFont->drawString("Wave #"+ofToString(waveNum), (int)(pos.x +waveTextOffset.x), (int)(pos.y+waveTextOffset.y));
+    messageFont->drawString(message, (int)(pos.x +messageTextOffset.x), (int)(pos.y+messageTextOffset.y));
     
     
 }

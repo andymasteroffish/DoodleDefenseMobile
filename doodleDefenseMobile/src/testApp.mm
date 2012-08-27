@@ -213,8 +213,8 @@ void testApp::setup(){
     titleBig.loadImage("banners/titleBig.png");
     
     //displaying the wave info
-    waveInfoBottom=boardOffset.y+boardH*boardScale-ofGetHeight()*0.15;
-    waveInfoDistToFadeOut=ofGetHeight()*0.8;
+    waveInfoBottom=boardOffset.y+(boardH*boardScale)*0.25;//boardOffset.y+boardH*boardScale-ofGetHeight()*0.15;
+    waveInfoDistToFadeOut=ofGetHeight()*0.4;//*0.8;
     //box images
     for (int i=0; i<NUM_WAVE_INFO_BOX_PICS; i++)
         waveInfoPics[i].loadImage("waveInfoBoxes/boxes-"+ofToString(i+1)+".png");
@@ -1859,7 +1859,7 @@ void testApp::loadFromText(){
     
     //set the wave info boxes
     waveInfoBoxes.clear();  //get rid of any old ones
-    float waveInfoX=ofGetWidth()*0.9;
+    float waveInfoX=ofGetWidth()*0.895;
     float waveInfoSpacing=ofGetHeight()*0.03;
     float boxWidth=208;
     float boxHeight=150;
