@@ -234,15 +234,16 @@ void Foe::drawDebug(){
 }
 
 //------------------------------------------------------------
-//draws the area that was explored when no path was found. Also flashes the location of the foe
+//draws the area that was explored when no path was found.
 void Foe::drawExplored(){
-    //otherwise draw the area explored
-    ofSetColor(220,35,130,40);
-    ofPushMatrix();
-    ofScale(fieldScale,fieldScale);
-    for (int i=0; i<closedList.size()-1; i++)
-        ofRect(closedList[i]->x,closedList[i]->y,2,2);
-    ofPopMatrix();
+    if (ofGetFrameNum()/6%5>1){
+        ofSetColor(220,35,130,20);
+        ofPushMatrix();
+        ofScale(fieldScale,fieldScale);
+        for (int i=0; i<closedList.size()-1; i++)
+            ofRect(closedList[i]->x,closedList[i]->y,2,2);
+        ofPopMatrix();
+    }
     
 }
 

@@ -15,7 +15,7 @@ void FreezeTower::typeSetup(){
     bulletAtraction=1;//0.5;    //fast bullet
     bulletDamage=0;         //no damage
     
-    freezeTime=300;      //how long the foe stays frozen
+    freezeTime=size*26;      //how long the foe stays frozen
     
     bulletCol.setHex(0x5999FF);
     
