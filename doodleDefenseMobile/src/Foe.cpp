@@ -302,20 +302,20 @@ bool Foe::checkExistingRoute(ofPoint (&routeGrid)[FIELD_W][FIELD_H]){
     ofPoint connectingPos;  //if the foe is on or near the path, this is the point where the path meets the foe
     vector<tile *> pathToRoute; //YOU NEED TO DELETE EVERYTHING IN HERE WHEN IT'S DONE
     
-    cout<<"foe fieldX: "<<foeFieldX<<"  foe field y: "<<foeFieldY<<endl;
-    cout<<"next node: "<<nextNode<<"   route size: "<<route.size()<<endl;
+    //cout<<"foe fieldX: "<<foeFieldX<<"  foe field y: "<<foeFieldY<<endl;
+    //cout<<"next node: "<<nextNode<<"   route size: "<<route.size()<<endl;
     if ( routeGrid[foeFieldX][foeFieldY].x != -2 && routeGrid[foeFieldX][foeFieldY].y != -2){
-        cout<<"shit my dad, I'm already on the path"<<endl;
+        //cout<<"shit my dad, I'm already on the path"<<endl;
         connectingPos.set(foeFieldX, foeFieldY);
         //path to Route will be empty because the foe is already on the route
     }else{
         //cout<<"Oh fuck, I'm not on the path. Try growing out to meet the path "<<endl;
         pathToRoute = checkProximityToExistingRoute(routeGrid);
         if (pathToRoute.size()==0){
-            cout<<"couldn't grow out"<<endl;
+            //cout<<"couldn't grow out"<<endl;
             return false;
         }
-        cout<<"Shit yes  could grow out. path size: "<<pathToRoute.size()<<endl;
+        //cout<<"Shit yes  could grow out. path size: "<<pathToRoute.size()<<endl;
         
         //if we get here, a viable connecting point was found
         connectingPos.set( pathToRoute[0]->x, pathToRoute[0]->y);
@@ -495,7 +495,7 @@ vector<tile *> Foe::checkProximityToExistingRoute(ofPoint (&routeGrid)[FIELD_W][
 //------------------------------------------------------------
 //attempt to find a path
 void Foe::standardFindPath(){
-    cout<<"doin' it MY WAY"<<endl;
+    //cout<<"doin' it MY WAY"<<endl;
     
     showPath=false;
     

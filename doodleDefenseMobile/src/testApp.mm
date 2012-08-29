@@ -3,7 +3,6 @@
 
 //--------------------------------------------------------------
 void testApp::setup(){	
-    
     retina = false; //TESTING
 	
     //orient landscape
@@ -29,7 +28,7 @@ void testApp::setup(){
     //setup vector field
     VF.setupField(120, 90,fieldW*fieldScale, fieldH*fieldScale);
     
-    boardOffset.set(ofGetWidth()*0.04,ofGetHeight()*0.15);
+    boardOffset.set(ofGetWidth()*0.04,ofGetHeight()*0.09);  //*0.15);
     
     //black image
     blackImg.allocate(boardW, boardH);
@@ -116,7 +115,18 @@ void testApp::setup(){
     int buttonW=colorButtonPics[0].width;
     int buttonH=colorButtonPics[0].height;
     for (int i=0; i<5; i++){
-        colorButtons[i].set(ofGetWidth()*0.2+i*(buttonW+10),ofGetHeight()*0.01, buttonW, buttonH);
+        
+        //move everything over so that the color buttons are on the right
+        int num = (i+2)%5;
+        
+        //switch the location of eraser and wall
+        if (num == 0)   num = 1;
+        else if (num == 1)  num = 0;
+        
+        int xPos = ofGetWidth()*0.2+num*(buttonW+10);
+        if (num<2)    xPos-=ofGetWidth()*0.025;
+        if (num>=2)    xPos+=ofGetWidth()*0.05;
+        colorButtons[i].set(xPos,boardOffset.y +boardH*boardScale - ofGetHeight()*0.02, buttonW, buttonH);
     }
     
     //bullet image
@@ -124,9 +134,9 @@ void testApp::setup(){
     
     //game buttons
     fastForwardButtonPic.loadImage("buttons/game/fastForwardButton.png");
-    fastForwardButton.set(ofGetWidth()*0.87, ofGetHeight()*0.64, fastForwardButtonPic.width, fastForwardButtonPic.height);
+    fastForwardButton.set(ofGetWidth()*0.87, ofGetHeight()*0.18, fastForwardButtonPic.width, fastForwardButtonPic.height);
     pauseButtonPic.loadImage("buttons/game/pauseButton.png");
-    pauseButton.set(fastForwardButton.x, ofGetHeight()*0.77, pauseButtonPic.width, pauseButtonPic.height);
+    pauseButton.set(fastForwardButton.x, ofGetHeight()*0.30, pauseButtonPic.width, pauseButtonPic.height);
     
     
     //pause screen buttons
@@ -209,11 +219,8 @@ void testApp::setup(){
         healthPicEmpty[i].loadImage("playerInfo/hearts/outlinehearts-"+ofToString(i+1)+".png");
     }
     
-    //title
-    titleBig.loadImage("banners/titleBig.png");
-    
     //displaying the wave info
-    waveInfoBottom=boardOffset.y+(boardH*boardScale)*0.25;//boardOffset.y+boardH*boardScale-ofGetHeight()*0.15;
+    waveInfoBottom=ofGetHeight()*0.90;//boardOffset.y+boardH*boardScale-ofGetHeight()*0.15;
     waveInfoDistToFadeOut=ofGetHeight()*0.4;//*0.8;
     //box images
     for (int i=0; i<NUM_WAVE_INFO_BOX_PICS; i++)
@@ -229,12 +236,25 @@ void testApp::setup(){
     infoFontBig.loadFont(fontName, 37*(retina+1), true, true);
     infoFontHuge.loadFont(fontName, 50*(retina+1), true, true);
     
+    //menu
+    titlePic.loadImage("menu/title.png");
+    menuButtonPics[0]=pauseScreenButtonPics[0];
+    menuButtonPics[1]=pauseScreenButtonPics[2];
+    int menuButtonsStartY = ofGetHeight()*0.6;
+    int menuButtonsEndY = ofGetHeight()*0.8;
+    for (int i=0; i<NUM_MENU_BUTONS; i++){
+        menuButtons[i].set(ofGetWidth()/2-menuButtonPics[i].width/2, ofMap(i,0,NUM_MENU_BUTONS-1,menuButtonsStartY,menuButtonsEndY), menuButtonPics[i].width, menuButtonPics[i].height);
+    }
+    
+    //pre-game stuff
     showAllInfo = false;
     
     fingerDown = false;
     gameStarted = true;
     
     prevFrameTime = ofGetElapsedTimef();
+    
+    gameState="menu";
     
     reset();
 }
@@ -334,191 +354,193 @@ void testApp::update(){
     deltaTime = ofGetElapsedTimef()-prevFrameTime;
     prevFrameTime = ofGetElapsedTimef();
     
-    //check if there is any reason to pause the game
-    if (playerPause || noPath  || !gameStarted || waveComplete || fingerDown)
-        paused=true;
-    else
-        paused=false;
-    
-    int numUpdates=1;
-    if (fastForward)    numUpdates=3;
-    for (int i=0; i<numUpdates; i++){
-        //manage the current wave
-        if (curWave>=0 && !wavesDone){
-            waves[curWave].update(paused, fastForward);
-            if (waves[curWave].readyForNextFoe)
-                spawnFoe(waves[curWave].getNextFoe(),waves[curWave].level);
-            
-            //if this wave is done, and all foes are dead or offscreen, we can start the next wave if the player is still alive
-            if (waves[curWave].done && foes.size()==0 && health>0 && !waveComplete)
-                endWave();
-        }
+    if (gameState=="game"){
+        //check if there is any reason to pause the game
+        if (playerPause || noPath  || !gameStarted || waveComplete || fingerDown)
+            paused=true;
+        else
+            paused=false;
         
-        //update Foes
-        bool allFoesHavePath=true;  //assume that all foes can reach the end
-        bool addToPunishmentTimer=false;    //assume that none back tracked
-        for (int i=foes.size()-1; i>=0; i--){
-            foes[i]->update();
-            
-            if (!foes[i]->pathFound) allFoesHavePath=false;
-            
-            //if it just backtracked, increase the timer before spawning a punishment stealth foe
-            if (foes[i]->justBacktracked){
-                foes[i]->justBacktracked=false; //turn off the flag
-                addToPunishmentTimer=true;
-            }
-            
-            //remove it if it reached the end
-            if (foes[i]->reachedTheEnd){
-                takeDamage(foes[i]->damageToPlayer);   //player takes damage
-                killFoe(i);
-            }
-            //remove it if it is dead
-            else if (foes[i]->dead){
-                //kill it
-                killFoe(i);
-                //play the sound
-                //SM.playSound("enemyDeath");
-            }
-        }
-        
-        //        //add to the punishment timer if a foe back tracked
-        //        if (addToPunishmentTimer)
-        //            punishmentFoeTimer++;
-        //        
-        //        //reduce the timer slightly to account for no back tracking recently
-        //        if (punishmentFoeTimer>0 && !paused)
-        //            punishmentFoeTimer-=punishmentTimerDecrease;
-        //        
-        //        //check if it's time to spawn an punishment foe
-        //        if (punishmentFoeTimer>=punishmentFoeTime){
-        //            punishmentFoeTimer=0;   //reset the timer
-        //            //spawn a stealth foe slightly stronger than the current wave level
-        //            spawnFoe("stealth", waves[curWave].level+1);
-        //        }
-        //        
-        //        //if the game was paused because a foes didn't have a path, unpause if the way is clear now
-        //        //        if (allFoesHavePath && noPath){
-        //        //            noPath=false;
-        //        //        }
-        //   
-        
-        //update the towers
-        for (int i=0; i<towers.size(); i++){
-            towers[i]->update();
-            
-            //if this tower is ready to shoot and the player isn't dead, check if there is a foe within range
-            if (towers[i]->readyToShoot && health>0){
+        int numUpdates=1;
+        if (fastForward)    numUpdates=3;
+        for (int i=0; i<numUpdates; i++){
+            //manage the current wave
+            if (curWave>=0 && !wavesDone){
+                waves[curWave].update(paused, fastForward);
+                if (waves[curWave].readyForNextFoe)
+                    spawnFoe(waves[curWave].getNextFoe(),waves[curWave].level);
                 
-                float closestDist=10000000;
-                int closestID=-1;
-                for (int k=0; k<foes.size(); k++){
-                    float distance=towers[i]->pos.distance(foes[k]->p.pos);
-                    if ( distance < towers[i]->range +towers[i]->rangePadding && distance<closestDist){
-                        
-                        //red can only target foes not immune to red
-                        if (towers[i]->type=="red" && foes[k]->type!="immune_red"){
-                            closestDist=distance;
-                            closestID=k;
-                        }
-                        
-                        //green can shoot goddamn anything
-                        if (towers[i]->type=="green"){
-                            closestDist=distance;
-                            closestID=k;
-                        }
-                        
-                        //freeze tower cannot shoot the foe if it is already frozen
-                        if (towers[i]->type=="blue" && foes[k]->freezeTimer<=0){
-                            closestDist=distance;
-                            closestID=k;
+                //if this wave is done, and all foes are dead or offscreen, we can start the next wave if the player is still alive
+                if (waves[curWave].done && foes.size()==0 && health>0 && !waveComplete)
+                    endWave();
+            }
+            
+            //update Foes
+            bool allFoesHavePath=true;  //assume that all foes can reach the end
+            bool addToPunishmentTimer=false;    //assume that none back tracked
+            for (int i=foes.size()-1; i>=0; i--){
+                foes[i]->update();
+                
+                if (!foes[i]->pathFound) allFoesHavePath=false;
+                
+                //if it just backtracked, increase the timer before spawning a punishment stealth foe
+                if (foes[i]->justBacktracked){
+                    foes[i]->justBacktracked=false; //turn off the flag
+                    addToPunishmentTimer=true;
+                }
+                
+                //remove it if it reached the end
+                if (foes[i]->reachedTheEnd){
+                    takeDamage(foes[i]->damageToPlayer);   //player takes damage
+                    killFoe(i);
+                }
+                //remove it if it is dead
+                else if (foes[i]->dead){
+                    //kill it
+                    killFoe(i);
+                    //play the sound
+                    //SM.playSound("enemyDeath");
+                }
+            }
+            
+            //        //add to the punishment timer if a foe back tracked
+            //        if (addToPunishmentTimer)
+            //            punishmentFoeTimer++;
+            //        
+            //        //reduce the timer slightly to account for no back tracking recently
+            //        if (punishmentFoeTimer>0 && !paused)
+            //            punishmentFoeTimer-=punishmentTimerDecrease;
+            //        
+            //        //check if it's time to spawn an punishment foe
+            //        if (punishmentFoeTimer>=punishmentFoeTime){
+            //            punishmentFoeTimer=0;   //reset the timer
+            //            //spawn a stealth foe slightly stronger than the current wave level
+            //            spawnFoe("stealth", waves[curWave].level+1);
+            //        }
+            //        
+            //        //if the game was paused because a foes didn't have a path, unpause if the way is clear now
+            //        //        if (allFoesHavePath && noPath){
+            //        //            noPath=false;
+            //        //        }
+            //   
+            
+            //update the towers
+            for (int i=0; i<towers.size(); i++){
+                towers[i]->update();
+                
+                //if this tower is ready to shoot and the player isn't dead, check if there is a foe within range
+                if (towers[i]->readyToShoot && health>0){
+                    
+                    float closestDist=10000000;
+                    int closestID=-1;
+                    for (int k=0; k<foes.size(); k++){
+                        float distance=towers[i]->pos.distance(foes[k]->p.pos);
+                        if ( distance < towers[i]->range +towers[i]->rangePadding && distance<closestDist){
+                            
+                            //red can only target foes not immune to red
+                            if (towers[i]->type=="red" && foes[k]->type!="immune_red"){
+                                closestDist=distance;
+                                closestID=k;
+                            }
+                            
+                            //green can shoot goddamn anything
+                            if (towers[i]->type=="green"){
+                                closestDist=distance;
+                                closestID=k;
+                            }
+                            
+                            //freeze tower cannot shoot the foe if it is already frozen
+                            if (towers[i]->type=="blue" && foes[k]->freezeTimer<=0){
+                                closestDist=distance;
+                                closestID=k;
+                            }
                         }
                     }
-                }
-                
-                if (closestID!=-1){
-                    towers[i]->fire(foes[closestID]);
-                }
-                
-            }
-            
-            //if this is a bomb tower, check if it just hit
-            if(towers[i]->bombHit){
-                towers[i]->bombHit=false;
-                cout<<endl;
-                
-                //find all of the foes in range of the bullet and damage them
-                for (int k=0; k<foes.size(); k++){
-                    if (towers[i]->bullet.pos.distance(foes[k]->p.pos)<towers[i]->blastRadius){
-                        foes[k]->hp-=towers[i]->bulletDamage;
+                    
+                    if (closestID!=-1){
+                        towers[i]->fire(foes[closestID]);
                     }
+                    
                 }
                 
-                //add an animation
-                BombAnimation newBombAnimation;
-                newBombAnimation.setup(towers[i]->bullet.pos.x,towers[i]->bullet.pos.y,towers[i]->blastRadius);
-                bombAnimations.push_back(newBombAnimation);
+                //if this is a bomb tower, check if it just hit
+                if(towers[i]->bombHit){
+                    towers[i]->bombHit=false;
+                    cout<<endl;
+                    
+                    //find all of the foes in range of the bullet and damage them
+                    for (int k=0; k<foes.size(); k++){
+                        if (towers[i]->bullet.pos.distance(foes[k]->p.pos)<towers[i]->blastRadius){
+                            foes[k]->hp-=towers[i]->bulletDamage;
+                        }
+                    }
+                    
+                    //add an animation
+                    BombAnimation newBombAnimation;
+                    newBombAnimation.setup(towers[i]->bullet.pos.x,towers[i]->bullet.pos.y,towers[i]->blastRadius);
+                    bombAnimations.push_back(newBombAnimation);
+                }
             }
         }
-    }
-    
-    //kil any old bomb animations
-    for (int i=bombAnimations.size()-1; i>=0; i--){
-        bombAnimations[i].update();
-        if (bombAnimations[i].done)
-            bombAnimations.erase(bombAnimations.begin()+i);
-    }
-    
-    //update ink particles
-    //the location is in terms of the board the game is played on, requiring it to go slightly negative to actually reach the display
-    int inkEndX=ofGetWidth()*0.05;
-    int inkEndY=ofGetHeight()* -0.05;
-    for (int i=inkParticles.size()-1; i>=0; i--){
-        //reset the particle
-        inkParticles[i].resetForce();
-        //atract the controler to the next node
-        inkParticles[i].addAttractionForce(inkEndX, inkEndY, ofGetWidth()*1.5, 0.95);
-        //dampen and update the particle
-        inkParticles[i].addDampingForce();
-        inkParticles[i].update();
         
-        //check if it reached the end
-        if (ofDist(inkParticles[i].pos.x, inkParticles[i].pos.y, inkEndX, inkEndY)<ofGetWidth()*0.02){
-            //give the player ink
-            totalInk+=inkParticles[i].inkValue;
-            //kill the particle
-            inkParticles.erase(inkParticles.begin()+i);
+        //kil any old bomb animations
+        for (int i=bombAnimations.size()-1; i>=0; i--){
+            bombAnimations[i].update();
+            if (bombAnimations[i].done)
+                bombAnimations.erase(bombAnimations.begin()+i);
         }
-    }
-    
-    //update explosions and puffs
-    for (int i=explosions.size()-1; i>=0; i--){
-        explosions[i].update();
         
-        if (explosions[i].killMe)
-            explosions.erase(explosions.begin()+i);
-    }
-    
-    //update the wave info boxes if they need any changing
-    //fade out the bottom box if the level was just finished
-    if (waveInfoBoxes.size()>0){
-        if (waveInfoBoxes[0].fading){
-            waveInfoBoxes[0].alpha-=waveInfoBoxes[0].fadeSpeed;
-            //kill it if it is gone
-            if (waveInfoBoxes[0].alpha<=0){
-                waveInfoBoxes.erase(waveInfoBoxes.begin());
+        //update ink particles
+        //the location is in terms of the board the game is played on, requiring it to go slightly negative to actually reach the display
+        int inkEndX=ofGetWidth()*0.05;
+        int inkEndY=ofGetHeight()* -0.05;
+        for (int i=inkParticles.size()-1; i>=0; i--){
+            //reset the particle
+            inkParticles[i].resetForce();
+            //atract the controler to the next node
+            inkParticles[i].addAttractionForce(inkEndX, inkEndY, ofGetWidth()*1.5, 0.95);
+            //dampen and update the particle
+            inkParticles[i].addDampingForce();
+            inkParticles[i].update();
+            
+            //check if it reached the end
+            if (ofDist(inkParticles[i].pos.x, inkParticles[i].pos.y, inkEndX, inkEndY)<ofGetWidth()*0.02){
+                //give the player ink
+                totalInk+=inkParticles[i].inkValue;
+                //kill the particle
+                inkParticles.erase(inkParticles.begin()+i);
             }
         }
-    }
-    //if the bottom box is not on the bottom line, move them all down and adjust the alhpa
-    if (waveInfoBoxes.size()>0){    //make sure there is somehting there
-        if (waveInfoBoxes[0].pos.y<waveInfoBottom){
-            for (int i=0; i<waveInfoBoxes.size(); i++){
-                waveInfoBoxes[i].pos.y+=waveInfoBoxes[i].fallSpeed;
-                //make sure they don't go below the line
-                waveInfoBoxes[i].pos.y=MIN(waveInfoBottom, waveInfoBoxes[i].pos.y);
-                //set the alpha based on the distance to the bottom line
-                waveInfoBoxes[i].alpha=ofMap( waveInfoBottom-waveInfoBoxes[i].pos.y, 0, waveInfoDistToFadeOut, 255, 0, true);
+        
+        //update explosions and puffs
+        for (int i=explosions.size()-1; i>=0; i--){
+            explosions[i].update();
+            
+            if (explosions[i].killMe)
+                explosions.erase(explosions.begin()+i);
+        }
+        
+        //update the wave info boxes if they need any changing
+        //fade out the bottom box if the level was just finished
+        if (waveInfoBoxes.size()>0){
+            if (waveInfoBoxes[0].fading){
+                waveInfoBoxes[0].alpha-=waveInfoBoxes[0].fadeSpeed;
+                //kill it if it is gone
+                if (waveInfoBoxes[0].alpha<=0){
+                    waveInfoBoxes.erase(waveInfoBoxes.begin());
+                }
+            }
+        }
+        //if the bottom box is not on the bottom line, move them all down and adjust the alhpa
+        if (waveInfoBoxes.size()>0){    //make sure there is somehting there
+            if (waveInfoBoxes[0].pos.y<waveInfoBottom){
+                for (int i=0; i<waveInfoBoxes.size(); i++){
+                    waveInfoBoxes[i].pos.y+=waveInfoBoxes[i].fallSpeed;
+                    //make sure they don't go below the line
+                    waveInfoBoxes[i].pos.y=MIN(waveInfoBottom, waveInfoBoxes[i].pos.y);
+                    //set the alpha based on the distance to the bottom line
+                    waveInfoBoxes[i].alpha=ofMap( waveInfoBottom-waveInfoBoxes[i].pos.y, 0, waveInfoDistToFadeOut, 255, 0, true);
+                }
             }
         }
     }
@@ -532,38 +554,6 @@ void testApp::draw(){
     backgroundPic.draw(0,0);
     
      ofEnableAlphaBlending();
-    
-    //color selection buttons
-    ofSetRectMode(OF_RECTMODE_CORNER);
-    //show the one that has been selected
-    ofPushMatrix();
-    ofTranslate(colorButtons[curBrushColor].x+colorButtonPics[curBrushColor].width/2, colorButtons[curBrushColor].y+colorButtonPics[curBrushColor].height/2);
-    ofScale(1.2,1.2);
-    ofSetColor(255,120);
-    colorButtonPics[curBrushColor].draw(-colorButtonPics[curBrushColor].width/2,-colorButtonPics[curBrushColor].height/2);
-    ofPopMatrix();
-    //then draw all of them
-    ofSetColor(255);
-    for (int i=0; i<5; i++)
-        colorButtonPics[i].draw(colorButtons[i].x, colorButtons[i].y);
-    
-    //game buttons
-    ofNoFill();
-    ofSetColor(255);
-    //pause buttons
-    pauseButtonPic.draw(pauseButton.x, pauseButton.y);
-    //if the fast forward button has been selected, show it again behind itself
-    if (fastForward){
-        ofPushMatrix();
-        ofTranslate(fastForwardButton.x+fastForwardButtonPic.width/2, fastForwardButton.y+fastForwardButtonPic.height/2);
-        ofScale(1.2,1.2);
-        ofSetColor(255,120);
-        fastForwardButtonPic.draw(-fastForwardButtonPic.width/2,-fastForwardButtonPic.height/2);
-        ofPopMatrix();
-    }
-    ofSetColor(255);
-    fastForwardButtonPic.draw(fastForwardButton.x, fastForwardButton.y);
-
     
     //debug info
     ofSetColor(255,100,100);
@@ -579,48 +569,37 @@ void testApp::draw(){
     }
     ofDrawBitmapString(pausedText, 100, ofGetHeight()-2);
     
-    
-    //show the game
-    drawGame();
-    
-    //show the border
-    ofSetRectMode(OF_RECTMODE_CORNER);
-    ofSetColor(255);
-    borderPics[numEntrances-1].draw(boardOffset.x, boardOffset.y);
-    
-    //show player stats that live outside of the game area
-    drawPlayerInfo();   
-    
-    //show the pause screen if it's up
-    if (playerPause){
-        //fade out the screen a bit
-        ofSetRectMode(OF_RECTMODE_CORNER);
-        ofSetColor(255,220);
-        backgroundPic.draw(0,0);
+    if (gameState=="game"){
+        //show the game
+        drawGame();
         
-        ofSetRectMode(OF_RECTMODE_CENTER);
-        int bannerX = ofGetWidth()*0.5;
-        int bannerY =ofGetHeight()*0.2;
-        
-        ofSetColor(255,ofMap(sin(ofGetElapsedTimef()*2), -1,1, 140,250));
-        bannerBacks[5].draw(bannerX, bannerY);
-        ofSetColor(0);
-        banners[5].draw(bannerX, bannerY);
-        
-        //draw the buttons
+        //show the border
         ofSetRectMode(OF_RECTMODE_CORNER);
         ofSetColor(255);
-        for (int i=0; i<3; i++){
-            pauseScreenButtonPics[i].draw(pauseScreenButtons[i].x, pauseScreenButtons[i].y);
+        borderPics[numEntrances-1].draw(boardOffset.x, boardOffset.y);
+        
+        //show player stats that live outside of the game area
+        drawPlayerInfo(); 
+        
+        //let the player know if they are dead
+        if (health<=0){
+            drawEndGame();
         }
         
+        //show the pause screen if it's up
+        if (playerPause){
+            drawPause();
+        }
         
+        //set the rect mode back
+        ofSetRectMode(OF_RECTMODE_CORNER);
+    }
+    
+    if (gameState=="menu"){
+        drawMenu();
     }
     
     ofDisableAlphaBlending();
-    //set the rect mode back
-    ofSetRectMode(OF_RECTMODE_CORNER);
-    
 }
 
 //--------------------------------------------------------------
@@ -633,7 +612,6 @@ void testApp::drawGame(){
     if(showAllInfo){
 
         //go through the images and draw them all out to the screen
-        
         for (int x=0; x<fieldW; x++){
             for (int y=0; y<fieldH; y++){
                 int pos=y*fieldW+x;
@@ -662,7 +640,7 @@ void testApp::drawGame(){
     }
     
     //show the explored area of the tempFoes if they could not find a path
-    if (noPath){
+    if (noPath && health>0){
         ofFill();
         if (tempFoeTop.showPath){
             tempFoeTop.drawExplored();
@@ -735,6 +713,53 @@ void testApp::drawGame(){
 }
 
 //--------------------------------------------------------------
+void testApp::drawPause(){
+    //fade out the screen a bit
+    ofSetRectMode(OF_RECTMODE_CORNER);
+    ofSetColor(255,220);
+    backgroundPic.draw(0,0);
+    
+    ofSetRectMode(OF_RECTMODE_CENTER);
+    int bannerX = ofGetWidth()*0.5;
+    int bannerY =ofGetHeight()*0.2;
+    
+    ofSetColor(255,ofMap(sin(ofGetElapsedTimef()*2), -1,1, 140,250));
+    bannerBacks[5].draw(bannerX, bannerY);
+    ofSetColor(0);
+    banners[5].draw(bannerX, bannerY);
+    
+    //draw the buttons
+    ofSetRectMode(OF_RECTMODE_CORNER);
+    ofSetColor(255);
+    for (int i=0; i<3; i++){
+        pauseScreenButtonPics[i].draw(pauseScreenButtons[i].x, pauseScreenButtons[i].y);
+    }
+    
+}
+
+//--------------------------------------------------------------
+void testApp::drawEndGame(){
+    //fade out the screen a bit
+    ofSetRectMode(OF_RECTMODE_CORNER);
+    ofSetColor(255,170);
+    backgroundPic.draw(0,0);
+    
+    ofSetRectMode(OF_RECTMODE_CENTER);
+    int messageX=boardOffset.x+boardW*boardScale*0.5;
+    int messageY=ofGetHeight()*0.25;
+    float deathMessageY=boardOffset.y+boardH*boardScale*0.3;
+    ofSetColor(255,ofMap(sin(ofGetElapsedTimef()*2), -1,1, 120,210));
+    bannerBacks[4].draw(messageX, deathMessageY);
+    ofSetColor(255,0,0);
+    if (ofGetFrameNum()/4%2==0) ofSetColor(0);
+    banners[4].draw(messageX, deathMessageY);
+    
+    ofSetColor(0);
+    drawCenteredText("After "+ofToString(curWave)+" waves", infoFontBig, messageX, messageY+ofGetHeight()*0.2);
+}
+
+
+//--------------------------------------------------------------
 void testApp::drawWaveCompleteAnimation(){
     //get the amount of time the animation has played
     float curTime=ofGetElapsedTimef()-waveAnimationStart;
@@ -744,6 +769,8 @@ void testApp::drawWaveCompleteAnimation(){
     
     //ofColor thisCol;
     //thisCol.setHsb(ofRandom(255), 255, 100);
+    
+    ofSetRectMode(OF_RECTMODE_CENTER);
     
     //backing
     ofSetColor(255,ofMap(sin(ofGetElapsedTimef()*2), -1,1, 120,210));
@@ -781,7 +808,7 @@ void testApp::drawPlayerInfo(){
     //draw health
     ofSetRectMode(OF_RECTMODE_CORNER);
     float xCenter=boardOffset.x + boardW*boardScale*0.5;
-    float healthY=boardOffset.y + boardH*boardScale;
+    float healthY=ofGetHeight()*0.01;   //boardOffset.y + boardH*boardScale;
     float healthWidth=boardW*boardScale;
     float xLeft=xCenter-healthWidth/2;
     float healthSpacing= (healthWidth - healthStart*healthPicFull[0].width)/healthStart;
@@ -803,8 +830,8 @@ void testApp::drawPlayerInfo(){
     //SHOW INK VALUES
     ofFill();
     ofSetColor(0);
-    int inktextRightX=ofGetWidth()*0.10;
-    int inkTextY=ofGetHeight()*0.07;
+    int inktextRightX=ofGetWidth()*0.09;
+    int inkTextY=ofGetHeight()*0.91;
     
     thisTextX=inktextRightX-infoFont.stringWidth("Ink Left:")/2;
     infoFont.drawString("Ink Left:",thisTextX,inkTextY);
@@ -818,9 +845,41 @@ void testApp::drawPlayerInfo(){
         waveInfoBoxes[i].draw();
     }
     
+    //color selection buttons
+    ofSetRectMode(OF_RECTMODE_CORNER);
+    //show the one that has been selected
+    ofPushMatrix();
+    ofTranslate(colorButtons[curBrushColor].x+colorButtonPics[curBrushColor].width/2, colorButtons[curBrushColor].y+colorButtonPics[curBrushColor].height/2);
+    ofScale(1.2,1.2);
+    ofSetColor(255,120);
+    colorButtonPics[curBrushColor].draw(-colorButtonPics[curBrushColor].width/2,-colorButtonPics[curBrushColor].height/2);
+    ofPopMatrix();
+    //then draw all of them
+    ofSetColor(255);
+    for (int i=0; i<5; i++)
+        colorButtonPics[i].draw(colorButtons[i].x, colorButtons[i].y);
+    
+    //game buttons
+    ofNoFill();
+    ofSetColor(255);
+    //pause buttons
+    pauseButtonPic.draw(pauseButton.x, pauseButton.y);
+    //if the fast forward button has been selected, show it again behind itself
+    if (fastForward){
+        ofPushMatrix();
+        ofTranslate(fastForwardButton.x+fastForwardButtonPic.width/2, fastForwardButton.y+fastForwardButtonPic.height/2);
+        ofScale(1.2,1.2);
+        ofSetColor(255,120);
+        fastForwardButtonPic.draw(-fastForwardButtonPic.width/2,-fastForwardButtonPic.height/2);
+        ofPopMatrix();
+    }
+    ofSetColor(255);
+    fastForwardButtonPic.draw(fastForwardButton.x, fastForwardButton.y);
+    
     //BANNERS
     //let the player no if there is no path
     ofFill();
+    ofSetRectMode(OF_RECTMODE_CENTER);
     int messageX=boardOffset.x+boardW*boardScale*0.5;
     int messageY=ofGetHeight()*0.25;
     ofSetColor(0,0,0);
@@ -839,15 +898,6 @@ void testApp::drawPlayerInfo(){
         banners[1].draw(messageX, messageY);
         outOfInkBannerTimer-=deltaTime;
     }
-    //let the player know if they are dead
-    if (health<=0){
-        float deathMessageY=boardOffset.y+boardH*boardScale*0.3;
-        ofSetColor(255,ofMap(sin(ofGetElapsedTimef()*2), -1,1, 120,210));
-        bannerBacks[4].draw(messageX, deathMessageY);
-        ofSetColor(255,0,0);
-        if (ofGetFrameNum()/4%2==0) ofSetColor(0);
-        banners[4].draw(messageX, deathMessageY);
-    }
     
     //check if we should be showing the wave complete animation
     if (waveComplete)
@@ -863,17 +913,36 @@ void testApp::drawPlayerInfo(){
 }
 
 //--------------------------------------------------------------
+void testApp::drawMenu(){
+    
+    ofSetRectMode(OF_RECTMODE_CENTER);
+    ofSetColor(255);
+    titlePic.draw(ofGetWidth()*0.5, ofGetHeight()*0.27);
+    
+    ofSetRectMode(OF_RECTMODE_CORNER);
+    //draw the buttons
+    for (int i=0; i<NUM_MENU_BUTONS; i++){
+        menuButtonPics[i].draw(menuButtons[i].x, menuButtons[i].y);
+    }
+    
+    ofSetColor(0);
+    infoFontSmall.drawString("Andy Wallace 2012", ofGetWidth()*0.01, ofGetHeight()*0.98);
+    
+}
+
+//--------------------------------------------------------------
 void testApp::exit(){
     
 }
 
 //--------------------------------------------------------------
 void testApp::touchDown(ofTouchEventArgs & touch){
+    health--;
     
-    if (touch.id == 0){
+    if (touch.id == 0 && gameState=="game"){
         fingerDown = true;
         
-        if (!playerPause){
+        if (!playerPause && health>0){
             for (int i=0; i<5; i++){
                 if (colorButtons[i].inside(touch.x,touch.y)){
                     curBrushColor = i;
@@ -900,7 +969,7 @@ void testApp::touchDown(ofTouchEventArgs & touch){
 
 //--------------------------------------------------------------
 void testApp::touchMoved(ofTouchEventArgs & touch){
-    if (touch.id == 0 && !playerPause){
+    if (touch.id == 0 && !playerPause && gameState=="game"){
         
         //if the finger moved fast, there could be blank space between where the two brush events are called
         //point spacing shows the aproximate number of pixels that shuld be betweene ach call to brushDown
@@ -927,26 +996,37 @@ void testApp::touchMoved(ofTouchEventArgs & touch){
 
 //--------------------------------------------------------------
 void testApp::touchUp(ofTouchEventArgs & touch){
-    if (touch.id == 0){
-        if (needToConvertDrawingToGame){
-            convertDrawingToGame();
+    if (gameState=="game"){
+        if (touch.id == 0){
+            if (needToConvertDrawingToGame){
+                convertDrawingToGame();
+            }
+            fingerDown = false;
         }
-        fingerDown = false;
+        
+        //check for the pause screen buttons if that's what's up
+        if (playerPause){
+            
+            if (pauseScreenButtons[0].inside(touch.x,touch.y)){
+                playerPause=false;
+            }
+            if (pauseScreenButtons[1].inside(touch.x,touch.y)){
+                reset();
+            }
+            if (pauseScreenButtons[2].inside(touch.x,touch.y)){
+                cout<<"how to play"<<endl;
+            }
+            
+        }
     }
     
-    //check for the pause screen buttons if that's what's up
-    if (playerPause){
-        
-        if (pauseScreenButtons[0].inside(touch.x,touch.y)){
-            playerPause=false;
-        }
-        if (pauseScreenButtons[1].inside(touch.x,touch.y)){
+    if (gameState=="menu"){
+    
+        if (menuButtons[0].inside(touch.x, touch.y)){
+            gameState="game";
             reset();
         }
-        if (pauseScreenButtons[2].inside(touch.x,touch.y)){
-            cout<<"how to play"<<endl;
-        }
-        
+    
     }
 }
 
@@ -1873,3 +1953,10 @@ void testApp::loadFromText(){
     }
 }
 
+
+//--------------------------------------------------------------
+void testApp::drawCenteredText(string text, ofTrueTypeFont font, int x, int y){
+    int centerX=x-font.stringWidth(text)/2;
+    //int centerY=y+font.stringHeight(text)/2;
+    font.drawString(text, centerX, y);
+}

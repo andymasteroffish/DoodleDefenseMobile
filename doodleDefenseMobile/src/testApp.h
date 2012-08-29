@@ -31,32 +31,35 @@
 //ON IPHONE NOTE INCLUDE THIS BEFORE ANYTHING ELSE
 #include "ofxOpenCv.h"
 
-//warning video player doesn't currently work - use live video only
-//#define _USE_LIVE_VIDEO
 
 class testApp : public ofxiPhoneApp{
 	
-	public:
+public:
 		
-		void setup();
-        void loadFromText();
-		void update();
-		void draw();
-        void drawGame();
-        void drawPlayerInfo();
-        void drawWaveCompleteAnimation();
-        void exit();
+    void setup();
+    void loadFromText();
+    void update();
+    void draw();
     
-        void touchDown(ofTouchEventArgs & touch);
-        void touchMoved(ofTouchEventArgs & touch);
-        void touchUp(ofTouchEventArgs & touch);
-        void touchDoubleTap(ofTouchEventArgs & touch);
-        void touchCancelled(ofTouchEventArgs & touch);
-	
-        void lostFocus();
-        void gotFocus();
-        void gotMemoryWarning();
-        void deviceOrientationChanged(int newOrientation);
+    void drawGame();
+    void drawPlayerInfo();
+    void drawPause();
+    void drawWaveCompleteAnimation();
+    void drawEndGame();
+    void drawMenu();
+
+    void exit();
+
+    void touchDown(ofTouchEventArgs & touch);
+    void touchMoved(ofTouchEventArgs & touch);
+    void touchUp(ofTouchEventArgs & touch);
+    void touchDoubleTap(ofTouchEventArgs & touch);
+    void touchCancelled(ofTouchEventArgs & touch);
+
+    void lostFocus();
+    void gotFocus();
+    void gotMemoryWarning();
+    void deviceOrientationChanged(int newOrientation);
     
     //game functions
     void reset();
@@ -78,6 +81,8 @@ class testApp : public ofxiPhoneApp{
     void startNextWave();
     void endWave();
     float getInkFromWaves(int num);
+    
+    void drawCenteredText(string text, ofTrueTypeFont font, int x, int y);
     
     //hardware
     bool retina;
@@ -247,10 +252,12 @@ class testApp : public ofxiPhoneApp{
 #define NUM_WAVE_INFO_BOX_PICS 3
     ofImage waveInfoPics[NUM_WAVE_INFO_BOX_PICS];        //images for the boxes
     
+    //game states
+    string gameState;
+    
     //banners
     ofImage banners[6];
     ofImage bannerBacks[6];
-    ofImage titleBig;
     ofImage playerHitPic;
     
     //pause screen buttons
@@ -269,6 +276,12 @@ class testApp : public ofxiPhoneApp{
     //sounds
     SoundManager SM;
     
+    //main menu
+    ofImage titlePic;
+    #define NUM_MENU_BUTONS 2
+    ofRectangle menuButtons[NUM_MENU_BUTONS];
+    ofImage menuButtonPics[NUM_MENU_BUTONS];
+    
     //debug
     bool showAllInfo;   //shows all of the bullshit lines and data
     
@@ -276,7 +289,7 @@ class testApp : public ofxiPhoneApp{
     float prevFrameTime;
     float deltaTime;
     
-    //tetsing
+    //testing
     int lastX;
     int lastY;
 
