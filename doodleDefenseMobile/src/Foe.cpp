@@ -9,8 +9,7 @@
 #include "Foe.h"
 
 //------------------------------------------------------------
-void Foe::setup(vectorField * _vf, float x, float y, float _goalX, float _goalY, float _fieldScale, int _fieldW, int _fieldH, int level){
-    VF=_vf;
+void Foe::setup(float x, float y, float _goalX, float _goalY, float _fieldScale, int _fieldW, int _fieldH, int level){
     p.pos.x=x;
     p.pos.y=y;
     fieldScale=_fieldScale;
@@ -95,13 +94,6 @@ void Foe::update(){
             p.addAttractionForce(moveParticle, p.pos.distance(moveParticle.pos)*1.5, atraction);
             
             moveAtraction+= moveAtractionIncrease;
-            
-            //get force from the vector field.
-            ofVec2f frc;
-            frc = VF->getForceFromPos(p.pos.x, p.pos.y);
-            //stealth gets almost no resistance from walls
-            if (type=="stealth")    frc*=0.3;
-            p.addForce(frc.x, frc.y);
             
             //dampen and update the particle
             p.addDampingForce();

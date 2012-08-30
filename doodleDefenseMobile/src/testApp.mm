@@ -25,9 +25,6 @@ void testApp::setup(){
     fieldScale = 10; //this was 7 in the computer verison
     boardScale = fieldScale/sizeIncreaseToBoard;
     
-    //setup vector field
-    VF.setupField(120, 90,fieldW*fieldScale, fieldH*fieldScale);
-    
     boardOffset.set(ofGetWidth()*0.04,ofGetHeight()*0.09);  //*0.15);
     
     //black image
@@ -640,7 +637,6 @@ void testApp::drawGame(){
         
         //show the vector field if we're viewing all data
         ofSetColor(0,130,130, 200);
-        VF.draw();
     }
     
     //show the explored area of the tempFoes if they could not find a path
@@ -1271,17 +1267,6 @@ void testApp::convertDrawingToGame(){
         return; //stop checking
     }
     
-    VF.clear();
-    //add some repulsion from each wall
-    for (int i=0; i<fieldW*fieldH; i++){
-        if (wallPixels[i]==0){
-            int wallX=i%fieldW;
-            int wallY=floor(i/fieldW);
-            
-            VF.addOutwardCircle(wallX*fieldScale, wallY*fieldScale, 25, 0.6);
-        }
-    }
-    
     //look for blobs to turn into towers
     //set all towers as unfound. If they are not found when checking the blobs, they will be removed
     for (int i=0; i<towers.size(); i++){
@@ -1446,11 +1431,11 @@ bool testApp::findPathsForFoes(){
     
     //give the foes all of the info they need
     //for left
-    tempFoeLeft.setup(&VF, startX[0], startY[0], goalX[0], goalY[0], fieldScale, fieldW, fieldH,0);
+    tempFoeLeft.setup(startX[0], startY[0], goalX[0], goalY[0], fieldScale, fieldW, fieldH,0);
     tempFoeLeft.wallPixels=wallPixels;
     tempFoeLeft.findPath();
     //from top
-    tempFoeTop.setup(&VF, startX[1], startY[1], goalX[1], goalY[1], fieldScale, fieldW, fieldH,0);
+    tempFoeTop.setup(startX[1], startY[1], goalX[1], goalY[1], fieldScale, fieldW, fieldH,0);
     tempFoeTop.wallPixels=wallPixels;
     tempFoeTop.findPath();
     
@@ -1808,7 +1793,7 @@ void testApp::spawnFoe(string name, int level){
     //give the foe all of the info it needs
     int entrance=nextEntrance;
     if (++nextEntrance >= numEntrances) nextEntrance=0;
-    foes[foes.size()-1]->setup(&VF, startX[entrance], startY[entrance], goalX[entrance], goalY[entrance], fieldScale, fieldW, fieldH,level);
+    foes[foes.size()-1]->setup(startX[entrance], startY[entrance], goalX[entrance], goalY[entrance], fieldScale, fieldW, fieldH,level);
     foes[foes.size()-1]->wallPixels=wallPixels;
     foes[foes.size()-1]->showAllInfo=&showAllInfo;
     foes[foes.size()-1]->paused=&paused;

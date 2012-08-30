@@ -19,7 +19,7 @@
 class Foe{
 public:
     
-    void setup(vectorField * _vf, float x, float y, float goalX, float goalY, float _fieldScale, int _fieldW, int _fieldH, int level);
+    void setup(float x, float y, float goalX, float goalY, float _fieldScale, int _fieldW, int _fieldH, int level);
     void setPics(ofImage stroke[], ofImage fill[]);
     virtual void typeSetup(int level){}
     void update();
@@ -45,7 +45,6 @@ public:
     float fieldScale;   //how mush the field must be blown up to match the screen
     int fieldW;
     int fieldH;
-    vectorField * VF;   //keep a pointer to the vector field
     
     //handling moving to the next node on the route
     particle p;     //particle that controls movement

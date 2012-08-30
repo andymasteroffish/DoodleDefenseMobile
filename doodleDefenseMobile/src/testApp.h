@@ -170,9 +170,6 @@ public:
     float outOfInkBannerTimer;
     float outOfInkBannerTime;
     
-    //vector field
-	vectorField VF;
-    
     //the player
     int score;
     int healthStart;
