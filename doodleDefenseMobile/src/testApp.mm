@@ -131,9 +131,11 @@ void testApp::setup(){
     
     //game buttons
     fastForwardButtonPic.loadImage("buttons/game/fastForwardButton.png");
-    fastForwardButton.set(ofGetWidth()*0.87, ofGetHeight()*0.18, fastForwardButtonPic.width, fastForwardButtonPic.height);
     pauseButtonPic.loadImage("buttons/game/pauseButton.png");
-    pauseButton.set(fastForwardButton.x, ofGetHeight()*0.30, pauseButtonPic.width, pauseButtonPic.height);
+    int gameButtonX = ofGetWidth()*0.85;
+    fastForwardButton.set(gameButtonX, ofGetHeight()*0.15, fastForwardButtonPic.width, fastForwardButtonPic.height);
+    pauseButton.set(gameButtonX, ofGetHeight()*0.30, pauseButtonPic.width, pauseButtonPic.height);
+
     
     
     //pause screen buttons
@@ -943,7 +945,6 @@ void testApp::exit(){
 
 //--------------------------------------------------------------
 void testApp::touchDown(ofTouchEventArgs & touch){
-    health--;
     
     if (touch.id == 0 && gameState=="game"){
         fingerDown = true;

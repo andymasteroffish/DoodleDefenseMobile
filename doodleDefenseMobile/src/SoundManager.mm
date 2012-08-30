@@ -24,6 +24,14 @@ void SoundManager::setup(){
     loadSound("audio/NEWLOSE1","wav", "lose", 1);
     loadSound("audio/STARTGAME","wav", "start", 1);
     
+    NSURL *url = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:ofxStringToNSString("audio/theme") ofType:ofxStringToNSString("mp3")]];
+    NSError *error;
+    gameMusic = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:&error];
+    [gameMusic setVolume:0.3];
+    gameMusic.numberOfLoops = -1;
+    [gameMusic prepareToPlay];
+    [gameMusic play];
+    
     muteSoundEffects = false;
 }
 

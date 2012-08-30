@@ -24,6 +24,8 @@ public:
     vector<string>        soundNames;
     vector<AVAudioPlayer*> sounds;
     
+    AVAudioPlayer* gameMusic;
+    
     bool muteSoundEffects;
     
 };
