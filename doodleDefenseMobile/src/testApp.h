@@ -264,6 +264,10 @@ public:
     ofRectangle pauseScreenButtons[3];
     ofImage pauseScreenButtonPics[3];
     
+    //game overbuttons
+    ofRectangle gameOverButton;
+    ofImage gameOverButtonPic;
+    
     //background pic
     ofImage backgroundPic;
     

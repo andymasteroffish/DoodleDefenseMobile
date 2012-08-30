@@ -236,6 +236,10 @@ void testApp::setup(){
     infoFontBig.loadFont(fontName, 37*(retina+1), true, true);
     infoFontHuge.loadFont(fontName, 50*(retina+1), true, true);
     
+    //game over screen
+    gameOverButtonPic.loadImage("buttons/gameOver/menu.png");
+    gameOverButton.set(0, 0, gameOverButtonPic.width, gameOverButtonPic.height);    //location set in drawEndGame
+    
     //menu
     titlePic.loadImage("menu/title.png");
     menuButtonPics[0]=pauseScreenButtonPics[0];
@@ -755,7 +759,13 @@ void testApp::drawEndGame(){
     banners[4].draw(messageX, deathMessageY);
     
     ofSetColor(0);
-    drawCenteredText("After "+ofToString(curWave)+" waves", infoFontBig, messageX, messageY+ofGetHeight()*0.2);
+    drawCenteredText("After "+ofToString(curWave)+" waves", infoFontBig, messageX, messageY+ofGetHeight()*0.24);
+    
+    //reset button
+    ofSetRectMode(OF_RECTMODE_CORNER);
+    gameOverButton.y=messageY+ofGetHeight()*0.36;
+    gameOverButton.x= messageX-gameOverButton.width/2;
+    gameOverButtonPic.draw(gameOverButton.x, gameOverButton.y);
 }
 
 
@@ -1018,9 +1028,14 @@ void testApp::touchUp(ofTouchEventArgs & touch){
             }
             
         }
+        
+        if (health<0 && gameOverButton.inside(touch.x,touch.y)){
+            gameState="menu";
+        }
+        
     }
     
-    if (gameState=="menu"){
+    else if (gameState=="menu"){
     
         if (menuButtons[0].inside(touch.x, touch.y)){
             gameState="game";
