@@ -212,6 +212,11 @@ public:
     ofImage explosionPic;
     vector <Explosion> explosions;
     
+    //punishing the user for making the foes backtrack too much by spawning stealth foes
+    float punishmentFoeTime;    //how many back tracks to wait before spawning
+    float punishmentTimerDecrease;  //how much to take away each frame to prevent normal play from triggering it
+    float punishmentFoeTimer;
+    
     //getting ink
     vector <particle> inkParticles;
     

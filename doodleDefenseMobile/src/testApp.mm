@@ -249,6 +249,12 @@ void testApp::setup(){
         menuButtons[i].set(ofGetWidth()/2-menuButtonPics[i].width/2, ofMap(i,0,NUM_MENU_BUTONS-1,menuButtonsStartY,menuButtonsEndY), menuButtonPics[i].width, menuButtonPics[i].height);
     }
     
+    
+    //punishing the player for forcing backtracks
+    punishmentFoeTime=50;
+    punishmentTimerDecrease=0.05;
+    punishmentFoeTimer=0;
+    
     //pre-game stuff
     showAllInfo = false;
     
@@ -406,26 +412,28 @@ void testApp::update(){
                 }
             }
             
-            //        //add to the punishment timer if a foe back tracked
-            //        if (addToPunishmentTimer)
-            //            punishmentFoeTimer++;
-            //        
-            //        //reduce the timer slightly to account for no back tracking recently
-            //        if (punishmentFoeTimer>0 && !paused)
-            //            punishmentFoeTimer-=punishmentTimerDecrease;
-            //        
-            //        //check if it's time to spawn an punishment foe
-            //        if (punishmentFoeTimer>=punishmentFoeTime){
-            //            punishmentFoeTimer=0;   //reset the timer
-            //            //spawn a stealth foe slightly stronger than the current wave level
-            //            spawnFoe("stealth", waves[curWave].level+1);
+            //add to the punishment timer if a foe back tracked
+            if (addToPunishmentTimer)
+                punishmentFoeTimer++;
+            
+            //reduce the timer slightly to account for no back tracking recently
+            if (punishmentFoeTimer>0 && !paused)
+                punishmentFoeTimer-=punishmentTimerDecrease;
+            
+            //check if it's time to spawn an punishment foe
+            if (punishmentFoeTimer>=punishmentFoeTime){
+                punishmentFoeTimer=0;   //reset the timer
+                //spawn a stealth foe slightly stronger than the current wave level
+                spawnFoe("stealth", waves[curWave].level+1);
+            }
+            
+            //if the game was paused because a foes didn't have a path, unpause if the way is clear now
+            //        if (allFoesHavePath && noPath){
+            //            noPath=false;
             //        }
-            //        
-            //        //if the game was paused because a foes didn't have a path, unpause if the way is clear now
-            //        //        if (allFoesHavePath && noPath){
-            //        //            noPath=false;
-            //        //        }
-            //   
+            
+            cout<<"punishment timer "<<punishmentFoeTimer<<endl;
+       
             
             //update the towers
             for (int i=0; i<towers.size(); i++){
