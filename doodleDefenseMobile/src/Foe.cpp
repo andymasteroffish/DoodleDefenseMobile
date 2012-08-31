@@ -228,14 +228,15 @@ void Foe::drawDebug(){
 //------------------------------------------------------------
 //draws the area that was explored when no path was found.
 void Foe::drawExplored(){
-    if (ofGetFrameNum()/6%5>1){
-        ofSetColor(220,35,130,20);
+    float alpha = MAX(0, ofMap( sin(ofGetElapsedTimef()*2), -1, 1, -5, 20));
+    //if (ofGetFrameNum()/6%5>1){
+        ofSetColor(220,35,130,alpha);
         ofPushMatrix();
         ofScale(fieldScale,fieldScale);
         for (int i=0; i<closedList.size()-1; i++)
             ofRect(closedList[i]->x,closedList[i]->y,2,2);
         ofPopMatrix();
-    }
+    //}
     
 }
 
