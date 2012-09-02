@@ -45,7 +45,7 @@ public:
     void drawPlayerInfo();
     void drawPause();
     void drawWaveCompleteAnimation();
-    void drawEndGame();
+    void drawEndGame(bool win);
     void drawMenu();
 
     void exit();
@@ -181,6 +181,8 @@ public:
     int damageFlashTime;
     int damageFlashTimer;   //how long to flash red when hit
     
+    bool gameOver;
+    
     //images for displaying player info
     ofImage healthPicFull[15];
     ofImage healthPicEmpty[15];
@@ -287,6 +289,12 @@ public:
     #define NUM_MENU_BUTONS 2
     ofRectangle menuButtons[NUM_MENU_BUTONS];
     ofImage menuButtonPics[NUM_MENU_BUTONS];
+    
+    //mute buttons
+    ofImage muteSoundsButtonPics[2];
+    ofImage muteMusicButtonPics[2];
+    ofRectangle muteSoundsButton;
+    ofRectangle muteMusicButton;
     
     //debug
     bool showAllInfo;   //shows all of the bullshit lines and data

@@ -19,14 +19,29 @@ public:
 
     void setup();
     void loadSound(string fileName, string fileType, string refrenceName, float volume);
+    AVAudioPlayer* loadSingleSound(string fileName, string fileType, float volume, bool loop);
     bool playSound(string refrenceName);
+    
+    void toggleSounds();
+    void toggleMusic();
     
     vector<string>        soundNames;
     vector<AVAudioPlayer*> sounds;
     
     AVAudioPlayer* gameMusic;
     
+    //some sound effects need to be able to play more than once
+    #define NUM_DUP_SOUNDS 5
+    AVAudioPlayer* bombSounds[NUM_DUP_SOUNDS];
+    AVAudioPlayer* enemyDeathSounds[NUM_DUP_SOUNDS];
+    AVAudioPlayer* freezeSounds[NUM_DUP_SOUNDS];
+    AVAudioPlayer* hitSounds[NUM_DUP_SOUNDS];
+    AVAudioPlayer* shootSounds[NUM_DUP_SOUNDS];
+    
     bool muteSoundEffects;
+    bool muteMusic;
+    
+   
     
 };
 

@@ -13,26 +13,34 @@ void SoundManager::setup(){
     sounds.clear();
     soundNames.clear();
     
-    loadSound("audio/BOMB","wav", "bomb", 1);
-    loadSound("audio/ENEMYEXPLODES","wav", "enemyDeath", 0.6);
+    //loadSound("audio/BOMB","wav", "bomb", 1);
+    //loadSound("audio/ENEMYEXPLODES","wav", "enemyDeath", 0.6);
     loadSound("audio/ERROR","wav", "error", 1);
-    loadSound("audio/FREEZE","wav", "freeze", 0.3);
-    loadSound("audio/HIT","wav", "hit", 0.4);
+    //loadSound("audio/FREEZE","wav", "freeze", 0.3);
+    //loadSound("audio/HIT","wav", "hit", 0.4);
     loadSound("audio/LOSEGAME2","wav", "playerHit", 1);
-    loadSound("audio/SHOT","wav", "shoot", 0.6);
+    //loadSound("audio/SHOT","wav", "shoot5555", 0.6);
     loadSound("audio/TRIUMPH4","wav", "beatWave", 1);
     loadSound("audio/NEWLOSE1","wav", "lose", 1);
     loadSound("audio/STARTGAME","wav", "start", 1);
     
-    NSURL *url = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:ofxStringToNSString("audio/theme") ofType:ofxStringToNSString("mp3")]];
-    NSError *error;
-    gameMusic = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:&error];
-    [gameMusic setVolume:0.3];
-    gameMusic.numberOfLoops = -1;
-    [gameMusic prepareToPlay];
-    [gameMusic play];
+    //sounds that need to be able to play more than once at a time
+    for (int i=0; i<NUM_DUP_SOUNDS; i++){
+        bombSounds[i] = loadSingleSound("audio/BOMB", "wav", 1, false);
+        enemyDeathSounds[i] = loadSingleSound("audio/ENEMYEXPLODES", "wav", 0.6, false);
+        freezeSounds[i] = loadSingleSound("audio/FREEZE", "wav", 0.3, false);
+        hitSounds[i] = loadSingleSound("audio/HIT", "wav", 0.4, false);
+        shootSounds[i] = loadSingleSound("audio/SHOT", "wav", 0.6, false);
+    }
+    
+    //game music
+    gameMusic = loadSingleSound("audio/theme", "mp3", 0.3, true);
     
     muteSoundEffects = false;
+    muteMusic = true;
+    
+    if (!muteMusic)
+        [gameMusic play];
 }
 
 //adds an external file to the vector of sound effects
@@ -50,9 +58,76 @@ void SoundManager::loadSound(string fileName, string fileType, string refrenceNa
     soundNames.push_back(refrenceName);
 }
 
+AVAudioPlayer* SoundManager::loadSingleSound(string fileName, string fileType, float volume, bool loop){
+    //load the sound
+    AVAudioPlayer *audioPlayer;
+    NSURL *url = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:ofxStringToNSString(fileName) ofType:ofxStringToNSString(fileType)]];
+    NSError *error;
+    audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:&error];
+    audioPlayer.volume = volume;
+    if (loop)   audioPlayer.numberOfLoops = -1;
+    [audioPlayer prepareToPlay];
+    return audioPlayer;
+}
+
 //plays the specified sound. Returns false if the sound was not found
 bool SoundManager::playSound(string refrenceName){
     if (muteSoundEffects)   return false;
+    
+    if (refrenceName=="bomb"){
+        //find the first verison of the file not currently playing
+        for (int i=0; i<NUM_DUP_SOUNDS; i++){
+            if ( ![bombSounds[i] isPlaying] ){
+                [bombSounds[i] play];
+                return true; //get out!
+            }
+        }
+        return false;
+    }
+    
+    if (refrenceName=="enemyDeath"){
+        //find the first verison of the file not currently playing
+        for (int i=0; i<NUM_DUP_SOUNDS; i++){
+            if ( ![enemyDeathSounds[i] isPlaying] ){
+                [enemyDeathSounds[i] play];
+                return true; //get out!
+            }
+        }
+        return false;
+    }
+    
+    if (refrenceName=="freeze"){
+        //find the first verison of the file not currently playing
+        for (int i=0; i<NUM_DUP_SOUNDS; i++){
+            if ( ![freezeSounds[i] isPlaying] ){
+                [freezeSounds[i] play];
+                return true; //get out!
+            }
+        }
+        return false;
+    }
+    
+    if (refrenceName=="hit"){
+        //find the first verison of the file not currently playing
+        for (int i=0; i<NUM_DUP_SOUNDS; i++){
+            if ( ![hitSounds[i] isPlaying] ){
+                [hitSounds[i] play];
+                return true; //get out!
+            }
+        }
+        return false;
+    }
+    
+    if (refrenceName=="shoot"){
+        //find the first verison of the file not currently playing
+        for (int i=0; i<NUM_DUP_SOUNDS; i++){
+            if ( ![shootSounds[i] isPlaying] ){
+                [shootSounds[i] play];
+                return true; //get out!
+            }
+        }
+        return false;
+    }
     
     //check the vector of names for the specified sound
     for (int i=0; i<soundNames.size(); i++){
@@ -67,4 +142,28 @@ bool SoundManager::playSound(string refrenceName){
     }
     cout<<"BAD SOUND NAME: "<<refrenceName<<endl;
     return false;
+}
+
+void SoundManager::toggleSounds(){
+    muteSoundEffects = !muteSoundEffects;
+    
+    //if the sounds were turned off, stop any that are playing
+    if (muteSoundEffects){
+        for (int i=0; i<soundNames.size(); i++){
+            if ( [sounds[i] isPlaying]){
+                [sounds[i] stop];
+            }
+        }
+    }
+}
+
+void SoundManager::toggleMusic(){
+    muteMusic = !muteMusic;
+    
+    //start or stop the music depending on the choice
+    if (!muteMusic){
+        [gameMusic play];
+    }else{
+        [gameMusic pause];
+    }
 }

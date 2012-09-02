@@ -249,6 +249,14 @@ void testApp::setup(){
         menuButtons[i].set(ofGetWidth()/2-menuButtonPics[i].width/2, ofMap(i,0,NUM_MENU_BUTONS-1,menuButtonsStartY,menuButtonsEndY), menuButtonPics[i].width, menuButtonPics[i].height);
     }
     
+    //mute buttons
+    int muteButtonY=ofGetHeight()*0.9;
+    muteSoundsButtonPics[0].loadImage("buttons/mute/muteSoundsOn.png");
+    muteSoundsButtonPics[1].loadImage("buttons/mute/muteSoundsOff.png");
+    muteMusicButtonPics[0].loadImage("buttons/mute/muteMusicOn.png");
+    muteMusicButtonPics[1].loadImage("buttons/mute/muteMusicOff.png");
+    muteSoundsButton.set(ofGetWidth()*0.8, muteButtonY, muteSoundsButtonPics[0].width,muteSoundsButtonPics[0].height);
+    muteMusicButton.set(ofGetWidth()*0.9, muteButtonY, muteMusicButtonPics[0].width,muteMusicButtonPics[0].height);
     
     //punishing the player for forcing backtracks
     punishmentFoeTime=50;
@@ -270,6 +278,7 @@ void testApp::setup(){
 
 //--------------------------------------------------------------
 void testApp::reset(){ 
+    gameOver = true;
     
     //clear out any foes if there are any
     for (int i=foes.size()-1; i>=0; i--){
@@ -287,7 +296,7 @@ void testApp::reset(){
     totalInk=startInk;
     score=0;
     outOfInkBannerTimer=0;
-    numEntrances=2; //TESTING
+    numEntrances=1; //TESTING
     nextEntrance=0;
     
     fastForward = false;
@@ -355,6 +364,7 @@ void testApp::reset(){
 
 //--------------------------------------------------------------
 void testApp::update(){
+    cout<<"game over:" <<gameOver<<endl;
     //cout<<"cur wave: "<<curWave<<endl;
     //TESTING
     //waveComplete = false;
@@ -432,7 +442,6 @@ void testApp::update(){
             //            noPath=false;
             //        }
             
-            cout<<"punishment timer "<<punishmentFoeTimer<<endl;
        
             
             //update the towers
@@ -502,9 +511,9 @@ void testApp::update(){
         }
         
         //update ink particles
-        //the location is in terms of the board the game is played on, requiring it to go slightly negative to actually reach the display
+        //the location is in terms of the board the game is played on
         int inkEndX=ofGetWidth()*0.05;
-        int inkEndY=ofGetHeight()* -0.05;
+        int inkEndY=ofGetHeight()*0.85;
         for (int i=inkParticles.size()-1; i>=0; i--){
             //reset the particle
             inkParticles[i].resetForce();
@@ -593,8 +602,8 @@ void testApp::draw(){
         drawPlayerInfo(); 
         
         //let the player know if they are dead
-        if (health<=0){
-            drawEndGame();
+        if (gameOver && health<=0){
+            drawEndGame(false);
         }
         
         //show the pause screen if it's up
@@ -608,6 +617,13 @@ void testApp::draw(){
     
     if (gameState=="menu"){
         drawMenu();
+    }
+    
+    //draw the mute buttons on menu or pause
+    if (gameState=="menu" || playerPause){
+        ofSetColor(255);
+        muteSoundsButtonPics[SM.muteSoundEffects].draw(muteSoundsButton.x,muteSoundsButton.y);
+        muteMusicButtonPics[SM.muteMusic].draw(muteMusicButton.x,muteMusicButton.y);
     }
     
     ofDisableAlphaBlending();
@@ -748,7 +764,7 @@ void testApp::drawPause(){
 }
 
 //--------------------------------------------------------------
-void testApp::drawEndGame(){
+void testApp::drawEndGame(bool win){
     //fade out the screen a bit
     ofSetRectMode(OF_RECTMODE_CORNER);
     ofSetColor(255,170);
@@ -758,14 +774,27 @@ void testApp::drawEndGame(){
     int messageX=boardOffset.x+boardW*boardScale*0.5;
     int messageY=ofGetHeight()*0.25;
     float deathMessageY=boardOffset.y+boardH*boardScale*0.3;
+    if (win) deathMessageY-=ofGetHeight()*0.03;
     ofSetColor(255,ofMap(sin(ofGetElapsedTimef()*2), -1,1, 120,210));
-    bannerBacks[4].draw(messageX, deathMessageY);
-    ofSetColor(255,0,0);
-    if (ofGetFrameNum()/4%2==0) ofSetColor(0);
-    banners[4].draw(messageX, deathMessageY);
     
-    ofSetColor(0);
-    drawCenteredText("After "+ofToString(curWave)+" waves", infoFontBig, messageX, messageY+ofGetHeight()*0.24);
+    if (!win){
+        bannerBacks[4].draw(messageX, deathMessageY);
+        ofSetColor(255,0,0);
+        if (ofGetFrameNum()/4%2==0) ofSetColor(0);
+        banners[4].draw(messageX, deathMessageY);
+        
+        ofSetColor(0);
+        drawCenteredText("After "+ofToString(curWave)+" waves", infoFontBig, messageX, messageY+ofGetHeight()*0.24);
+    }
+    else{
+        bannerBacks[3].draw(messageX, deathMessageY);
+        ofSetColor(255,0,0);
+        if (ofGetFrameNum()/4%2==0) ofSetColor(0);
+        banners[3].draw(messageX, deathMessageY);
+        
+        ofSetColor(0);
+        drawCenteredText("With "+ofToString(totalInk-inkUsed)+" ink left", infoFontBig, messageX, messageY+ofGetHeight()*0.24);
+    }
     
     //reset button
     ofSetRectMode(OF_RECTMODE_CORNER);
@@ -789,19 +818,17 @@ void testApp::drawWaveCompleteAnimation(){
     ofSetRectMode(OF_RECTMODE_CENTER);
     
     //backing
-    ofSetColor(255,ofMap(sin(ofGetElapsedTimef()*2), -1,1, 120,210));
-    if (wavesDone)
-        bannerBacks[3].draw(messageX, messageY);
-    else {
-        bannerBacks[2].draw(messageX, messageY);
-    }
     
-    //and the banner proper
-    ofSetColor(ofColor::fromHsb(ofRandom(255), 255, 100));
-    if (wavesDone)
-        banners[3].draw(messageX, messageY);
-    else {
-        banners[2].draw(messageX, messageY);
+    if (wavesDone){
+        gameOver = true;
+        drawEndGame(true);
+    }else{
+        //draw the backing
+        ofSetColor(255,ofMap(sin(ofGetElapsedTimef()*2), -1,1, 120,210));
+         bannerBacks[2].draw(messageX, messageY);
+        //and the banner proper
+        ofSetColor(ofColor::fromHsb(ofRandom(255), 255, 100));
+         banners[2].draw(messageX, messageY);
     }
     
     //    if (curWave+1 != waves.size()){
@@ -977,6 +1004,15 @@ void testApp::touchDown(ofTouchEventArgs & touch){
         
     }
     
+    if (playerPause || gameState=="menu"){
+        if (muteSoundsButton.inside(touch.x, touch.y)){
+            SM.toggleSounds();
+        }
+        if (muteMusicButton.inside(touch.x, touch.y)){
+            SM.toggleMusic();
+        }
+    }
+    
     lastX = touch.x;
     lastY = touch.y;
     
@@ -1026,7 +1062,7 @@ void testApp::touchUp(ofTouchEventArgs & touch){
                 playerPause=false;
             }
             if (pauseScreenButtons[1].inside(touch.x,touch.y)){
-                reset();
+                gameState="menu";
             }
             if (pauseScreenButtons[2].inside(touch.x,touch.y)){
                 cout<<"how to play"<<endl;
@@ -1034,7 +1070,7 @@ void testApp::touchUp(ofTouchEventArgs & touch){
             
         }
         
-        if (health<0 && gameOverButton.inside(touch.x,touch.y)){
+        if (gameOver && gameOverButton.inside(touch.x,touch.y)){
             gameState="menu";
         }
         
@@ -1060,6 +1096,8 @@ void testApp::touchDoubleTap(ofTouchEventArgs & touch){
     
     if (touch.x<60 && touch.y<60)
         reset();
+    
+    health-=2;
     
 }
 
@@ -1090,7 +1128,7 @@ void testApp::deviceOrientationChanged(int newOrientation){
 
 void testApp::brushDown(float touchX, float touchY){
     //get out immediatly if the player is dead
-    if (health<=0)  return;
+    if (gameOver)  return;
     
     int relativeX = touchX-boardOffset.x;
     int relativeY = touchY-boardOffset.y;
@@ -1865,17 +1903,18 @@ void testApp::killFoe(int num){
 //--------------------------------------------------------------
 void testApp::takeDamage(int damage){
     //show red for a second if the player is still in the game
-    if (health>0)   damageFlashTimer=damageFlashTime; 
+    if (gameOver)   damageFlashTimer=damageFlashTime; 
     
     health-=damage;
     
     //check if the player is dead
-    if (health==0){
+    if (health<=0){
         //gray out all towers
         for (int i=0; i<towers.size(); i++)
             towers[i]->playerDead=true;
         //play the lose game sound
         SM.playSound("lose");
+        gameOver = true;
     }
     
     //play the sound
