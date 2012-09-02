@@ -278,7 +278,7 @@ void testApp::setup(){
 
 //--------------------------------------------------------------
 void testApp::reset(){ 
-    gameOver = true;
+    gameOver = false;
     
     //clear out any foes if there are any
     for (int i=foes.size()-1; i>=0; i--){
@@ -364,7 +364,6 @@ void testApp::reset(){
 
 //--------------------------------------------------------------
 void testApp::update(){
-    cout<<"game over:" <<gameOver<<endl;
     //cout<<"cur wave: "<<curWave<<endl;
     //TESTING
     //waveComplete = false;
@@ -772,8 +771,8 @@ void testApp::drawEndGame(bool win){
     
     ofSetRectMode(OF_RECTMODE_CENTER);
     int messageX=boardOffset.x+boardW*boardScale*0.5;
-    int messageY=ofGetHeight()*0.25;
-    float deathMessageY=boardOffset.y+boardH*boardScale*0.3;
+    int messageY=ofGetHeight()*0.25 +ofGetHeight()*0.02;
+    float deathMessageY=boardOffset.y+boardH*boardScale*0.3 +ofGetHeight()*0.02;
     if (win) deathMessageY-=ofGetHeight()*0.03;
     ofSetColor(255,ofMap(sin(ofGetElapsedTimef()*2), -1,1, 120,210));
     
@@ -924,7 +923,7 @@ void testApp::drawPlayerInfo(){
     ofFill();
     ofSetRectMode(OF_RECTMODE_CENTER);
     int messageX=boardOffset.x+boardW*boardScale*0.5;
-    int messageY=ofGetHeight()*0.25;
+    int messageY=ofGetHeight()*0.11;//*0.25;
     ofSetColor(0,0,0);
     if (noPath){
         ofSetColor(255,ofMap(sin(ofGetElapsedTimef()*2), -1,1, 120,210));
@@ -1805,7 +1804,8 @@ void testApp::endWave(){
     }
     
     //play the sound
-    SM.playSound("beatWave");
+    if (!gameOver)
+        SM.playSound("beatWave");
 }
 
 //--------------------------------------------------------------
