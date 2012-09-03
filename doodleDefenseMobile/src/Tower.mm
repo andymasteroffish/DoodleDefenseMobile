@@ -28,8 +28,6 @@ void Tower::setup(float x, float y, float _size, int _idNum, ofImage * _bulletPi
     rangePadding=13;    //slightly increase the range for determining what can be shot
     
     
-    cout<<"setup"<<endl;
-    
     //everything else is handled by the type specific setup, called in setNewPos
     setNewPos(x,y,_size);
     

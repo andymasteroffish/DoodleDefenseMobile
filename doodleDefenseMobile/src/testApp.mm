@@ -159,7 +159,7 @@ void testApp::setup(){
     waveAnimationTime=5;    //flash for x seconds when a wave is finished
     
     //ink values
-    float relativeInkScale = 0.4;   //for adjusting the overall cost of things
+    float relativeInkScale = 0;//0.4;   //for adjusting the overall cost of things
     blackInkValue   = .02 *relativeInkScale;
     colorInkValue[0] = .23 *relativeInkScale;
     colorInkValue[1] = .35 *relativeInkScale;
@@ -575,18 +575,18 @@ void testApp::draw(){
      ofEnableAlphaBlending();
     
     //debug info
-    ofSetColor(255,100,100);
-    ofDrawBitmapString(ofToString(ofGetFrameRate()), 5,ofGetHeight()-2);
-    string pausedText = "not paused";
-    if (paused){
-        pausedText = "paused because  ";
-        if (playerPause)    pausedText+="player paused  ";
-        if (noPath)         pausedText+="no path  ";
-        if (!gameStarted)   pausedText+="game not started  ";
-        if (waveComplete)   pausedText+="wave complete  ";
-        if (fingerDown)     pausedText+="finger down";
-    }
-    ofDrawBitmapString(pausedText, 100, ofGetHeight()-2);
+//    ofSetColor(255,100,100);
+//    ofDrawBitmapString(ofToString(ofGetFrameRate()), 5,ofGetHeight()-2);
+//    string pausedText = "not paused";
+//    if (paused){
+//        pausedText = "paused because  ";
+//        if (playerPause)    pausedText+="player paused  ";
+//        if (noPath)         pausedText+="no path  ";
+//        if (!gameStarted)   pausedText+="game not started  ";
+//        if (waveComplete)   pausedText+="wave complete  ";
+//        if (fingerDown)     pausedText+="finger down";
+//    }
+//    ofDrawBitmapString(pausedText, 100, ofGetHeight()-2);
     
     if (gameState=="game"){
         //show the game
@@ -1324,23 +1324,19 @@ void testApp::convertDrawingToGame(){
     int maxArea=(boardW*boardH)/2;
     int maxNumberOfBlobs=25;        //how many towers there can be
     
-    //expand the pixels in the images 
-//    for (int i=0; i<3; i++)
-//        colorImgs[i].dilate_3x3();   
-    
     //threshold the color images before looking for blobs
     //this will be undone next time the images are set from the pixel arrays
     for (int i=0; i<3; i++){
         colorImgs[i].threshold(colorThreshold, false);
     }
     
-    contourFinder.findContours(colorImgs[0], minArea, maxArea, maxNumberOfBlobs, false);
+    contourFinder.findContours(colorImgs[0], minArea, maxArea, maxNumberOfBlobs, true);
     checkTowers("red");
     //green
-    contourFinder.findContours(colorImgs[1], minArea, maxArea, maxNumberOfBlobs, false);
+    contourFinder.findContours(colorImgs[1], minArea, maxArea, maxNumberOfBlobs, true);
     checkTowers("green");
     //blue
-    contourFinder.findContours(colorImgs[2], minArea, maxArea, maxNumberOfBlobs, false);
+    contourFinder.findContours(colorImgs[2], minArea, maxArea, maxNumberOfBlobs, true);
     checkTowers("blue");
     
     //find any towers that were not found in the last sweep and kill them
@@ -1545,7 +1541,7 @@ bool testApp::findPathsForFoes(){
                 curPathOK = foes[i]->checkRouteForObstruction();
                 
                 if (curPathOK){
-                    cout<<"using current path"<<endl;
+                    //cout<<"using current path"<<endl;
                 }
             }
             
@@ -1558,7 +1554,7 @@ bool testApp::findPathsForFoes(){
                     standardRouteOK = foes[i]->checkExistingRoute(routeFromTopGrid);
                 
                 if (standardRouteOK){
-                    cout<<"using standard route"<<endl;
+                    //cout<<"using standard route"<<endl;
                 }
             }
             
@@ -1587,8 +1583,6 @@ void testApp::checkTowers(string type){
     vector <int> skip;
     float minDist=5;
     
-    //cout<<"num blobs: "<<contourFinder.nBlobs<<endl;
-    
     //JUST USE the holes boolean in the blob. JESUS
     for (int i = 0; i < contourFinder.nBlobs; i++){
         for (int k=0; k<i; k++){
@@ -1605,7 +1599,9 @@ void testApp::checkTowers(string type){
         bool skipMe=false;
         
         for (int k=0; k<skip.size(); k++){
-            if (i==skip[k]) skipMe=true;
+            if (i==skip[k]) {
+                skipMe=true;
+            }
         }
         
         //find the radius
@@ -1614,7 +1610,9 @@ void testApp::checkTowers(string type){
         //make sure the blob is at least pretty close to being a circle
         //check compacntess of the blob. a value of 1 would be a perfect circle. Higher values are less compact
         float compactness = (float)((contourFinder.blobs[i].length*contourFinder.blobs[i].length/contourFinder.blobs[i].area)/FOUR_PI);
-        if (compactness>maxCompactness) skipMe=true;
+        if (compactness>maxCompactness){ 
+            skipMe=true;
+        }
         
         //if it passed all those tests, try to make a tower for the blob
         if (!skipMe){
@@ -1661,8 +1659,6 @@ void testApp::checkTowers(string type){
                     towers.push_back(newTower);
                 }
             }
-        }else{
-            cout<<"my shit got skipped"<<endl;
         }
     }
 }
@@ -1771,7 +1767,7 @@ void testApp::setMazeBorders(){
 
 //--------------------------------------------------------------
 void testApp::startNextWave(){
-    cout<<"start Next"<<endl;
+    //cout<<"start Next"<<endl;
     waveComplete=false;
     curWave++;
     if (curWave<waves.size()){
@@ -1788,7 +1784,7 @@ void testApp::startNextWave(){
         numEntrances=2;
     }
     
-    cout<<"end start Next"<<endl;
+    //cout<<"end start Next"<<endl;
 }
 
 //--------------------------------------------------------------
