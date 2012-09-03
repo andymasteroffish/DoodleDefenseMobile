@@ -159,7 +159,7 @@ void testApp::setup(){
     waveAnimationTime=5;    //flash for x seconds when a wave is finished
     
     //ink values
-    float relativeInkScale = 0;//0.4;   //for adjusting the overall cost of things
+    float relativeInkScale = 0.4;   //for adjusting the overall cost of things
     blackInkValue   = .02 *relativeInkScale;
     colorInkValue[0] = .23 *relativeInkScale;
     colorInkValue[1] = .35 *relativeInkScale;
@@ -572,21 +572,7 @@ void testApp::draw(){
 	ofSetColor(255);
     backgroundPic.draw(0,0);
     
-     ofEnableAlphaBlending();
-    
-    //debug info
-//    ofSetColor(255,100,100);
-//    ofDrawBitmapString(ofToString(ofGetFrameRate()), 5,ofGetHeight()-2);
-//    string pausedText = "not paused";
-//    if (paused){
-//        pausedText = "paused because  ";
-//        if (playerPause)    pausedText+="player paused  ";
-//        if (noPath)         pausedText+="no path  ";
-//        if (!gameStarted)   pausedText+="game not started  ";
-//        if (waveComplete)   pausedText+="wave complete  ";
-//        if (fingerDown)     pausedText+="finger down";
-//    }
-//    ofDrawBitmapString(pausedText, 100, ofGetHeight()-2);
+    ofEnableAlphaBlending();
     
     if (gameState=="game"){
         //show the game
@@ -626,6 +612,20 @@ void testApp::draw(){
     }
     
     ofDisableAlphaBlending();
+    
+    //debug info
+    ofSetColor(255,100,100);
+    ofDrawBitmapString(ofToString(ofGetFrameRate()), 5,ofGetHeight()-2);
+    string pausedText = "not paused";
+    if (paused){
+        pausedText = "paused because  ";
+        if (playerPause)    pausedText+="player paused  ";
+        if (noPath)         pausedText+="no path  ";
+        if (!gameStarted)   pausedText+="game not started  ";
+        if (waveComplete)   pausedText+="wave complete  ";
+        if (fingerDown)     pausedText+="finger down";
+    }
+    ofDrawBitmapString(pausedText, 100, ofGetHeight()-2);
 }
 
 //--------------------------------------------------------------
@@ -1143,7 +1143,7 @@ void testApp::brushDown(float touchX, float touchY){
     }
     
     //eraser gets a smaller brush
-    if (curBrushColor == 4) maxDist*=0.5;   
+    if (curBrushColor == 4) maxDist*=0.6;   
     
     //keeping track of how much ink refund (if any) was generated
     //float blackInkRefund=0;
@@ -1257,7 +1257,7 @@ void testApp::brushDown(float touchX, float touchY){
     }
     
     //spit out some ink pixels if ink was refunded
-    float inkPerParticle = 1.5;
+    float inkPerParticle = 3;
     float pixelWiggle = ofGetWidth()*0.01;  //the force with which the particle can spawn
     
     //get the average locaiton of any refunds that hapenned

@@ -254,7 +254,7 @@ void particle::draw(){
 
 void particle::drawInk(){
     ofSetColor(col);
-    ofCircle(pos.x, pos.y, ofGetWidth()*0.0015);
+    ofCircle(pos.x, pos.y, ofGetWidth()*0.002);
 }
 
 
