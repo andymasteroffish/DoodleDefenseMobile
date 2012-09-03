@@ -249,6 +249,22 @@ void testApp::setup(){
         menuButtons[i].set(ofGetWidth()/2-menuButtonPics[i].width/2, ofMap(i,0,NUM_MENU_BUTONS-1,menuButtonsStartY,menuButtonsEndY), menuButtonPics[i].width, menuButtonPics[i].height);
     }
     
+    //how To
+    cout<<"load how to"<<endl;
+    for (int i=0; i<NUM_HOW_TO_SLIDES; i++){
+        cout<<"load "<<i<<endl;
+        howToSlides[i].loadImage("howTo/howTo"+ofToString(i)+".png");
+    }
+    //set up the next button
+    nextButtonPic[0].loadImage("buttons/howTo/nextButton.png");
+    nextButtonPic[1].loadImage("buttons/howTo/doneButton.png");
+    nextButton.set(ofGetWidth()*0.64,ofGetHeight()*0.67,nextButtonPic[0].width, nextButtonPic[0].height);
+    if (!retina){
+        nextButton.width  *= 0.5;
+        nextButton.height *= 0.5;
+    }
+    cout<<"done load how to"<<endl;
+    
     //mute buttons
     int muteButtonY=ofGetHeight()*0.9;
     muteSoundsButtonPics[0].loadImage("buttons/mute/muteSoundsOn.png");
@@ -604,6 +620,10 @@ void testApp::draw(){
         drawMenu();
     }
     
+    if (gameState=="howTo"){
+        drawHowTo();
+    }
+    
     //draw the mute buttons on menu or pause
     if (gameState=="menu" || playerPause){
         ofSetColor(255);
@@ -882,20 +902,25 @@ void testApp::drawPlayerInfo(){
     
     
     //draw the wave info boxes
-    ofSetRectMode(OF_RECTMODE_CENTER);
-    for (int i=0; i<waveInfoBoxes.size(); i++){
-        waveInfoBoxes[i].draw();
+    //don't show these during how to, only during game
+    if (gameState=="game"){
+        ofSetRectMode(OF_RECTMODE_CENTER);
+        for (int i=0; i<waveInfoBoxes.size(); i++){
+            waveInfoBoxes[i].draw();
+        }
     }
     
     //color selection buttons
     ofSetRectMode(OF_RECTMODE_CORNER);
-    //show the one that has been selected
-    ofPushMatrix();
-    ofTranslate(colorButtons[curBrushColor].x+colorButtonPics[curBrushColor].width/2, colorButtons[curBrushColor].y+colorButtonPics[curBrushColor].height/2);
-    ofScale(1.2,1.2);
-    ofSetColor(255,120);
-    colorButtonPics[curBrushColor].draw(-colorButtonPics[curBrushColor].width/2,-colorButtonPics[curBrushColor].height/2);
-    ofPopMatrix();
+    //show the one that has been selected during gamepaly
+    if (gameState=="game"){
+        ofPushMatrix();
+        ofTranslate(colorButtons[curBrushColor].x+colorButtonPics[curBrushColor].width/2, colorButtons[curBrushColor].y+colorButtonPics[curBrushColor].height/2);
+        ofScale(1.2,1.2);
+        ofSetColor(255,120);
+        colorButtonPics[curBrushColor].draw(-colorButtonPics[curBrushColor].width/2,-colorButtonPics[curBrushColor].height/2);
+        ofPopMatrix();
+    }
     //then draw all of them
     ofSetColor(255);
     for (int i=0; i<5; i++)
@@ -906,8 +931,8 @@ void testApp::drawPlayerInfo(){
     ofSetColor(255);
     //pause buttons
     pauseButtonPic.draw(pauseButton.x, pauseButton.y);
-    //if the fast forward button has been selected, show it again behind itself
-    if (fastForward){
+    //if the fast forward button has been selected, show it again behind itself during gamepaly
+    if (fastForward && gameState=="game"){
         ofPushMatrix();
         ofTranslate(fastForwardButton.x+fastForwardButtonPic.width/2, fastForwardButton.y+fastForwardButtonPic.height/2);
         ofScale(1.2,1.2);
@@ -969,6 +994,32 @@ void testApp::drawMenu(){
     
     ofSetColor(0);
     infoFontSmall.drawString("Andy Wallace 2012", ofGetWidth()*0.01, ofGetHeight()*0.98);
+}
+
+//--------------------------------------------------------------
+void testApp::drawHowTo(){
+    //draw the HUD
+    //show the border
+    ofSetRectMode(OF_RECTMODE_CORNER);
+    ofSetColor(255);
+    borderPics[numEntrances-1].draw(boardOffset.x, boardOffset.y);
+    
+    //show player stats that live outside of the game area
+    drawPlayerInfo(); 
+    
+    //cover it up a bit
+    ofSetRectMode(OF_RECTMODE_CORNER);
+    ofSetColor(255,150);
+    backgroundPic.draw(0,0);
+    
+    //draw the slide
+    ofSetRectMode(OF_RECTMODE_CORNER);
+    ofSetColor(255);
+    howToSlides[curHowToSlide].draw(ofGetWidth()*0.07,ofGetHeight()*0.16);
+    
+    //and the next button
+    nextButtonPic[curHowToSlide==NUM_HOW_TO_SLIDES-1].draw(nextButton.x, nextButton.y, nextButton.width, nextButton.height);
+    
     
 }
 
@@ -995,7 +1046,8 @@ void testApp::touchDown(ofTouchEventArgs & touch){
             }
             
             if (pauseButton.inside(touch.x,touch.y)){
-                playerPause = !playerPause;
+                playerPause = true;
+                SM.playSound("paper");
             }
             
             brushDown(touch.x, touch.y);
@@ -1006,10 +1058,19 @@ void testApp::touchDown(ofTouchEventArgs & touch){
     if (playerPause || gameState=="menu"){
         if (muteSoundsButton.inside(touch.x, touch.y)){
             SM.toggleSounds();
+            SM.playSound("paper");
         }
         if (muteMusicButton.inside(touch.x, touch.y)){
             SM.toggleMusic();
+            SM.playSound("paper");
         }
+    }
+    
+    if (gameState == "howTo" && nextButton.inside(touch.x, touch.y)){
+        curHowToSlide++;
+        if (curHowToSlide==NUM_HOW_TO_SLIDES)
+            gameState=stateToReturnTo;
+        SM.playSound("paper");
     }
     
     lastX = touch.x;
@@ -1059,18 +1120,24 @@ void testApp::touchUp(ofTouchEventArgs & touch){
             
             if (pauseScreenButtons[0].inside(touch.x,touch.y)){
                 playerPause=false;
+                SM.playSound("paper");
             }
             if (pauseScreenButtons[1].inside(touch.x,touch.y)){
                 gameState="menu";
+                SM.playSound("paper");
             }
             if (pauseScreenButtons[2].inside(touch.x,touch.y)){
-                cout<<"how to play"<<endl;
+                gameState="howTo";
+                curHowToSlide=0;
+                stateToReturnTo = "game";
+                SM.playSound("paper");
             }
             
         }
         
         if (gameOver && gameOverButton.inside(touch.x,touch.y)){
             gameState="menu";
+            SM.playSound("paper");
         }
         
     }
@@ -1079,7 +1146,15 @@ void testApp::touchUp(ofTouchEventArgs & touch){
     
         if (menuButtons[0].inside(touch.x, touch.y)){
             gameState="game";
+            SM.playSound("paper");
             reset();
+        }
+        
+        if (menuButtons[1].inside(touch.x, touch.y)){
+            gameState="howTo";
+            curHowToSlide = 0;
+            stateToReturnTo = "menu";
+            SM.playSound("paper");
         }
     
     }
@@ -1347,122 +1422,6 @@ void testApp::convertDrawingToGame(){
         }
     }
     
-    
-    
-//    //check how much ink has been used
-//    inkUsed= 0;  
-//    //check black pixels
-//    for (int i=0; i<fieldW*fieldH; i++){
-//        if (wallPixels[i]==0) inkUsed+=blackInkValue;
-//    }
-//    //check towers
-//    for (int i=0; i<towers.size(); i++){
-//        if (towers[i]->type=="red") inkUsed+=rInkValue*towers[i]->size;
-//        if (towers[i]->type=="green") inkUsed+=gInkValue*towers[i]->size;
-//        if (towers[i]->type=="blue") inkUsed+=bInkValue*towers[i]->size;
-//    }
-//    //factor in the refund
-//    inkUsed-=inkRefund;
-//    //make sure ink used is not negative
-//    inkUsed=MAX(0,inkUsed);
-//    //check if they used more ink than they have
-//    if (inkUsed>totalInk){
-//        tooMuchInk=true;
-//        SM.playSound("error");  //play the sound
-//    }else if (tooMuchInk){  //if they just fixed using too much ink, unpause the game
-//        tooMuchInk=false;
-//    }
-    
-//    //if there is nothing wrong, the game is ready to continue
-//    //but we should check to see if any towers from the last safe game state were removed
-//    if (!tooMuchInk && !noPath){
-//        cout<<"ITS GOOD"<<endl;
-//        
-//        //check the current wall image against the last one to see if any big chunks of wall were erased
-//        vector <int> wallEraseLocations;
-//        wallDiffImage.absDiff(lastSafeWallImage, wallImage);
-//        wallDiffImage.erode_3x3();  //try to remove some noise by expanding the black parts of the image
-//        unsigned char * wallDiffPixels=wallDiffImage.getPixels();
-//        //go thorugh and see how many pixels that had been black are now white
-//        int totalDiff=0;
-//        //int spawnParticleFrequency= (1/blackInkValue)*wallRefund;
-//        for (int i=0; i<fieldW*fieldH; i++){
-//            if (wallDiffPixels[i]>128 && wallPixels[i]==255){
-//                totalDiff++;
-//                //spawn an ink particle every so often based on the number of pixels checked so far if the game has started
-//                if (gameStarted){
-//                    particle newInkParticle;
-//                    int xPos= (i%fieldW)*fieldScale;
-//                    int yPos= ( floor(i/fieldW) )*fieldScale;
-//                    newInkParticle.setInitialCondition( xPos, yPos , ofRandom(-5,5),ofRandom(-5,5));
-//                    inkParticles.push_back(newInkParticle);
-//                }
-//            }
-//        }
-//        //remove from their total ink based on the total
-//        if (gameStarted)
-//            totalInk-= totalDiff/wallRefund;
-//        cout<<"total wall difference: "<<totalDiff<<endl;
-//        cout<<"took Away: "<<totalDiff/wallRefund<<endl;
-//        
-//        
-//        
-//        //go through the tower data from the last safe state and see if antyhing is missing
-//        for (int i=0; i<lastSafeTowerSet.size(); i++){
-//            bool found=false;   //assume the tower will not be found
-//            
-//            //checking each tower might be a super innificient way of doing this
-//            for (int k=0; k<towers.size(); k++){
-//                if ( lastSafeTowerSet[i].pos.distance(towers[k]->pos)<lastSafeTowerSet[i].size && lastSafeTowerSet[i].type==towers[k]->type){
-//                    found=true;
-//                    break;
-//                }
-//            }
-//            
-//            if (!found){
-//                cout<<"you erased the tower at "<<lastSafeTowerSet[i].pos.x<<" , "<<lastSafeTowerSet[i].pos.y<<endl;
-//                
-//                //figure out how much ink that tower was worth
-//                float inkValue;
-//                if (lastSafeTowerSet[i].type=="red") inkValue=rInkValue*lastSafeTowerSet[i].size;
-//                if (lastSafeTowerSet[i].type=="green") inkValue=gInkValue*lastSafeTowerSet[i].size;
-//                if (lastSafeTowerSet[i].type=="blue") inkValue=bInkValue*lastSafeTowerSet[i].size;
-//                
-//                //remove that ink from the player's reserve if the game has been started
-//                if (gameStarted){
-//                    totalInk-=inkValue;
-//                    //and spawn ink particles equal to the refund they should get
-//                    for (int r=0; r<inkValue*towerRefund; r++){
-//                        particle newInkParticle;
-//                        newInkParticle.setInitialCondition(lastSafeTowerSet[i].pos.x,lastSafeTowerSet[i].pos.y,ofRandom(-5,5),ofRandom(-5,5));
-//                        inkParticles.push_back(newInkParticle);
-//                    }
-//                }
-//                
-//            }
-//            
-//            
-//        }
-//        
-//        //save the current wall image
-//        lastSafeWallImage=wallImage;
-//        
-//        //save all of the current tower info to be checked next time
-//        lastSafeTowerSet.clear();
-//        for (int i=0; i<towers.size(); i++){
-//            TowerInfo newInfo;
-//            newInfo.pos=towers[i]->pos;
-//            newInfo.size=towers[i]->size;
-//            newInfo.type=towers[i]->type;
-//            lastSafeTowerSet.push_back(newInfo);
-//        }
-//    }
-//    else{
-//        cout<<"NO GOOD BAD BAD"<<endl;
-//        if (tooMuchInk)    cout<<"TOO MUCH INK"<<endl;
-//        if (noPath)        cout<<"NO PATH"<<endl;
-//    }
-    //cout<<"this many towers: "<<towers.size()<<endl;   
 }
 
 //--------------------------------------------------------------

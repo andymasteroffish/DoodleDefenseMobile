@@ -47,6 +47,7 @@ public:
     void drawWaveCompleteAnimation();
     void drawEndGame(bool win);
     void drawMenu();
+    void drawHowTo();
 
     void exit();
 
@@ -295,6 +296,14 @@ public:
     ofImage muteMusicButtonPics[2];
     ofRectangle muteSoundsButton;
     ofRectangle muteMusicButton;
+    
+    //how to screens
+    #define NUM_HOW_TO_SLIDES 5
+    ofImage howToSlides[NUM_HOW_TO_SLIDES];
+    ofImage nextButtonPic[2];
+    ofRectangle nextButton;
+    string stateToReturnTo; //if it should go back to game or menu
+    int curHowToSlide;
     
     //debug
     bool showAllInfo;   //shows all of the bullshit lines and data

@@ -23,6 +23,7 @@ void SoundManager::setup(){
     loadSound("audio/TRIUMPH4","wav", "beatWave", 1);
     loadSound("audio/NEWLOSE1","wav", "lose", 1);
     loadSound("audio/STARTGAME","wav", "start", 1);
+    loadSound("audio/paper","wav", "paper", 1);
     
     //sounds that need to be able to play more than once at a time
     for (int i=0; i<NUM_DUP_SOUNDS; i++){
@@ -133,7 +134,6 @@ bool SoundManager::playSound(string refrenceName){
     for (int i=0; i<soundNames.size(); i++){
         if (refrenceName==soundNames[i]){
             if ( [sounds[i] isPlaying]){
-                return true;    //TESTING
                 sounds[i].currentTime=0;  //rewind it
             }
             [sounds[i] play];
