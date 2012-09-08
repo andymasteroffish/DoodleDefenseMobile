@@ -885,13 +885,12 @@ void testApp::drawPlayerInfo(){
     float healthSpacing= (healthWidth - healthStart*healthPicFull[0].width)/healthStart;
     //draw full hearts for the life remaining
     ofSetColor(255);
-    float tempScale = 0.7;      //actually size the images!
     for (int i=0; i<health; i++){
-        healthPicFull[i].draw(xLeft+i*healthPicFull[0].width+i*healthSpacing,healthY, healthPicFull[i].width*tempScale, healthPicFull[i].height*tempScale);
+        healthPicFull[i].draw(xLeft+i*healthPicFull[0].width+i*healthSpacing,healthY, healthPicFull[i].width, healthPicFull[i].height);
     }
     //end empty life for the life lost
     for (int i=MAX(0,health); i<healthStart; i++){
-        healthPicEmpty[0].draw(xLeft+i*healthPicEmpty[0].width+i*healthSpacing,healthY, healthPicEmpty[i].width*tempScale, healthPicEmpty[i].height*tempScale);
+        healthPicEmpty[i].draw(xLeft+i*healthPicEmpty[i].width+i*healthSpacing,healthY, healthPicEmpty[i].width, healthPicEmpty[i].height);
     }
     
     
