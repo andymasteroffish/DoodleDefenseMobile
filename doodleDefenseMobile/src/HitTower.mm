@@ -12,7 +12,7 @@ void HitTower::typeSetup(){
     //cout<<"size: "<< size<<endl;
     range=size*3.5 *mobileRangeIncrease;           //moderate range
     
-    rechargeTime=1;         //fast recharge
+    rechargeTime=15;         //fast recharge (always going up even when firing
     bulletAtraction=1;//0.5;    //fast bullet
     bulletDamage=size*0.85;        //moderate damage based on tower size
     

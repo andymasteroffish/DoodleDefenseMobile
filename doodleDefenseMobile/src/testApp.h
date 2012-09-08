@@ -4,6 +4,7 @@
 #include "ofMain.h"
 #include "ofxiPhone.h"
 #include "ofxiPhoneExtras.h"
+#include "ofxiPhoneExternalDisplay.h"   //for mirroring
 
 #include "Foe.h"
 #include "NormFoe.h"
@@ -32,7 +33,7 @@
 #include "ofxOpenCv.h"
 
 
-class testApp : public ofxiPhoneApp{
+class testApp : public ofxiPhoneApp, public ofxiPhoneExternalDisplay{
 	
 public:
 		

@@ -55,8 +55,11 @@ void Tower::update(){
     
     if (! *paused ){
         //increase the timer
-        if (!shooting)  timer++;
-        if (timer>rechargeTime){
+        //red tower needs to advance anyway to make sure it doens't insta-fire on stealth foes
+        if (!shooting || type=="red")  
+            timer++; 
+        
+        if (timer>rechargeTime && !shooting){
             
             //if we have a target already, check if it is still in range
             bool needsNewTarget=true;   //assume we will need a new atrget

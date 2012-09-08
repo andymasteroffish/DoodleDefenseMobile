@@ -380,6 +380,15 @@ void testApp::reset(){
 
 //--------------------------------------------------------------
 void testApp::update(){
+    //anything that only needs to happen at the very start
+    if (ofGetFrameNum()<10){
+        //set it to mirror if it isn't already
+        if (!ofxiPhoneExternalDisplay::isMirroring()){
+            //code from the internet to get it to mirror on exteral screens
+            ofxiPhoneExternalDisplay::mirrorOn();
+            ofxiPhoneExternalDisplay::isMirroring();
+        }
+    }
     //cout<<"cur wave: "<<curWave<<endl;
     //TESTING
     //waveComplete = false;
@@ -1441,7 +1450,7 @@ bool testApp::findPathsForFoes(){
     tempFoeTop.findPath();
     
     //if there is no path for either foe, pause the game
-    if (!tempFoeLeft.pathFound || !tempFoeTop.pathFound){
+    if (!tempFoeLeft.pathFound || (!tempFoeTop.pathFound && numEntrances==2)){
         //go through and mark every foe as hot having a path
         for (int i=0; i<foes.size(); i++){
             //if the foe's guide couldn't make it to the end, mark that they coudl not find a path
