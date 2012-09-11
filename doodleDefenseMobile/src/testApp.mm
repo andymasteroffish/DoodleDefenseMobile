@@ -243,8 +243,9 @@ void testApp::setup(){
     titlePic.loadImage("menu/title.png");
     menuButtonPics[0]=pauseScreenButtonPics[0];
     menuButtonPics[1]=pauseScreenButtonPics[2];
-    int menuButtonsStartY = ofGetHeight()*0.6;
-    int menuButtonsEndY = ofGetHeight()*0.8;
+    menuButtonPics[2].loadImage("buttons/pauseScreen/credits.png");
+    int menuButtonsStartY = ofGetHeight()*0.55;
+    int menuButtonsEndY = ofGetHeight()*0.85;
     for (int i=0; i<NUM_MENU_BUTONS; i++){
         menuButtons[i].set(ofGetWidth()/2-menuButtonPics[i].width/2, ofMap(i,0,NUM_MENU_BUTONS-1,menuButtonsStartY,menuButtonsEndY), menuButtonPics[i].width, menuButtonPics[i].height);
     }
@@ -997,6 +998,9 @@ void testApp::drawMenu(){
     ofSetRectMode(OF_RECTMODE_CORNER);
     //draw the buttons
     for (int i=0; i<NUM_MENU_BUTONS; i++){
+        //have play pulse
+        int alpha = (i==0) ? ofMap(sin(ofGetElapsedTimef()*3),-1,1, 180, 255) : 255;
+        ofSetColor(255,alpha);
         menuButtonPics[i].draw(menuButtons[i].x, menuButtons[i].y);
     }
     

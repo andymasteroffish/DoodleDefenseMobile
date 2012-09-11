@@ -288,7 +288,7 @@ public:
     
     //main menu
     ofImage titlePic;
-    #define NUM_MENU_BUTONS 2
+    #define NUM_MENU_BUTONS 3
     ofRectangle menuButtons[NUM_MENU_BUTONS];
     ofImage menuButtonPics[NUM_MENU_BUTONS];
     
