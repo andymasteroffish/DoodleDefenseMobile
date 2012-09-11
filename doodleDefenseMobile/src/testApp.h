@@ -267,8 +267,8 @@ public:
     ofImage playerHitPic;
     
     //pause screen buttons
-    ofRectangle pauseScreenButtons[3];
-    ofImage pauseScreenButtonPics[3];
+    ofRectangle pauseScreenButtons[4];
+    ofImage pauseScreenButtonPics[4];
     
     //game overbuttons
     ofRectangle gameOverButton;

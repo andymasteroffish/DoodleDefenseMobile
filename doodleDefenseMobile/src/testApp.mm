@@ -4,6 +4,8 @@
 //--------------------------------------------------------------
 void testApp::setup(){	
     retina = false; //TESTING
+    
+    string picNameEnd = retina ? "Retina.png" : ".png";
 	
     //orient landscape
 	iPhoneSetOrientation(OFXIPHONE_ORIENTATION_LANDSCAPE_RIGHT);
@@ -139,11 +141,15 @@ void testApp::setup(){
     
     
     //pause screen buttons
-    pauseScreenButtonPics[0].loadImage("buttons/pauseScreen/play.png");
-    pauseScreenButtonPics[1].loadImage("buttons/pauseScreen/quit.png");
-    pauseScreenButtonPics[2].loadImage("buttons/pauseScreen/howToPlay.png");
-    for (int i=0; i<3; i++){
-        pauseScreenButtons[i].set(ofGetWidth()/2-pauseScreenButtonPics[i].width/2, ofGetHeight()*0.42+ofGetHeight()*0.19*i, pauseScreenButtonPics[i].width, pauseScreenButtonPics[i].height);
+    pauseScreenButtonPics[0].loadImage("buttons/pauseScreen/play"+picNameEnd);
+    pauseScreenButtonPics[1].loadImage("buttons/pauseScreen/howToPlay"+picNameEnd);
+    pauseScreenButtonPics[2].loadImage("buttons/pauseScreen/credits"+picNameEnd);
+    pauseScreenButtonPics[3].loadImage("buttons/pauseScreen/quit"+picNameEnd);
+    float pauseButtonStartY = ofGetHeight()*0.38;
+    float pauseButtonEndY = ofGetHeight()*0.85;
+    for (int i=0; i<4; i++){
+        pauseScreenButtons[i].set(ofGetWidth()/2-pauseScreenButtonPics[i].width/2, (int)ofMap(i,0,3,pauseButtonStartY,pauseButtonEndY), pauseScreenButtonPics[i].width, pauseScreenButtonPics[i].height);
+        
     }
 	
 	//testing different views
@@ -243,37 +249,34 @@ void testApp::setup(){
     titlePic.loadImage("menu/title.png");
     menuButtonPics[0]=pauseScreenButtonPics[0];
     menuButtonPics[1]=pauseScreenButtonPics[2];
-    menuButtonPics[2].loadImage("buttons/pauseScreen/credits.png");
-    int menuButtonsStartY = ofGetHeight()*0.55;
-    int menuButtonsEndY = ofGetHeight()*0.85;
+    menuButtonPics[2]=pauseScreenButtonPics[3];//.loadImage("buttons/pauseScreen/credits.png");
+    float menuButtonsStartY = ofGetHeight()*0.55;
+    float menuButtonsEndY = ofGetHeight()*0.85;
     for (int i=0; i<NUM_MENU_BUTONS; i++){
-        menuButtons[i].set(ofGetWidth()/2-menuButtonPics[i].width/2, ofMap(i,0,NUM_MENU_BUTONS-1,menuButtonsStartY,menuButtonsEndY), menuButtonPics[i].width, menuButtonPics[i].height);
+        menuButtons[i].set(ofGetWidth()/2-menuButtonPics[i].width/2, (int)ofMap(i,0,NUM_MENU_BUTONS-1,menuButtonsStartY,menuButtonsEndY), menuButtonPics[i].width, menuButtonPics[i].height);
+        
     }
     
     //how To
-    cout<<"load how to"<<endl;
     for (int i=0; i<NUM_HOW_TO_SLIDES; i++){
-        cout<<"load "<<i<<endl;
         howToSlides[i].loadImage("howTo/howTo"+ofToString(i)+".png");
     }
     //set up the next button
-    nextButtonPic[0].loadImage("buttons/howTo/nextButton.png");
-    nextButtonPic[1].loadImage("buttons/howTo/doneButton.png");
+    nextButtonPic[0].loadImage("buttons/howTo/nextButton"+picNameEnd);
+    nextButtonPic[1].loadImage("buttons/howTo/doneButton"+picNameEnd);
     nextButton.set(ofGetWidth()*0.64,ofGetHeight()*0.67,nextButtonPic[0].width, nextButtonPic[0].height);
-    if (!retina){
-        nextButton.width  *= 0.5;
-        nextButton.height *= 0.5;
-    }
-    cout<<"done load how to"<<endl;
+
     
     //mute buttons
     int muteButtonY=ofGetHeight()*0.9;
-    muteSoundsButtonPics[0].loadImage("buttons/mute/muteSoundsOn.png");
-    muteSoundsButtonPics[1].loadImage("buttons/mute/muteSoundsOff.png");
-    muteMusicButtonPics[0].loadImage("buttons/mute/muteMusicOn.png");
-    muteMusicButtonPics[1].loadImage("buttons/mute/muteMusicOff.png");
+    
+    muteSoundsButtonPics[0].loadImage("buttons/mute/muteSoundsOn"+picNameEnd);
+    muteSoundsButtonPics[1].loadImage("buttons/mute/muteSoundsOff"+picNameEnd);
+    muteMusicButtonPics[0].loadImage("buttons/mute/muteMusicOn"+picNameEnd);
+    muteMusicButtonPics[1].loadImage("buttons/mute/muteMusicOff"+picNameEnd);
     muteSoundsButton.set(ofGetWidth()*0.8, muteButtonY, muteSoundsButtonPics[0].width,muteSoundsButtonPics[0].height);
     muteMusicButton.set(ofGetWidth()*0.9, muteButtonY, muteMusicButtonPics[0].width,muteMusicButtonPics[0].height);
+    
     
     //punishing the player for forcing backtracks
     punishmentFoeTime=50;
@@ -786,8 +789,8 @@ void testApp::drawPause(){
     //draw the buttons
     ofSetRectMode(OF_RECTMODE_CORNER);
     ofSetColor(255);
-    for (int i=0; i<3; i++){
-        pauseScreenButtonPics[i].draw(pauseScreenButtons[i].x, pauseScreenButtons[i].y);
+    for (int i=0; i<4; i++){
+        pauseScreenButtonPics[i].draw(pauseScreenButtons[i].x, pauseScreenButtons[i].y, pauseScreenButtons[i].width, pauseScreenButtons[i].height);
     }
     
 }
@@ -1001,7 +1004,7 @@ void testApp::drawMenu(){
         //have play pulse
         int alpha = (i==0) ? ofMap(sin(ofGetElapsedTimef()*3),-1,1, 180, 255) : 255;
         ofSetColor(255,alpha);
-        menuButtonPics[i].draw(menuButtons[i].x, menuButtons[i].y);
+        menuButtonPics[i].draw(menuButtons[i].x, menuButtons[i].y, menuButtons[i].width, menuButtons[i].height);
     }
     
     ofSetColor(0);
@@ -1134,14 +1137,15 @@ void testApp::touchUp(ofTouchEventArgs & touch){
                 playerPause=false;
                 SM.playSound("paper");
             }
+            
             if (pauseScreenButtons[1].inside(touch.x,touch.y)){
-                gameState="menu";
-                SM.playSound("paper");
-            }
-            if (pauseScreenButtons[2].inside(touch.x,touch.y)){
                 gameState="howTo";
                 curHowToSlide=0;
                 stateToReturnTo = "game";
+                SM.playSound("paper");
+            }
+            if (pauseScreenButtons[3].inside(touch.x,touch.y)){
+                gameState="menu";
                 SM.playSound("paper");
             }
             
