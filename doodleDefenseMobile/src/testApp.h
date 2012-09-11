@@ -306,6 +306,9 @@ public:
     string stateToReturnTo; //if it should go back to game or menu
     int curHowToSlide;
     
+    //sometimes we want to ignore touch up because somehting just fired in touch down
+    bool ignoreTouchUp;
+    
     //debug
     bool showAllInfo;   //shows all of the bullshit lines and data
     

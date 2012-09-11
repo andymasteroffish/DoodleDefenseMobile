@@ -248,8 +248,8 @@ void testApp::setup(){
     //menu
     titlePic.loadImage("menu/title.png");
     menuButtonPics[0]=pauseScreenButtonPics[0];
-    menuButtonPics[1]=pauseScreenButtonPics[2];
-    menuButtonPics[2]=pauseScreenButtonPics[3];//.loadImage("buttons/pauseScreen/credits.png");
+    menuButtonPics[1]=pauseScreenButtonPics[1];
+    menuButtonPics[2]=pauseScreenButtonPics[2];
     float menuButtonsStartY = ofGetHeight()*0.55;
     float menuButtonsEndY = ofGetHeight()*0.85;
     for (int i=0; i<NUM_MENU_BUTONS; i++){
@@ -287,6 +287,7 @@ void testApp::setup(){
     showAllInfo = false;
     
     fingerDown = false;
+    ignoreTouchUp = false;
     gameStarted = true;
     
     prevFrameTime = ofGetElapsedTimef();
@@ -1086,6 +1087,7 @@ void testApp::touchDown(ofTouchEventArgs & touch){
         if (curHowToSlide==NUM_HOW_TO_SLIDES)
             gameState=stateToReturnTo;
         SM.playSound("paper");
+        ignoreTouchUp=true;
     }
     
     lastX = touch.x;
@@ -1122,6 +1124,12 @@ void testApp::touchMoved(ofTouchEventArgs & touch){
 
 //--------------------------------------------------------------
 void testApp::touchUp(ofTouchEventArgs & touch){
+    if (ignoreTouchUp){
+        //turn off the flag and get out
+        ignoreTouchUp=false;
+        return;
+    }
+    
     if (gameState=="game"){
         if (touch.id == 0){
             if (needToConvertDrawingToGame){
