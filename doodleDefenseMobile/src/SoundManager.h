@@ -38,6 +38,7 @@ public:
     AVAudioPlayer* hitSounds[NUM_DUP_SOUNDS];
     AVAudioPlayer* shootSounds[NUM_DUP_SOUNDS];
     
+    
     bool muteSoundEffects;
     bool muteMusic;
     

@@ -13,29 +13,29 @@ void SoundManager::setup(){
     sounds.clear();
     soundNames.clear();
     
-    //loadSound("audio/BOMB","wav", "bomb", 1);
-    //loadSound("audio/ENEMYEXPLODES","wav", "enemyDeath", 0.6);
-    loadSound("audio/ERROR","wav", "error", 1);
-    //loadSound("audio/FREEZE","wav", "freeze", 0.3);
-    //loadSound("audio/HIT","wav", "hit", 0.4);
-    loadSound("audio/LOSEGAME2","wav", "playerHit", 1);
-    //loadSound("audio/SHOT","wav", "shoot5555", 0.6);
-    loadSound("audio/TRIUMPH4","wav", "beatWave", 1);
-    loadSound("audio/NEWLOSE1","wav", "lose", 1);
-    loadSound("audio/STARTGAME","wav", "start", 1);
-    loadSound("audio/paper","wav", "paper", 1);
+    //loadSound("audio/BOMB","caf", "bomb", 1);
+    //loadSound("audio/ENEMYEXPLODES","caf", "enemyDeath", 0.6);
+    loadSound("audio/ERROR","caf", "error", 1);
+    //loadSound("audio/FREEZE","caf", "freeze", 0.3);
+    //loadSound("audio/HIT","caf", "hit", 0.4);
+    loadSound("audio/LOSEGAME2","caf", "playerHit", 1);
+    //loadSound("audio/SHOT","caf", "shoot5555", 0.6);
+    loadSound("audio/TRIUMPH4","caf", "beatWave", 1);
+    loadSound("audio/NEWLOSE1","caf", "lose", 1);
+    loadSound("audio/STARTGAME","caf", "start", 1);
+    loadSound("audio/paper","caf", "paper", 1);
     
     //sounds that need to be able to play more than once at a time
     for (int i=0; i<NUM_DUP_SOUNDS; i++){
-        bombSounds[i] = loadSingleSound("audio/BOMB", "wav", 1, false);
-        enemyDeathSounds[i] = loadSingleSound("audio/ENEMYEXPLODES", "wav", 0.6, false);
-        freezeSounds[i] = loadSingleSound("audio/FREEZE", "wav", 0.3, false);
-        hitSounds[i] = loadSingleSound("audio/HIT", "wav", 0.4, false);
-        shootSounds[i] = loadSingleSound("audio/SHOT", "wav", 0.6, false);
+        bombSounds[i] = loadSingleSound("audio/BOMB", "caf", 1, false);
+        enemyDeathSounds[i] = loadSingleSound("audio/ENEMYEXPLODES", "caf", 0.6, false);
+        freezeSounds[i] = loadSingleSound("audio/FREEZE", "caf", 0.3, false);
+        hitSounds[i] = loadSingleSound("audio/HIT", "caf", 0.4, false);
+        shootSounds[i] = loadSingleSound("audio/SHOT", "caf", 0.6, false);
     }
     
     //game music
-    gameMusic = loadSingleSound("audio/theme", "mp3", 0.3, true);
+    gameMusic = loadSingleSound("audio/DD_THEME_LOOP", "caf", 0.4, true);
     
     muteSoundEffects = false;
     muteMusic = true;
