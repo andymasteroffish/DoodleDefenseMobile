@@ -64,7 +64,7 @@ void testApp::setup(){
     
     //load in the paper texture and set the greycscale part of the pictures
     ofImage paperPic;
-    paperPic.loadImage("paper/paperTexture.jpg");
+    paperPic.loadImage("paper/paperTexture.jpg");   //load the same image even for retina
     paperPic.setImageType(OF_IMAGE_GRAYSCALE);
     
     
@@ -106,11 +106,11 @@ void testApp::setup(){
     
     //color selection
     curBrushColor = 3;
-    colorButtonPics[0].loadImage("buttons/game/hitTower.png");
-    colorButtonPics[1].loadImage("buttons/game/bombTower.png");
-    colorButtonPics[2].loadImage("buttons/game/freezeTower.png");
-    colorButtonPics[3].loadImage("buttons/game/wall.png");
-    colorButtonPics[4].loadImage("buttons/game/eraser.png");
+    colorButtonPics[0].loadImage("buttons/game/hitTower"+picNameEnd);
+    colorButtonPics[1].loadImage("buttons/game/bombTower"+picNameEnd);
+    colorButtonPics[2].loadImage("buttons/game/freezeTower"+picNameEnd);
+    colorButtonPics[3].loadImage("buttons/game/wall"+picNameEnd);
+    colorButtonPics[4].loadImage("buttons/game/eraser"+picNameEnd);
     int buttonW=colorButtonPics[0].width;
     int buttonH=colorButtonPics[0].height;
     for (int i=0; i<5; i++){
@@ -129,11 +129,11 @@ void testApp::setup(){
     }
     
     //bullet image
-    bulletPic.loadImage("bullets/bullet.png");
+    bulletPic.loadImage("bullets/bullet"+picNameEnd);
     
     //game buttons
-    fastForwardButtonPic.loadImage("buttons/game/fastForwardButton.png");
-    pauseButtonPic.loadImage("buttons/game/pauseButton.png");
+    fastForwardButtonPic.loadImage("buttons/game/fastForwardButton"+picNameEnd);
+    pauseButtonPic.loadImage("buttons/game/pauseButton"+picNameEnd);
     int gameButtonX = ofGetWidth()*0.85;
     fastForwardButton.set(gameButtonX, ofGetHeight()*0.15, fastForwardButtonPic.width, fastForwardButtonPic.height);
     pauseButton.set(gameButtonX, ofGetHeight()*0.30, pauseButtonPic.width, pauseButtonPic.height);
@@ -191,42 +191,42 @@ void testApp::setup(){
     }
     
     //other images for foes
-    explosionPic.loadImage("misc/explosionFill.png");
-    foeExclamationPic.loadImage("misc/exclamation.png");
+    explosionPic.loadImage("misc/explosionFill"+picNameEnd);
+    foeExclamationPic.loadImage("misc/exclamation"+picNameEnd);
     
     //ink particle pic
     inkParticlePic.loadImage("misc/inkParticle"+picNameEnd);
     
     //banners
-    banners[0].loadImage("banners/nopath.png");
-    banners[1].loadImage("banners/outofink.png");
-    banners[2].loadImage("banners/wave.png");
-    banners[3].loadImage("banners/youwin.png");
-    banners[4].loadImage("banners/youlose.png");
-    banners[5].loadImage("banners/paused.png");
-    banners[6].loadImage("banners/credits.png");
-    bannerBacks[0].loadImage("banners/nopathBack.png");
-    bannerBacks[1].loadImage("banners/outofinkBack.png");
-    bannerBacks[2].loadImage("banners/waveBack.png");
-    bannerBacks[3].loadImage("banners/youwinBack.png");
-    bannerBacks[4].loadImage("banners/youloseBack.png");
-    bannerBacks[5].loadImage("banners/pausedBack.png");
-    bannerBacks[6].loadImage("banners/creditsBack.png");
+    banners[0].loadImage("banners/nopath"+picNameEnd);
+    banners[1].loadImage("banners/outofink"+picNameEnd);
+    banners[2].loadImage("banners/wave"+picNameEnd);
+    banners[3].loadImage("banners/youwin"+picNameEnd);
+    banners[4].loadImage("banners/youlose"+picNameEnd);
+    banners[5].loadImage("banners/paused"+picNameEnd);
+    banners[6].loadImage("banners/credits"+picNameEnd);
+    bannerBacks[0].loadImage("banners/nopathBack"+picNameEnd);
+    bannerBacks[1].loadImage("banners/outofinkBack"+picNameEnd);
+    bannerBacks[2].loadImage("banners/waveBack"+picNameEnd);
+    bannerBacks[3].loadImage("banners/youwinBack"+picNameEnd);
+    bannerBacks[4].loadImage("banners/youloseBack"+picNameEnd);
+    bannerBacks[5].loadImage("banners/pausedBack"+picNameEnd);
+    bannerBacks[6].loadImage("banners/creditsBack"+picNameEnd);
     
     //background
-    backgroundPic.loadImage("paper/paperBacking.jpg");
+    backgroundPic.loadImage("paper/paperBacking.jpg");  //load the same image even for retina
     
     //showing when player is out of ink
     outOfInkBannerTime = 1.5;
     
     //getting hit
     damageFlashTime=8;
-    playerHitPic.loadImage("banners/playerHit.png");
+    playerHitPic.loadImage("banners/playerHit"+picNameEnd);
     
     //player info pics
     for(int i=0; i<healthStart; i++){
-        healthPicFull[i].loadImage("playerInfo/hearts/filled_hearts-"+ofToString(i+1)+".png");
-        healthPicEmpty[i].loadImage("playerInfo/hearts/outlinehearts-"+ofToString(i+1)+".png");
+        healthPicFull[i].loadImage("playerInfo/hearts/filled_hearts-"+ofToString(i+1)+picNameEnd);
+        healthPicEmpty[i].loadImage("playerInfo/hearts/outlinehearts-"+ofToString(i+1)+picNameEnd);
     }
     
     //displaying the wave info
@@ -234,7 +234,7 @@ void testApp::setup(){
     waveInfoDistToFadeOut=ofGetHeight()*0.4;//*0.8;
     //box images
     for (int i=0; i<NUM_WAVE_INFO_BOX_PICS; i++)
-        waveInfoPics[i].loadImage("waveInfoBoxes/boxes-"+ofToString(i+1)+".png");
+        waveInfoPics[i].loadImage("waveInfoBoxes/boxes-"+ofToString(i+1)+picNameEnd);
     
     //load the sounds
     SM.setup();
@@ -247,11 +247,11 @@ void testApp::setup(){
     infoFontHuge.loadFont(fontName, 50*(retina+1), true, true);
     
     //game over screen
-    gameOverButtonPic.loadImage("buttons/gameOver/menu.png");
+    gameOverButtonPic.loadImage("buttons/gameOver/menu"+picNameEnd);
     gameOverButton.set(0, 0, gameOverButtonPic.width, gameOverButtonPic.height);    //location set in drawEndGame
     
     //menu
-    titlePic.loadImage("menu/title.png");
+    titlePic.loadImage("menu/title"+picNameEnd);
     menuButtonPics[0]=pauseScreenButtonPics[0];
     menuButtonPics[1]=pauseScreenButtonPics[1];
     menuButtonPics[2]=pauseScreenButtonPics[2];
@@ -264,7 +264,7 @@ void testApp::setup(){
     
     //how To
     for (int i=0; i<NUM_HOW_TO_SLIDES; i++){
-        howToSlides[i].loadImage("howTo/howTo"+ofToString(i)+".png");
+        //howToSlides[i].loadImage("howTo/howTo"+ofToString(i)+".png");   //load the same image even for retina
     }
     //set up the next button
     nextButtonPic[0].loadImage("buttons/howTo/nextButton"+picNameEnd);
@@ -607,7 +607,7 @@ void testApp::update(){
 void testApp::draw(){
 	ofSetRectMode(OF_RECTMODE_CORNER);
 	ofSetColor(255);
-    backgroundPic.draw(0,0);
+    backgroundPic.draw(0,0, ofGetWidth(), ofGetHeight());
     
     ofEnableAlphaBlending();
     
@@ -813,7 +813,7 @@ void testApp::drawEndGame(bool win){
     //fade out the screen a bit
     ofSetRectMode(OF_RECTMODE_CORNER);
     ofSetColor(255,170);
-    backgroundPic.draw(0,0);
+    backgroundPic.draw(0,0, ofGetWidth(), ofGetHeight());
     
     ofSetRectMode(OF_RECTMODE_CENTER);
     int messageX=boardOffset.x+boardW*boardScale*0.5;
@@ -1038,12 +1038,12 @@ void testApp::drawHowTo(){
     //cover it up a bit
     ofSetRectMode(OF_RECTMODE_CORNER);
     ofSetColor(255,150);
-    backgroundPic.draw(0,0);
+    backgroundPic.draw(0,0, ofGetWidth(), ofGetHeight());
     
     //draw the slide
     ofSetRectMode(OF_RECTMODE_CORNER);
     ofSetColor(255);
-    howToSlides[curHowToSlide].draw(ofGetWidth()*0.07,ofGetHeight()*0.16);
+    howToSlides[curHowToSlide].draw(ofGetWidth()*0.07,ofGetHeight()*0.16, howToSlides[curHowToSlide].width*(retina+1), howToSlides[curHowToSlide].height*(retina+1));
     
     //and the next button
     nextButtonPic[curHowToSlide==NUM_HOW_TO_SLIDES-1].draw(nextButton.x, nextButton.y, nextButton.width, nextButton.height);
@@ -1277,7 +1277,7 @@ void testApp::touchDoubleTap(ofTouchEventArgs & touch){
     if (touch.x<60 && touch.y<60)
         reset();
     
-    health-=2;
+    //health-=2;
     
 }
 

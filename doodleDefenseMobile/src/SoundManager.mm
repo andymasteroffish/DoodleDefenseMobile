@@ -13,13 +13,8 @@ void SoundManager::setup(){
     sounds.clear();
     soundNames.clear();
     
-    //loadSound("audio/BOMB","caf", "bomb", 1);
-    //loadSound("audio/ENEMYEXPLODES","caf", "enemyDeath", 0.6);
     loadSound("audio/ERROR","caf", "error", 1);
-    //loadSound("audio/FREEZE","caf", "freeze", 0.3);
-    //loadSound("audio/HIT","caf", "hit", 0.4);
     loadSound("audio/LOSEGAME2","caf", "playerHit", 1);
-    //loadSound("audio/SHOT","caf", "shoot5555", 0.6);
     loadSound("audio/TRIUMPH4","caf", "beatWave", 1);
     loadSound("audio/NEWLOSE1","caf", "lose", 1);
     loadSound("audio/STARTGAME","caf", "start", 1);
@@ -52,7 +47,6 @@ void SoundManager::loadSound(string fileName, string fileType, string refrenceNa
     NSError *error;
     audioPlayer1 = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:&error];
     [audioPlayer1 setVolume:volume];
-    //[audioPlayer1 setEnableRate:YES];  //only works in iOS5 and above! TOO BAD IT'S NOT WORKING AT ALL
     [audioPlayer1 prepareToPlay];
     //add the sound and names to the vector
     sounds.push_back(audioPlayer1);
