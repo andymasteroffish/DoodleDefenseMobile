@@ -273,12 +273,12 @@
 		0A8B005915AFA1DE00561FF7 /* utils */ = {
 			isa = PBXGroup;
 			children = (
-				0A8B005A15AFA1FA00561FF7 /* particle.cpp */,
 				0A8B005B15AFA1FA00561FF7 /* particle.h */,
-				0A8B005C15AFA1FA00561FF7 /* spring.cpp */,
+				0A8B005A15AFA1FA00561FF7 /* particle.cpp */,
 				0A8B005D15AFA1FA00561FF7 /* spring.h */,
-				0A8B005E15AFA1FA00561FF7 /* vectorField.cpp */,
+				0A8B005C15AFA1FA00561FF7 /* spring.cpp */,
 				0A8B005F15AFA1FA00561FF7 /* vectorField.h */,
+				0A8B005E15AFA1FA00561FF7 /* vectorField.cpp */,
 				0AA305AA15AF9CB20043A0B8 /* tile.h */,
 			);
 			name = utils;

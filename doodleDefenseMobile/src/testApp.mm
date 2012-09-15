@@ -13,6 +13,8 @@ void testApp::setup(){
     
 	ofBackground(255,255,255);
     
+    setBackerNames();
+    
     cout<<ofGetWidth()<<" X "<<ofGetHeight()<<endl;
     
     //size of the grid the game is played on
@@ -60,13 +62,11 @@ void testApp::setup(){
         colorDispPixels[i] = new unsigned char [boardW * boardH * 2];
     }
     
-    cout<<"about to load"<<endl;
     //load in the paper texture and set the greycscale part of the pictures
     ofImage paperPic;
     paperPic.loadImage("paper/paperTexture.jpg");
     paperPic.setImageType(OF_IMAGE_GRAYSCALE);
     
-    cout<<"make the pixels"<<endl;
     
     unsigned char *	paperPixels = paperPic.getPixels();
     
@@ -194,6 +194,9 @@ void testApp::setup(){
     explosionPic.loadImage("misc/explosionFill.png");
     foeExclamationPic.loadImage("misc/exclamation.png");
     
+    //ink particle pic
+    inkParticlePic.loadImage("misc/inkParticle"+picNameEnd);
+    
     //banners
     banners[0].loadImage("banners/nopath.png");
     banners[1].loadImage("banners/outofink.png");
@@ -201,18 +204,20 @@ void testApp::setup(){
     banners[3].loadImage("banners/youwin.png");
     banners[4].loadImage("banners/youlose.png");
     banners[5].loadImage("banners/paused.png");
+    banners[6].loadImage("banners/credits.png");
     bannerBacks[0].loadImage("banners/nopathBack.png");
     bannerBacks[1].loadImage("banners/outofinkBack.png");
     bannerBacks[2].loadImage("banners/waveBack.png");
     bannerBacks[3].loadImage("banners/youwinBack.png");
     bannerBacks[4].loadImage("banners/youloseBack.png");
     bannerBacks[5].loadImage("banners/pausedBack.png");
+    bannerBacks[6].loadImage("banners/creditsBack.png");
     
     //background
     backgroundPic.loadImage("paper/paperBacking.jpg");
     
     //showing when player is out of ink
-    outOfInkBannerTime = 1;
+    outOfInkBannerTime = 1.5;
     
     //getting hit
     damageFlashTime=8;
@@ -266,10 +271,11 @@ void testApp::setup(){
     nextButtonPic[1].loadImage("buttons/howTo/doneButton"+picNameEnd);
     nextButton.set(ofGetWidth()*0.64,ofGetHeight()*0.67,nextButtonPic[0].width, nextButtonPic[0].height);
 
+    //credits
+    creditsBackButton.set(ofGetWidth()*0.02, ofGetHeight()*0.91, gameOverButtonPic.width*0.7, gameOverButtonPic.height*0.7);
     
     //mute buttons
     int muteButtonY=ofGetHeight()*0.9;
-    
     muteSoundsButtonPics[0].loadImage("buttons/mute/muteSoundsOn"+picNameEnd);
     muteSoundsButtonPics[1].loadImage("buttons/mute/muteSoundsOff"+picNameEnd);
     muteMusicButtonPics[0].loadImage("buttons/mute/muteMusicOn"+picNameEnd);
@@ -598,7 +604,8 @@ void testApp::update(){
 }
 
 //--------------------------------------------------------------
-void testApp::draw(){	
+void testApp::draw(){
+	ofSetRectMode(OF_RECTMODE_CORNER);
 	ofSetColor(255);
     backgroundPic.draw(0,0);
     
@@ -636,6 +643,10 @@ void testApp::draw(){
     
     if (gameState=="howTo"){
         drawHowTo();
+    }
+    
+    if (gameState=="credits"){
+        drawCredits();
     }
     
     //draw the mute buttons on menu or pause
@@ -971,7 +982,7 @@ void testApp::drawPlayerInfo(){
     }
     //let the player know if they used too much ink
     if (outOfInkBannerTimer > 0){
-        float alpha = ofMap(outOfInkBannerTimer, outOfInkBannerTime, 0, 255,0);
+        float alpha = ofMap(outOfInkBannerTimer, outOfInkBannerTime*0.75, 0, 255,0);
         ofSetColor(255,alpha-40);
         bannerBacks[1].draw(messageX, messageY);
         ofSetColor(0,alpha);
@@ -1040,6 +1051,62 @@ void testApp::drawHowTo(){
 }
 
 //--------------------------------------------------------------
+void testApp::drawCredits(){
+    ofSetRectMode(OF_RECTMODE_CENTER);
+    
+    ofSetColor(255,ofMap(sin(ofGetElapsedTimef()*2), -1,1, 120,210));
+    bannerBacks[6].draw(ofGetWidth()*0.5, ofGetHeight()*0.13);
+    ofSetColor(0);
+    banners[6].draw(ofGetWidth()*0.5, ofGetHeight()*0.13);
+    
+    
+    int startY = ofGetHeight()*0.3;
+    int ySpacing = ofGetHeight()*0.09;
+    
+    ofSetColor(0);
+    infoFontBig.drawCenteredStringBottom("Game by Andy Wallace", ofGetWidth()/2, startY+ySpacing*0);
+    infoFontBig.drawCenteredStringBottom("Art by Midge Belickis", ofGetWidth()/2, startY+ySpacing*1);
+    infoFontBig.drawCenteredStringBottom("Sound & Music by Jay Braun", ofGetWidth()/2, startY+ySpacing*2);
+    
+    infoFontBig.drawCenteredStringBottom("Special Thanks:", ofGetWidth()/2, startY+ySpacing*3);
+    
+    //draw the back names
+    int backerSpacing = ofGetHeight()*0.05;
+    int totalHeight = NUM_BACKERS * backerSpacing + backerSpacing;
+    
+    float backerEnd = startY+ySpacing*3.4;
+    float backerStart = ofGetHeight()+backerSpacing;
+    
+    float speed = 75;
+    
+    for (int i=0; i<NUM_BACKERS; i++){
+        //int thisY = i*backerSpacing + backerStart - (int)(ofGetElapsedTimef()*speed)%totalHeight;
+        int thisY = i*backerSpacing + backerStart - ofGetElapsedTimef()*speed;
+        
+        
+        //holy shit this could get bad if it's been running for a long time
+        while (thisY < backerEnd){
+            thisY+=totalHeight;
+        }
+        
+        if (thisY>backerEnd && thisY<backerStart){
+            int alpha = ofMap(thisY-backerEnd,0, ofGetHeight()*0.02, 0, 255, true);
+            ofSetColor(0,alpha);
+            infoFont.drawCenteredStringBottom(backerNames[i], ofGetWidth()/2, thisY);
+        }
+        
+        
+    }
+    
+    //draw the back button
+    ofSetRectMode(OF_RECTMODE_CORNER);
+    ofSetColor(255);
+    gameOverButtonPic.draw(creditsBackButton.x, creditsBackButton.y, creditsBackButton.width, creditsBackButton.height);
+    
+}
+
+
+//--------------------------------------------------------------
 void testApp::exit(){
     
 }
@@ -1088,6 +1155,14 @@ void testApp::touchDown(ofTouchEventArgs & touch){
             gameState=stateToReturnTo;
         SM.playSound("paper");
         ignoreTouchUp=true;
+    }
+    
+    if (gameState == "credits"){
+        if (creditsBackButton.inside(touch.x, touch.y)){
+            gameState="menu";
+            SM.playSound("paper");
+            ignoreTouchUp=true;
+        }
     }
     
     lastX = touch.x;
@@ -1180,6 +1255,11 @@ void testApp::touchUp(ofTouchEventArgs & touch){
             stateToReturnTo = "menu";
             SM.playSound("paper");
         }
+        
+        if (menuButtons[2].inside(touch.x, touch.y)){
+            gameState="credits";
+            SM.playSound("paper");
+        }
     
     }
 }
@@ -1267,6 +1347,10 @@ void testApp::brushDown(float touchX, float touchY){
         for (int row=yStart; row<yEnd; row++){
             //if there is no ink left to use, just get out
             if (inkUsed > totalInk && curBrushColor!=4){ 
+                //play the error sound if this is the firts frame in a while where they'r eout of ink
+                if (outOfInkBannerTimer<outOfInkBannerTime*0.8){
+                    SM.playSound("error");
+                }
                 outOfInkBannerTimer = outOfInkBannerTime;
                 break;
             }
@@ -1356,7 +1440,7 @@ void testApp::brushDown(float touchX, float touchY){
     }
     
     //spit out some ink pixels if ink was refunded
-    float inkPerParticle = 3;
+    float inkPerParticle = 4;
     float pixelWiggle = ofGetWidth()*0.01;  //the force with which the particle can spawn
     
     //get the average locaiton of any refunds that hapenned

@@ -39,6 +39,7 @@ public:
     
     float inkValue;
     ofColor col;
+    ofImage * inkPic;
     
 protected:
 private:

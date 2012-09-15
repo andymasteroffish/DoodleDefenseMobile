@@ -49,6 +49,7 @@ public:
     void drawEndGame(bool win);
     void drawMenu();
     void drawHowTo();
+    void drawCredits();
 
     void exit();
 
@@ -85,6 +86,7 @@ public:
     float getInkFromWaves(int num);
     
     void drawCenteredText(string text, ofTrueTypeFont font, int x, int y);
+    void setBackerNames();  //in main.cpp because it is long and borring
     
     //hardware
     bool retina;
@@ -223,6 +225,7 @@ public:
     
     //getting ink
     vector <particle> inkParticles;
+    ofImage inkParticlePic;
     
     //ink ussage - how much each pixel costs
     float blackInkValue;
@@ -262,8 +265,8 @@ public:
     string gameState;
     
     //banners
-    ofImage banners[6];
-    ofImage bannerBacks[6];
+    ofImage banners[7];
+    ofImage bannerBacks[7];
     ofImage playerHitPic;
     
     //pause screen buttons
@@ -305,6 +308,12 @@ public:
     ofRectangle nextButton;
     string stateToReturnTo; //if it should go back to game or menu
     int curHowToSlide;
+    
+    //credits page
+    ofRectangle creditsBackButton;
+    #define NUM_BACKERS 87
+    string backerNames[NUM_BACKERS];
+    float creditsY; //MIGHT NOT NEED
     
     //sometimes we want to ignore touch up because somehting just fired in touch down
     bool ignoreTouchUp;
