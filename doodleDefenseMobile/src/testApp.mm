@@ -775,6 +775,7 @@ void testApp::drawGame(){
     //draw ink particles if there are any
     //ofSetColor(150);
     ofFill();
+    ofSetRectMode(OF_RECTMODE_CENTER);
     for (int i=0; i<inkParticles.size(); i++)
         inkParticles[i].drawInk();
     
@@ -1457,6 +1458,7 @@ void testApp::brushDown(float touchX, float touchY){
             newInkParticle.setInitialCondition(newX, newY, cos(thisAngle)*ofRandom(pixelWiggle), sin(thisAngle)*ofRandom(pixelWiggle));
             newInkParticle.inkValue = MIN(inkPerParticle, colorInkRefund[i]);
             newInkParticle.col = (i<3) ? dispColor[i] : ofColor::black;
+            newInkParticle.inkPic = &inkParticlePic;
             inkParticles.push_back(newInkParticle);
             //take away from the total
             colorInkRefund[i]-=inkPerParticle;
@@ -1946,6 +1948,7 @@ void testApp::killFoe(int num){
             newInkParticle.setInitialCondition(foes[num]->p.pos.x,foes[num]->p.pos.y,ofRandom(-5,5),ofRandom(-5,5));
             newInkParticle.inkValue = 1;
             newInkParticle.col.set(0, 0, 0);
+            newInkParticle.inkPic = &inkParticlePic;
             inkParticles.push_back(newInkParticle);
         }
 
