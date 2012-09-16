@@ -177,17 +177,19 @@ void testApp::setup(){
     
     
     //foe images
+    string foePicFolder = "foePics/";
+    if (retina) foePicFolder+="retina/";
     for (int i=0; i<NUM_FOE_FRAMES; i++){
-        normFoePic[0][i].loadImage("foePics/normal/wnormal"+ofToString(i+1)+".png");
-        normFoePic[1][i].loadImage("foePics/normal/nfill"+ofToString(i+1)+".png");
-        fastFoePic[0][i].loadImage("foePics/fast/wfast"+ofToString(i+1)+".png");
-        fastFoePic[1][i].loadImage("foePics/fast/ffill"+ofToString(i+1)+".png");
-        heavyFoePic[0][i].loadImage("foePics/heavy/heavy"+ofToString(i+1)+".png");
-        heavyFoePic[1][i].loadImage("foePics/heavy/hfill"+ofToString(i+1)+".png");
-        stealthFoePic[0][i].loadImage("foePics/stealth/wstealth"+ofToString(i+1)+".png");
-        stealthFoePic[1][i].loadImage("foePics/stealth/sfill"+ofToString(i+1)+".png");
-        immuneRedFoePic[0][i].loadImage("foePics/immune/immune"+ofToString(i+1)+".png");
-        immuneRedFoePic[1][i].loadImage("foePics/immune/ifill"+ofToString(i+1)+".png");
+        normFoePic[0][i].loadImage(foePicFolder+"normal/wnormal"+ofToString(i+1)+".png");
+        normFoePic[1][i].loadImage(foePicFolder+"normal/nfill"+ofToString(i+1)+".png");
+        fastFoePic[0][i].loadImage(foePicFolder+"fast/wfast"+ofToString(i+1)+".png");
+        fastFoePic[1][i].loadImage(foePicFolder+"fast/ffill"+ofToString(i+1)+".png");
+        heavyFoePic[0][i].loadImage(foePicFolder+"heavy/heavy"+ofToString(i+1)+".png");
+        heavyFoePic[1][i].loadImage(foePicFolder+"heavy/hfill"+ofToString(i+1)+".png");
+        stealthFoePic[0][i].loadImage(foePicFolder+"stealth/wstealth"+ofToString(i+1)+".png");
+        stealthFoePic[1][i].loadImage(foePicFolder+"stealth/sfill"+ofToString(i+1)+".png");
+        immuneRedFoePic[0][i].loadImage(foePicFolder+"immune/immune"+ofToString(i+1)+".png");
+        immuneRedFoePic[1][i].loadImage(foePicFolder+"immune/ifill"+ofToString(i+1)+".png");
     }
     
     //other images for foes
@@ -264,7 +266,7 @@ void testApp::setup(){
     
     //how To
     for (int i=0; i<NUM_HOW_TO_SLIDES; i++){
-        //howToSlides[i].loadImage("howTo/howTo"+ofToString(i)+".png");   //load the same image even for retina
+        howToSlides[i].loadImage("howTo/howTo"+ofToString(i)+".png");   //load the same image even for retina
     }
     //set up the next button
     nextButtonPic[0].loadImage("buttons/howTo/nextButton"+picNameEnd);
@@ -618,7 +620,7 @@ void testApp::draw(){
         //show the border
         ofSetRectMode(OF_RECTMODE_CORNER);
         ofSetColor(255);
-        borderPics[numEntrances-1].draw(boardOffset.x, boardOffset.y);
+        borderPics[numEntrances-1].draw(boardOffset.x, boardOffset.y, borderPics[numEntrances-1].width*(1+retina), borderPics[numEntrances-1].height*(1+retina));
         
         //show player stats that live outside of the game area
         drawPlayerInfo(); 
@@ -1030,7 +1032,7 @@ void testApp::drawHowTo(){
     //show the border
     ofSetRectMode(OF_RECTMODE_CORNER);
     ofSetColor(255);
-    borderPics[numEntrances-1].draw(boardOffset.x, boardOffset.y);
+    borderPics[numEntrances-1].draw(boardOffset.x, boardOffset.y, borderPics[numEntrances-1].width*(1+retina), borderPics[numEntrances-1].height*(1+retina));
     
     //show player stats that live outside of the game area
     drawPlayerInfo(); 

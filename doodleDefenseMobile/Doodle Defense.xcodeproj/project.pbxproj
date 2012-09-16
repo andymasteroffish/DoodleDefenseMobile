@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0A5A56D016061F96005EF7E5 /* Default-Landscape~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = 0A5A56CF16061F96005EF7E5 /* Default-Landscape~ipad.png */; };
+		0A5A56D216061F99005EF7E5 /* Default-Landscape@2x~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = 0A5A56D116061F99005EF7E5 /* Default-Landscape@2x~ipad.png */; };
 		0A8B006015AFA1FA00561FF7 /* particle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0A8B005A15AFA1FA00561FF7 /* particle.cpp */; };
 		0A8B006115AFA1FA00561FF7 /* spring.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0A8B005C15AFA1FA00561FF7 /* spring.cpp */; };
 		0A8B006215AFA1FA00561FF7 /* vectorField.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0A8B005E15AFA1FA00561FF7 /* vectorField.cpp */; };
@@ -79,6 +81,8 @@
 		057122a817d12571f8c0c7a4d522b879 /* ofxCvGrayscaleImage.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxCvGrayscaleImage.cpp; path = ../../../addons/ofxOpenCv/src/ofxCvGrayscaleImage.cpp; sourceTree = SOURCE_ROOT; };
 		087522ea37a32b8d902cab6426a387c7 /* core_c.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = core_c.h; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv2/core/core_c.h; sourceTree = SOURCE_ROOT; };
 		096cb33cad6c5a446e7026e9ff234dc2 /* dynamic_bitset.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = dynamic_bitset.h; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv2/flann/dynamic_bitset.h; sourceTree = SOURCE_ROOT; };
+		0A5A56CF16061F96005EF7E5 /* Default-Landscape~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-Landscape~ipad.png"; sourceTree = "<group>"; };
+		0A5A56D116061F99005EF7E5 /* Default-Landscape@2x~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-Landscape@2x~ipad.png"; sourceTree = "<group>"; };
 		0A8B005A15AFA1FA00561FF7 /* particle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = particle.cpp; sourceTree = "<group>"; };
 		0A8B005B15AFA1FA00561FF7 /* particle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = particle.h; sourceTree = "<group>"; };
 		0A8B005C15AFA1FA00561FF7 /* spring.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = spring.cpp; sourceTree = "<group>"; };
@@ -412,6 +416,8 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
+				0A5A56D116061F99005EF7E5 /* Default-Landscape@2x~ipad.png */,
+				0A5A56CF16061F96005EF7E5 /* Default-Landscape~ipad.png */,
 				E4D8936A11527B74007E1F53 /* src */,
 				BB24DD8B10DA77E000E9C588 /* data */,
 				BB24E1F710DAA51900E9C588 /* openFrameworks */,
@@ -758,6 +764,8 @@
 				BB24DDCA10DA781C00E9C588 /* ofxiphone-Info.plist in Resources */,
 				E41D3ED713B38FB500A75A5D /* Project.xcconfig in Resources */,
 				E41D3EE613B3906D00A75A5D /* CoreOF.xcconfig in Resources */,
+				0A5A56D016061F96005EF7E5 /* Default-Landscape~ipad.png in Resources */,
+				0A5A56D216061F99005EF7E5 /* Default-Landscape@2x~ipad.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
