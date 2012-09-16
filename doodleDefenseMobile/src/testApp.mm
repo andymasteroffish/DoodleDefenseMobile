@@ -1022,8 +1022,9 @@ void testApp::drawMenu(){
         menuButtonPics[i].draw(menuButtons[i].x, menuButtons[i].y, menuButtons[i].width, menuButtons[i].height);
     }
     
-    ofSetColor(0);
-    infoFontSmall.drawString("Andy Wallace 2012", ofGetWidth()*0.01, ofGetHeight()*0.98);
+    //probaby don't need to draw your name if its on the launch image and the credits page
+    //ofSetColor(0);
+    //infoFontSmall.drawString("Andy Wallace 2012", ofGetWidth()*0.01, ofGetHeight()*0.98);
 }
 
 //--------------------------------------------------------------
