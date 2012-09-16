@@ -1048,7 +1048,8 @@ void testApp::drawHowTo(){
     //and the next button
     nextButtonPic[curHowToSlide==NUM_HOW_TO_SLIDES-1].draw(nextButton.x, nextButton.y, nextButton.width, nextButton.height);
     
-    
+    //make sure player pause is off
+    playerPause = false;
 }
 
 //--------------------------------------------------------------
