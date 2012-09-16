@@ -52,9 +52,6 @@ void WaveInfoBox::setup(int _waveNum, string _message, ofImage * _backPic, ofTru
 
 void WaveInfoBox::draw(){
     
-    int imgPaddingX=40;
-    int imgPaddingY=25;
-    
     //draw the box
     ofSetColor(bgColor.r, bgColor.g, bgColor.b, alpha);
     backPic->draw(pos.x,pos.y);

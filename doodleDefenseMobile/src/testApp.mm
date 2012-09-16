@@ -30,7 +30,7 @@ void testApp::setup(){
     
     cout<<"board size: "<<boardW<<" X "<<boardH<<endl;
     
-    fieldScale = 10; //this was 7 in the computer verison
+    fieldScale = 10*(retina+1); //this was 7 in the computer verison
     boardScale = fieldScale/sizeIncreaseToBoard;
     
     boardOffset.set(ofGetWidth()*0.04,ofGetHeight()*0.09);  //*0.15);
@@ -794,7 +794,7 @@ void testApp::drawPause(){
     //fade out the screen a bit
     ofSetRectMode(OF_RECTMODE_CORNER);
     ofSetColor(255,220);
-    backgroundPic.draw(0,0);
+    backgroundPic.draw(0,0, ofGetWidth(), ofGetHeight());
     
     ofSetRectMode(OF_RECTMODE_CENTER);
     int bannerX = ofGetWidth()*0.5;
@@ -1327,7 +1327,7 @@ void testApp::brushDown(float touchX, float touchY){
     
     //black gets a smaller but more powerful brush
     if (curBrushColor == 3){ 
-        maxDist*=0.4;   //black can be smaller
+        maxDist*=0.5;   //black can be smaller
         brushStrength = 255;
     }
     
@@ -2064,8 +2064,8 @@ void testApp::loadFromText(){
     waveInfoBoxes.clear();  //get rid of any old ones
     float waveInfoX=ofGetWidth()*0.895;
     float waveInfoSpacing=ofGetHeight()*0.03;
-    float boxWidth=208;
-    float boxHeight=150;
+    float boxWidth=208*(retina+1);
+    float boxHeight=150*(retina+1);
     for (int i=0; i<waves.size(); i++){
         WaveInfoBox newInfoBox;
         
