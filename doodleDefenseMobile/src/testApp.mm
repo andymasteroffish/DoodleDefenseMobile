@@ -3,13 +3,17 @@
 
 //--------------------------------------------------------------
 void testApp::setup(){	
-    retina = false; //TESTING
     
-    string picNameEnd = retina ? "Retina.png" : ".png";
-	
     //orient landscape
 	iPhoneSetOrientation(OFXIPHONE_ORIENTATION_LANDSCAPE_RIGHT);
 	ofSetFrameRate(30);
+    
+    //check for retina
+    retina = false;
+    if (ofGetWidth()>=2000)   retina = true;
+    
+    //set file names
+    string picNameEnd = retina ? "Retina.png" : ".png";
     
 	ofBackground(255,255,255);
     
