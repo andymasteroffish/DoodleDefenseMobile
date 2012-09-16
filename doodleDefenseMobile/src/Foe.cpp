@@ -9,12 +9,14 @@
 #include "Foe.h"
 
 //------------------------------------------------------------
-void Foe::setup(float x, float y, float _goalX, float _goalY, float _fieldScale, int _fieldW, int _fieldH, int level){
+void Foe::setup(float x, float y, float _goalX, float _goalY, float _fieldScale, int _fieldW, int _fieldH, int level, bool _retina){
     p.pos.x=x;
     p.pos.y=y;
     fieldScale=_fieldScale;
     fieldW=_fieldW;
     fieldH=_fieldH;
+    
+    retina = _retina;
     
     //get read to handle movement
     moveParticle.setInitialCondition(0,0,0,0);
@@ -91,7 +93,8 @@ void Foe::update(){
             
             //atract the controler to the next node
             float atraction=moveAtraction;
-            p.addAttractionForce(moveParticle, p.pos.distance(moveParticle.pos)*1.5, atraction);
+            //foes need ot move fast across the screen on retina devices
+            p.addAttractionForce(moveParticle, p.pos.distance(moveParticle.pos)*1.5, atraction*(1+retina));
             
             moveAtraction+= moveAtractionIncrease;
             

@@ -909,11 +909,11 @@ void testApp::drawPlayerInfo(){
     //draw full hearts for the life remaining
     ofSetColor(255);
     for (int i=0; i<health; i++){
-        healthPicFull[i].draw(xLeft+i*healthPicFull[0].width+i*healthSpacing,healthY, healthPicFull[i].width, healthPicFull[i].height);
+        healthPicFull[i].draw(xLeft+i*healthPicFull[0].width+i*healthSpacing,healthY);
     }
     //end empty life for the life lost
     for (int i=MAX(0,health); i<healthStart; i++){
-        healthPicEmpty[i].draw(xLeft+i*healthPicEmpty[i].width+i*healthSpacing,healthY, healthPicEmpty[i].width, healthPicEmpty[i].height);
+        healthPicEmpty[i].draw(xLeft+i*healthPicEmpty[0].width+i*healthSpacing,healthY);
     }
     
     
@@ -1285,7 +1285,7 @@ void testApp::touchDoubleTap(ofTouchEventArgs & touch){
     if (touch.x<60 && touch.y<60)
         reset();
     
-    //health-=2;
+    health-=1;
     
 }
 
@@ -1324,6 +1324,7 @@ void testApp::brushDown(float touchX, float touchY){
     int brushStrength = 100;    //how much it adds at the center
     
     int maxDist = 15*boardScale;
+    if (retina) maxDist*=0.7;    //shrink it a bit for retina
     
     //black gets a smaller but more powerful brush
     if (curBrushColor == 3){ 
@@ -1551,11 +1552,11 @@ bool testApp::findPathsForFoes(){
     
     //give the foes all of the info they need
     //for left
-    tempFoeLeft.setup(startX[0], startY[0], goalX[0], goalY[0], fieldScale, fieldW, fieldH,0);
+    tempFoeLeft.setup(startX[0], startY[0], goalX[0], goalY[0], fieldScale, fieldW, fieldH,0, retina);
     tempFoeLeft.wallPixels=wallPixels;
     tempFoeLeft.findPath();
     //from top
-    tempFoeTop.setup(startX[1], startY[1], goalX[1], goalY[1], fieldScale, fieldW, fieldH,0);
+    tempFoeTop.setup(startX[1], startY[1], goalX[1], goalY[1], fieldScale, fieldW, fieldH,0, retina);
     tempFoeTop.wallPixels=wallPixels;
     tempFoeTop.findPath();
     
@@ -1914,7 +1915,7 @@ void testApp::spawnFoe(string name, int level){
     //give the foe all of the info it needs
     int entrance=nextEntrance;
     if (++nextEntrance >= numEntrances) nextEntrance=0;
-    foes[foes.size()-1]->setup(startX[entrance], startY[entrance], goalX[entrance], goalY[entrance], fieldScale, fieldW, fieldH,level);
+    foes[foes.size()-1]->setup(startX[entrance], startY[entrance], goalX[entrance], goalY[entrance], fieldScale, fieldW, fieldH,level, retina);
     foes[foes.size()-1]->wallPixels=wallPixels;
     foes[foes.size()-1]->showAllInfo=&showAllInfo;
     foes[foes.size()-1]->paused=&paused;
