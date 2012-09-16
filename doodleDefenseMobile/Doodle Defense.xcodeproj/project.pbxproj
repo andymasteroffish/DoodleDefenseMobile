@@ -872,7 +872,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				CODE_SIGN_IDENTITY = "iPhone Developer: Andy Wallace (VZGRS8NQX8)";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Andy Wallace";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Andy Wallace (VZGRS8NQX8)";
 				COMPRESS_PNG_FILES = NO;
 				GCC_C_LANGUAGE_STANDARD = c99;
@@ -929,8 +929,8 @@
 					../../../addons/ofxOpenCv/libs/opencv/lib/ios/zlib.a,
 				);
 				PREBINDING = NO;
-				PROVISIONING_PROFILE = "CEE2FF4C-7B63-4B71-8DF0-356A828309DF";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "CEE2FF4C-7B63-4B71-8DF0-356A828309DF";
+				PROVISIONING_PROFILE = "67CC9184-7839-4B39-81FA-7576E8058299";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "FCBE1E2F-6C4B-418A-805B-E74ADC54682D";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 				WARNING_LDFLAGS = "-no_arch_warnings";
@@ -943,8 +943,8 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				CODE_SIGN_IDENTITY = "iPhone Developer: Andy Wallace (VZGRS8NQX8)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Andy Wallace";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Andy Wallace";
 				COMPRESS_PNG_FILES = NO;
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_DYNAMIC_NO_PIC = YES;
@@ -998,7 +998,8 @@
 					../../../addons/ofxOpenCv/libs/opencv/lib/ios/zlib.a,
 				);
 				PREBINDING = NO;
-				PROVISIONING_PROFILE = "CEE2FF4C-7B63-4B71-8DF0-356A828309DF";
+				PROVISIONING_PROFILE = "67CC9184-7839-4B39-81FA-7576E8058299";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "67CC9184-7839-4B39-81FA-7576E8058299";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 				WARNING_LDFLAGS = "-no_arch_warnings";
