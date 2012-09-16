@@ -310,6 +310,7 @@ public:
     int curHowToSlide;
     
     //credits page
+    ofImage creditsBackButtonPic;
     ofRectangle creditsBackButton;
     #define NUM_BACKERS 87
     string backerNames[NUM_BACKERS];

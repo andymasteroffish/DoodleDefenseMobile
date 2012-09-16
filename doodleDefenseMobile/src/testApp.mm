@@ -278,7 +278,9 @@ void testApp::setup(){
     nextButton.set(ofGetWidth()*0.64,ofGetHeight()*0.67,nextButtonPic[0].width, nextButtonPic[0].height);
 
     //credits
-    creditsBackButton.set(ofGetWidth()*0.02, ofGetHeight()*0.91, gameOverButtonPic.width*0.7, gameOverButtonPic.height*0.7);
+    creditsBackButtonPic.loadImage("buttons/credits/back"+picNameEnd);
+    creditsBackButton.set(ofGetWidth()*0.02, ofGetHeight()*0.91, creditsBackButtonPic.width, creditsBackButtonPic.height);
+    //creditsBackButton.set(ofGetWidth()*0.02, ofGetHeight()*0.91, gameOverButtonPic.width*0.7, gameOverButtonPic.height*0.7);
     
     //mute buttons
     int muteButtonY=ofGetHeight()*0.9;
@@ -422,7 +424,7 @@ void testApp::update(){
             paused=false;
         
         int numUpdates=1;
-        if (fastForward)    numUpdates=3;
+        if (fastForward)    numUpdates= (retina) ? 4 : 3;   //older iPads can't go quite as fast :(
         for (int i=0; i<numUpdates; i++){
             //manage the current wave
             if (curWave>=0 && !wavesDone){
@@ -1110,7 +1112,7 @@ void testApp::drawCredits(){
     //draw the back button
     ofSetRectMode(OF_RECTMODE_CORNER);
     ofSetColor(255);
-    gameOverButtonPic.draw(creditsBackButton.x, creditsBackButton.y, creditsBackButton.width, creditsBackButton.height);
+    creditsBackButtonPic.draw(creditsBackButton.x, creditsBackButton.y, creditsBackButton.width, creditsBackButton.height);
     
 }
 
@@ -1168,7 +1170,7 @@ void testApp::touchDown(ofTouchEventArgs & touch){
     
     if (gameState == "credits"){
         if (creditsBackButton.inside(touch.x, touch.y)){
-            gameState="menu";
+            gameState=stateToReturnTo;
             SM.playSound("paper");
             ignoreTouchUp=true;
         }
@@ -1236,6 +1238,13 @@ void testApp::touchUp(ofTouchEventArgs & touch){
                 stateToReturnTo = "game";
                 SM.playSound("paper");
             }
+            
+            if (pauseScreenButtons[2].inside(touch.x,touch.y)){
+                gameState="credits";
+                stateToReturnTo = "game";
+                SM.playSound("paper");
+            }
+            
             if (pauseScreenButtons[3].inside(touch.x,touch.y)){
                 gameState="menu";
                 SM.playSound("paper");
@@ -1267,6 +1276,7 @@ void testApp::touchUp(ofTouchEventArgs & touch){
         
         if (menuButtons[2].inside(touch.x, touch.y)){
             gameState="credits";
+            stateToReturnTo = "menu";
             SM.playSound("paper");
         }
     
