@@ -237,7 +237,7 @@ void testApp::setup(){
     
     //displaying the wave info
     waveInfoBottom=ofGetHeight()*0.90;//boardOffset.y+boardH*boardScale-ofGetHeight()*0.15;
-    waveInfoDistToFadeOut=ofGetHeight()*0.4;//*0.8;
+    waveInfoDistToFadeOut=ofGetHeight()*0.3;//*0.8;
     //box images
     for (int i=0; i<NUM_WAVE_INFO_BOX_PICS; i++)
         waveInfoPics[i].loadImage("waveInfoBoxes/boxes-"+ofToString(i+1)+picNameEnd);
@@ -506,13 +506,14 @@ void testApp::update(){
                         if ( distance < towers[i]->range +towers[i]->rangePadding && distance<closestDist){
                             
                             //red can only target foes not immune to red
-                            if (towers[i]->type=="red" && foes[k]->type!="immune_red"){
+                            if (towers[i]->type=="red"){
                                 closestDist=distance;
                                 closestID=k;
                             }
                             
                             //green can shoot goddamn anything
-                            if (towers[i]->type=="green"){
+                            //MAYBE NOT. TETSING THIS OUT
+                            if (towers[i]->type=="green" && foes[k]->type!="immune_red"){
                                 closestDist=distance;
                                 closestID=k;
                             }
@@ -538,7 +539,7 @@ void testApp::update(){
                     
                     //find all of the foes in range of the bullet and damage them
                     for (int k=0; k<foes.size(); k++){
-                        if (towers[i]->bullet.pos.distance(foes[k]->p.pos)<towers[i]->blastRadius){
+                        if (towers[i]->bullet.pos.distance(foes[k]->p.pos)<towers[i]->blastRadius && foes[k]->type!="immune_red"){
                             foes[k]->hp-=towers[i]->bulletDamage;
                         }
                     }
@@ -851,7 +852,7 @@ void testApp::drawEndGame(bool win){
         banners[3].draw(messageX, deathMessageY);
         
         ofSetColor(0);
-        drawCenteredText("With "+ofToString(totalInk-inkUsed)+" ink left", infoFontBig, messageX, messageY+ofGetHeight()*0.24);
+        drawCenteredText("With "+ofToString((int)(totalInk-inkUsed))+" ink left", infoFontBig, messageX, messageY+ofGetHeight()*0.24);
     }
     
     //reset button
@@ -1321,7 +1322,7 @@ void testApp::touchDoubleTap(ofTouchEventArgs & touch){
     if (touch.x<60 && touch.y<60)
         reset();
     
-    health-=1;
+    //health-=1;
     
 }
 
@@ -1553,7 +1554,7 @@ void testApp::convertDrawingToGame(){
     //red
     int minArea=20;
     int maxArea=(boardW*boardH)/2;
-    int maxNumberOfBlobs=25;        //how many towers there can be
+    int maxNumberOfBlobs=30;        //how many towers there can be
     
     //threshold the color images before looking for blobs
     //this will be undone next time the images are set from the pixel arrays
@@ -2055,6 +2056,10 @@ void testApp::loadData(){
     
     if (fin==NULL){
         cout<<"no data there"<<endl;
+        if (SM.muteMusic){
+            SM.toggleMusic();
+        }
+        saveData();
     }
     else{
         cout<<"load the data in"<<endl;
@@ -2065,7 +2070,6 @@ void testApp::loadData(){
             string full; 
             getline(fin, full); 
             dataStrings.push_back(full);
-            cout<<"read: "<<full<<endl;
         }
         
         //make sure there is enough to fill all of the options

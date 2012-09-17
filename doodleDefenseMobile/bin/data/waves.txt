@@ -1,5 +1,5 @@
 new 1
-dur 50
+dur 60
 add norm 15
 col norm
 mes Start drawing
@@ -39,7 +39,7 @@ new 3
 dur 35
 add immune_red 12
 col immune
-mes Hope you don't#use too much#red
+mes Hope you don't#use too much#green
 
 new 4
 dur 80
