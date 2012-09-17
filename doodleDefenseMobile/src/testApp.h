@@ -85,6 +85,9 @@ public:
     void endWave();
     float getInkFromWaves(int num);
     
+    void loadData();
+    void saveData();
+    
     void drawCenteredText(string text, ofTrueTypeFont font, int x, int y);
     void setBackerNames();  //in main.cpp because it is long and borring
     
@@ -308,6 +311,7 @@ public:
     ofRectangle nextButton;
     string stateToReturnTo; //if it should go back to game or menu
     int curHowToSlide;
+    bool forceHowTo;    //the first game, force the player to se the how to
     
     //credits page
     ofImage creditsBackButtonPic;

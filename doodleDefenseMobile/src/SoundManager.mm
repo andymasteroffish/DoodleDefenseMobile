@@ -30,10 +30,10 @@ void SoundManager::setup(){
     }
     
     //game music
-    gameMusic = loadSingleSound("audio/DD_THEME_LOOP", "caf", 0.4, true);
+    gameMusic = loadSingleSound("audio/DD_THEME_LOOP", "caf", 0.33, true);
     
     muteSoundEffects = false;
-    muteMusic = true;
+    muteMusic = false;
     
     if (!muteMusic)
         [gameMusic play];

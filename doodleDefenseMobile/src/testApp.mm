@@ -269,6 +269,7 @@ void testApp::setup(){
     }
     
     //how To
+    forceHowTo = true;  //assume this is the first run and they need to see the how to slides. This will ussualy be turned off in loadData()
     for (int i=0; i<NUM_HOW_TO_SLIDES; i++){
         howToSlides[i].loadImage("howTo/howTo"+ofToString(i)+".png");   //load the same image even for retina
     }
@@ -297,6 +298,9 @@ void testApp::setup(){
     punishmentTimerDecrease=0.05;
     punishmentFoeTimer=0;
     
+    //load the prefrences
+    loadData();
+    
     //pre-game stuff
     showAllInfo = false;
     
@@ -313,6 +317,7 @@ void testApp::setup(){
 
 //--------------------------------------------------------------
 void testApp::reset(){ 
+    cout<<"reset"<<endl;
     gameOver = false;
     
     //clear out any foes if there are any
@@ -1057,8 +1062,8 @@ void testApp::drawHowTo(){
     //and the next button
     nextButtonPic[curHowToSlide==NUM_HOW_TO_SLIDES-1].draw(nextButton.x, nextButton.y, nextButton.width, nextButton.height);
     
-    //make sure player pause is off
-    playerPause = false;
+    //make sure the game is paused
+    paused = true;
 }
 
 //--------------------------------------------------------------
@@ -1153,17 +1158,27 @@ void testApp::touchDown(ofTouchEventArgs & touch){
         if (muteSoundsButton.inside(touch.x, touch.y)){
             SM.toggleSounds();
             SM.playSound("paper");
+            saveData();
         }
         if (muteMusicButton.inside(touch.x, touch.y)){
             SM.toggleMusic();
             SM.playSound("paper");
+            saveData();
         }
     }
     
     if (gameState == "howTo" && nextButton.inside(touch.x, touch.y)){
         curHowToSlide++;
-        if (curHowToSlide==NUM_HOW_TO_SLIDES)
+        if (curHowToSlide==NUM_HOW_TO_SLIDES){
             gameState=stateToReturnTo;
+            //in case this was the first time through, turn off the flag to force the how to and save
+            if (forceHowTo){
+                forceHowTo = false;
+                saveData();
+                playerPause = false;
+                reset();
+            }
+        }
         SM.playSound("paper");
         ignoreTouchUp=true;
     }
@@ -1262,9 +1277,20 @@ void testApp::touchUp(ofTouchEventArgs & touch){
     else if (gameState=="menu"){
     
         if (menuButtons[0].inside(touch.x, touch.y)){
-            gameState="game";
-            SM.playSound("paper");
-            reset();
+            //ussualy go to the game, but if this is the player's first time, show the how to
+            if (!forceHowTo){
+                gameState="game";
+                SM.playSound("paper");
+                reset();
+            }
+            else{
+                gameState="howTo";
+                curHowToSlide=0;
+                stateToReturnTo = "game";
+                SM.playSound("paper");
+                playerPause = true; //don't let the timer start running
+            }
+            
         }
         
         if (menuButtons[1].inside(touch.x, touch.y)){
@@ -2005,6 +2031,63 @@ void testApp::takeDamage(int damage){
     
     //play the sound
     SM.playSound("playerHit");
+}
+
+//--------------------------------------------------------------
+void testApp::saveData(){
+    cout<<"saving"<<endl;
+    ofstream fout;
+    fout.open (ofToDataPath(ofxiPhoneGetDocumentsDirectory()+"playerData.txt").c_str());
+    
+    fout << SM.muteSoundEffects<<endl;
+    fout << SM.muteMusic<<endl;
+    fout << forceHowTo<<endl;
+    
+    fout.close();
+}
+
+
+//--------------------------------------------------------------
+void testApp::loadData(){
+    //load in the text file
+	ifstream fin;
+	fin.open(ofToDataPath(ofxiPhoneGetDocumentsDirectory()+"playerData.txt").c_str());
+    
+    if (fin==NULL){
+        cout<<"no data there"<<endl;
+    }
+    else{
+        cout<<"load the data in"<<endl;
+        
+        vector<string> dataStrings;
+        
+        while (fin!=NULL){
+            string full; 
+            getline(fin, full); 
+            dataStrings.push_back(full);
+            cout<<"read: "<<full<<endl;
+        }
+        
+        //make sure there is enough to fill all of the options
+        if (dataStrings.size()<3){
+            cout<<"NOT ENOUGH DATA"<<endl;
+            return;
+        }
+        
+        //set the variables that we need ot remember
+        //SM.muteSoundEffects = ofToInt(dataStrings[0]);
+        //SM.muteMusic = ofToInt(dataStrings[1]);
+        if (SM.muteSoundEffects!=ofToInt(dataStrings[0])){
+            SM.toggleSounds();
+        }
+        if (SM.muteMusic!=ofToInt(dataStrings[1])){
+            SM.toggleMusic();
+        }
+        
+        forceHowTo = ofToInt(dataStrings[2]);
+    }
+	
+	
 }
 
 //--------------------------------------------------------------
