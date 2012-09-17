@@ -673,18 +673,18 @@ void testApp::draw(){
     ofDisableAlphaBlending();
     
     //debug info
-    ofSetColor(255,100,100);
-    ofDrawBitmapString(ofToString(ofGetFrameRate()), 5,ofGetHeight()-2);
-    string pausedText = "not paused";
-    if (paused){
-        pausedText = "paused because  ";
-        if (playerPause)    pausedText+="player paused  ";
-        if (noPath)         pausedText+="no path  ";
-        if (!gameStarted)   pausedText+="game not started  ";
-        if (waveComplete)   pausedText+="wave complete  ";
-        if (fingerDown)     pausedText+="finger down";
-    }
-    ofDrawBitmapString(pausedText, 100, ofGetHeight()-2);
+//    ofSetColor(255,100,100);
+//    ofDrawBitmapString(ofToString(ofGetFrameRate()), 5,ofGetHeight()-2);
+//    string pausedText = "not paused";
+//    if (paused){
+//        pausedText = "paused because  ";
+//        if (playerPause)    pausedText+="player paused  ";
+//        if (noPath)         pausedText+="no path  ";
+//        if (!gameStarted)   pausedText+="game not started  ";
+//        if (waveComplete)   pausedText+="wave complete  ";
+//        if (fingerDown)     pausedText+="finger down";
+//    }
+//    ofDrawBitmapString(pausedText, 100, ofGetHeight()-2);
 }
 
 //--------------------------------------------------------------
