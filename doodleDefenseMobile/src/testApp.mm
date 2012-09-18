@@ -1341,7 +1341,8 @@ void testApp::touchCancelled(ofTouchEventArgs & touch){
 
 //--------------------------------------------------------------
 void testApp::lostFocus(){
-    
+    //pause the game
+    playerPause = true;
 }
 
 //--------------------------------------------------------------
