@@ -1,4 +1,10 @@
 new 1
+dur 35
+add immune 12
+col immune
+mes TESTING
+
+new 1
 dur 60
 add norm 15
 col norm
@@ -37,7 +43,7 @@ mes They can go#through walls?
 
 new 3
 dur 35
-add immune_red 12
+add immune 12
 col immune
 mes Hope you don't#use too much#green
 
@@ -73,7 +79,7 @@ mes More stealth
 new 6
 dur 100
 add norm 30
-add immune_red 20
+add immune 20
 add heavy 20
 add fast 20
 add stealth 16
@@ -97,7 +103,7 @@ mes fast and#slow
 new 10
 dur 100
 add norm 30
-add immune_red 20
+add immune 20
 add heavy 20
 add fast 20
 add stealth 16
@@ -107,7 +113,7 @@ mes Back for#more
 new 12
 dur 100
 add norm 30
-add immune_red 20
+add immune 20
 add heavy 20
 add fast 20
 add stealth 16

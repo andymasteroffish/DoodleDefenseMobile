@@ -10,7 +10,7 @@
 #include "NormFoe.h"
 #include "FastFoe.h"
 #include "StealthFoe.h"
-#include "ImmuneRedFoe.h"
+#include "ImmuneFoe.h"
 #include "HeavyFoe.h"
 
 #include "Tower.h"
@@ -206,7 +206,7 @@ public:
     ofImage fastFoePic[2][NUM_FOE_FRAMES]; 
     ofImage heavyFoePic[2][NUM_FOE_FRAMES]; 
     ofImage stealthFoePic[2][NUM_FOE_FRAMES]; 
-    ofImage immuneRedFoePic[2][NUM_FOE_FRAMES]; 
+    ofImage ImmuneFoePic[2][NUM_FOE_FRAMES]; 
     
     //exclamation pic
     ofImage foeExclamationPic;

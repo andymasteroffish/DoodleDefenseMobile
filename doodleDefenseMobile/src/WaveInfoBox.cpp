@@ -31,7 +31,7 @@ void WaveInfoBox::setup(int _waveNum, string _message, ofImage * _backPic, ofTru
     if (colorID=="stealth")
         bgColor.set(227,228,69);
     if (colorID=="immune")
-        bgColor.set(239,60,64);
+        bgColor.set(27,196,58);
     
     
     

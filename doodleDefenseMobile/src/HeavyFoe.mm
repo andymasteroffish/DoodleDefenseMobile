@@ -1,10 +1,4 @@
-//
-//  ImmuneRedFoe.cpp
-//  ofxKinectExample
-//
-//  Created by Andy Wallace on 12/11/11.
-//  Copyright (c) 2011 AndyMakes. All rights reserved.
-//
+
 
 #include "HeavyFoe.h"
 

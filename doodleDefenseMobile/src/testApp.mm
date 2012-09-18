@@ -192,8 +192,8 @@ void testApp::setup(){
         heavyFoePic[1][i].loadImage(foePicFolder+"heavy/hfill"+ofToString(i+1)+".png");
         stealthFoePic[0][i].loadImage(foePicFolder+"stealth/wstealth"+ofToString(i+1)+".png");
         stealthFoePic[1][i].loadImage(foePicFolder+"stealth/sfill"+ofToString(i+1)+".png");
-        immuneRedFoePic[0][i].loadImage(foePicFolder+"immune/immune"+ofToString(i+1)+".png");
-        immuneRedFoePic[1][i].loadImage(foePicFolder+"immune/ifill"+ofToString(i+1)+".png");
+        ImmuneFoePic[0][i].loadImage(foePicFolder+"immune/immune"+ofToString(i+1)+".png");
+        ImmuneFoePic[1][i].loadImage(foePicFolder+"immune/ifill"+ofToString(i+1)+".png");
     }
     
     //other images for foes
@@ -513,7 +513,7 @@ void testApp::update(){
                             
                             //green can shoot goddamn anything
                             //MAYBE NOT. TETSING THIS OUT
-                            if (towers[i]->type=="green" && foes[k]->type!="immune_red"){
+                            if (towers[i]->type=="green" && foes[k]->type!="immune"){
                                 closestDist=distance;
                                 closestID=k;
                             }
@@ -539,7 +539,7 @@ void testApp::update(){
                     
                     //find all of the foes in range of the bullet and damage them
                     for (int k=0; k<foes.size(); k++){
-                        if (towers[i]->bullet.pos.distance(foes[k]->p.pos)<towers[i]->blastRadius && foes[k]->type!="immune_red"){
+                        if (towers[i]->bullet.pos.distance(foes[k]->p.pos)<towers[i]->blastRadius && foes[k]->type!="immune"){
                             foes[k]->hp-=towers[i]->bulletDamage;
                         }
                     }
@@ -1940,9 +1940,9 @@ void testApp::spawnFoe(string name, int level){
         newFoe->setPics(stealthFoePic[0], stealthFoePic[1]);
         foes.push_back(newFoe);
     }
-    else if (name=="immune_red"){
-        ImmuneRedFoe * newFoe=new ImmuneRedFoe;
-        newFoe->setPics(immuneRedFoePic[0], immuneRedFoePic[1]);
+    else if (name=="immune"){
+        ImmuneFoe * newFoe=new ImmuneFoe;
+        newFoe->setPics(ImmuneFoePic[0], ImmuneFoePic[1]);
         foes.push_back(newFoe);
     }
     else if (name=="heavy"){

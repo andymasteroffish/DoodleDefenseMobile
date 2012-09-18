@@ -1,23 +1,23 @@
 //
-//  ImmuneRedFoe.cpp
+//  ImmuneFoe.cpp
 //  ofxKinectExample
 //
 //  Created by Andy Wallace on 12/11/11.
 //  Copyright (c) 2011 AndyMakes. All rights reserved.
 //
 
-#include "ImmuneRedFoe.h"
+#include "ImmuneFoe.h"
 
 //------------------------------------------------------------
-void ImmuneRedFoe::typeSetup(int level){
-    type="immune_red";
+void ImmuneFoe::typeSetup(int level){
+    type="immune";
     fullHP=40+ 40*level;    //slightly reduced health
 }
 
 
 //------------------------------------------------------------
 /*
-void ImmuneRedFoe::draw(){
+void ImmuneFoe::draw(){
     ofFill();
     
     

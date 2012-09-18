@@ -22,7 +22,7 @@
 		0AA305A915AF9B070043A0B8 /* WaveInfoBox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA305A715AF9B070043A0B8 /* WaveInfoBox.cpp */; };
 		0AECA85215B4F9DD00123F00 /* FastFoe.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0AECA84B15B4F9DD00123F00 /* FastFoe.mm */; };
 		0AECA85315B4F9DD00123F00 /* StealthFoe.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0AECA84D15B4F9DD00123F00 /* StealthFoe.mm */; };
-		0AECA85415B4F9DD00123F00 /* ImmuneRedFoe.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0AECA84F15B4F9DD00123F00 /* ImmuneRedFoe.mm */; };
+		0AECA85415B4F9DD00123F00 /* ImmuneFoe.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0AECA84F15B4F9DD00123F00 /* ImmuneFoe.mm */; };
 		0AECA85515B4F9DD00123F00 /* HeavyFoe.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0AECA85115B4F9DD00123F00 /* HeavyFoe.mm */; };
 		0AECA86115B4F9FA00123F00 /* Tower.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0AECA85815B4F9FA00123F00 /* Tower.mm */; };
 		0AECA86215B4F9FA00123F00 /* BombTower.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0AECA85A15B4F9FA00123F00 /* BombTower.mm */; };
@@ -110,8 +110,8 @@
 		0AECA84B15B4F9DD00123F00 /* FastFoe.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = FastFoe.mm; sourceTree = "<group>"; };
 		0AECA84C15B4F9DD00123F00 /* StealthFoe.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StealthFoe.h; sourceTree = "<group>"; };
 		0AECA84D15B4F9DD00123F00 /* StealthFoe.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = StealthFoe.mm; sourceTree = "<group>"; };
-		0AECA84E15B4F9DD00123F00 /* ImmuneRedFoe.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImmuneRedFoe.h; sourceTree = "<group>"; };
-		0AECA84F15B4F9DD00123F00 /* ImmuneRedFoe.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ImmuneRedFoe.mm; sourceTree = "<group>"; };
+		0AECA84E15B4F9DD00123F00 /* ImmuneFoe.h */ = {isa = PBXFileReference; fileEncoding = 4; path = ImmuneFoe.h; sourceTree = "<group>"; };
+		0AECA84F15B4F9DD00123F00 /* ImmuneFoe.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ImmuneFoe.mm; sourceTree = "<group>"; };
 		0AECA85015B4F9DD00123F00 /* HeavyFoe.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HeavyFoe.h; sourceTree = "<group>"; };
 		0AECA85115B4F9DD00123F00 /* HeavyFoe.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = HeavyFoe.mm; sourceTree = "<group>"; };
 		0AECA85715B4F9FA00123F00 /* Tower.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Tower.h; sourceTree = "<group>"; };
@@ -303,8 +303,8 @@
 				0AECA84B15B4F9DD00123F00 /* FastFoe.mm */,
 				0AECA84C15B4F9DD00123F00 /* StealthFoe.h */,
 				0AECA84D15B4F9DD00123F00 /* StealthFoe.mm */,
-				0AECA84E15B4F9DD00123F00 /* ImmuneRedFoe.h */,
-				0AECA84F15B4F9DD00123F00 /* ImmuneRedFoe.mm */,
+				0AECA84E15B4F9DD00123F00 /* ImmuneFoe.h */,
+				0AECA84F15B4F9DD00123F00 /* ImmuneFoe.mm */,
 				0AECA85015B4F9DD00123F00 /* HeavyFoe.h */,
 				0AECA85115B4F9DD00123F00 /* HeavyFoe.mm */,
 			);
@@ -820,7 +820,7 @@
 				0A8B006F15AFB43100561FF7 /* SoundManager.mm in Sources */,
 				0AECA85215B4F9DD00123F00 /* FastFoe.mm in Sources */,
 				0AECA85315B4F9DD00123F00 /* StealthFoe.mm in Sources */,
-				0AECA85415B4F9DD00123F00 /* ImmuneRedFoe.mm in Sources */,
+				0AECA85415B4F9DD00123F00 /* ImmuneFoe.mm in Sources */,
 				0AECA85515B4F9DD00123F00 /* HeavyFoe.mm in Sources */,
 				0AECA86115B4F9FA00123F00 /* Tower.mm in Sources */,
 				0AECA86215B4F9FA00123F00 /* BombTower.mm in Sources */,
