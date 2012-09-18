@@ -149,7 +149,7 @@ void testApp::setup(){
     pauseScreenButtonPics[1].loadImage("buttons/pauseScreen/howToPlay"+picNameEnd);
     pauseScreenButtonPics[2].loadImage("buttons/pauseScreen/credits"+picNameEnd);
     pauseScreenButtonPics[3].loadImage("buttons/pauseScreen/quit"+picNameEnd);
-    float pauseButtonStartY = ofGetHeight()*0.38;
+    float pauseButtonStartY = ofGetHeight()*0.36;
     float pauseButtonEndY = ofGetHeight()*0.85;
     for (int i=0; i<4; i++){
         pauseScreenButtons[i].set(ofGetWidth()/2-pauseScreenButtonPics[i].width/2, (int)ofMap(i,0,3,pauseButtonStartY,pauseButtonEndY), pauseScreenButtonPics[i].width, pauseScreenButtonPics[i].height);

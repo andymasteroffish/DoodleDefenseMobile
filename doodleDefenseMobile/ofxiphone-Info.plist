@@ -19,6 +19,8 @@
 				<string>Default-Landscape@2x~ipad.png</string>
 				<string>Icon~iPad.png</string>
 				<string>Icon@2x~iPad.png</string>
+				<string>Default-Landscape@2x~ipad.png</string>
+				<string>Default-Landscape~ipad.png</string>
 			</array>
 			<key>UIPrerenderedIcon</key>
 			<true/>
