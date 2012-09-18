@@ -723,17 +723,6 @@ void testApp::drawGame(){
         ofSetColor(0,130,130, 200);
     }
     
-    //show the explored area of the tempFoes if they could not find a path
-    if (noPath && health>0){
-        ofFill();
-        if (tempFoeTop.showPath){
-            tempFoeTop.drawExplored();
-        }
-        if (tempFoeLeft.showPath){
-            tempFoeLeft.drawExplored();
-        }
-    }
-    
     //show the towers
     for (int i=0; i<towers.size(); i++)
         towers[i]->draw();
@@ -773,8 +762,10 @@ void testApp::drawGame(){
     for (int i=0; i<explosions.size(); i++)
         explosions[i].draw();
     
-    //show exclamations if there is no path
+    
+    //Things to draw if there is no path
     if (noPath){
+        //show exclamations 
         for (int i=0; i<foes.size(); i++){
             //if they have no path, show the exclamation point
             if (!foes[i]->pathFound){
@@ -782,6 +773,23 @@ void testApp::drawGame(){
                 float xPos = foes[i]->p.pos.x+ofGetWidth()*0.005 + ofNoise(i*100, ofGetElapsedTimef()/3)*ofGetWidth()*0.005;
                 float yPos = foes[i]->p.pos.y-ofGetWidth()*0.03 - ofNoise(i, ofGetElapsedTimef()/3)*ofGetWidth()*0.01;
                 foeExclamationPic.draw(xPos, yPos);
+            }
+        }
+        
+        //show the path of the foes that could not reach the end
+        for (int i=0; i<foes.size(); i++){
+            if (foes[i]->showPath){
+                foes[i]->drawExplored();
+            }
+        }
+        //show the explored area of the tempFoes if they could not find a path
+        if (health>0){
+            ofFill();
+            if (tempFoeTop.showPath){
+                tempFoeTop.drawExplored();
+            }
+            if (tempFoeLeft.showPath){
+                tempFoeLeft.drawExplored();
             }
         }
     }

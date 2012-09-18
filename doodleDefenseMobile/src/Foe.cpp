@@ -172,9 +172,9 @@ void Foe::standardDraw(){
     
     
     //have it flash if there is no path
-    if (showPath){
-        drawExplored();
-    }
+//    if (showPath){
+//        drawExplored();
+//    }
     
     //draw the outline and the fill
     ofPushMatrix();
