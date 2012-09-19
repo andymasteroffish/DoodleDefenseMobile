@@ -38,6 +38,7 @@ void testApp::setup(){
     //black image
     blackImg.allocate(boardW, boardH);
     blackPixels = new unsigned char [boardW * boardH];
+    prevBlackImg.allocate(boardW, boardH);
     
     //set up the images
     wallPixels = new unsigned char [fieldW * fieldH];
@@ -47,6 +48,7 @@ void testApp::setup(){
     for (int i=0; i<3; i++){
         colorImgs[i].allocate(boardW, boardH);
         colorPixels[i]= new unsigned char [boardW * boardH];
+        prevColorImgs[i].allocate(boardW, boardH);
     }
     
     //set the colors to display each image
@@ -685,6 +687,7 @@ void testApp::draw(){
 //        if (fingerDown)     pausedText+="finger down";
 //    }
 //    ofDrawBitmapString(pausedText, 100, ofGetHeight()-2);
+    
 }
 
 //--------------------------------------------------------------
@@ -963,7 +966,7 @@ void testApp::drawPlayerInfo(){
     if (gameState=="game"){
         ofPushMatrix();
         ofTranslate(colorButtons[curBrushColor].x+colorButtonPics[curBrushColor].width/2, colorButtons[curBrushColor].y+colorButtonPics[curBrushColor].height/2);
-        ofScale(1.2,1.2);
+        ofScale(1.3,1.3);
         ofSetColor(255,120);
         colorButtonPics[curBrushColor].draw(-colorButtonPics[curBrushColor].width/2,-colorButtonPics[curBrushColor].height/2);
         ofPopMatrix();
@@ -982,7 +985,7 @@ void testApp::drawPlayerInfo(){
     if (fastForward && gameState=="game"){
         ofPushMatrix();
         ofTranslate(fastForwardButton.x+fastForwardButtonPic.width/2, fastForwardButton.y+fastForwardButtonPic.height/2);
-        ofScale(1.2,1.2);
+        ofScale(1.3,1.3);
         ofSetColor(255,120);
         fastForwardButtonPic.draw(-fastForwardButtonPic.width/2,-fastForwardButtonPic.height/2);
         ofPopMatrix();
@@ -1143,21 +1146,36 @@ void testApp::touchDown(ofTouchEventArgs & touch){
         fingerDown = true;
         
         if (!playerPause && health>0){
+            //check the pallet buttons
             for (int i=0; i<5; i++){
                 if (colorButtons[i].inside(touch.x,touch.y)){
                     curBrushColor = i;
                 }
             }
             
+            //other buttons
             if (fastForwardButton.inside(touch.x,touch.y)){
                 fastForward=!fastForward;
             }
-            
             if (pauseButton.inside(touch.x,touch.y)){
                 playerPause = true;
                 SM.playSound("paper");
             }
+
+            //undo button not working yet (or possibly ever)
+//            if (fastForwardButton.inside(touch.x,touch.y)){
+//                //fastForward=!fastForward;
+//                undoDraw();
+//            }else{
+//                cout<<"save"<<endl;
+//                //save the current board in case the player wants to undo
+//                prevBlackImg = blackImg;
+//                for (int i=0; i<3; i++){
+//                    prevColorImgs[i] = colorImgs[i];
+//                }
+//            }
             
+            //start applying the brush
             brushDown(touch.x, touch.y);
         }
         
@@ -1528,6 +1546,50 @@ void testApp::brushDown(float touchX, float touchY){
     }
     blackImg.setFromPixels(blackPixels, boardW, boardH);
     wallDispTex.loadData(wallDispPixels, boardW, boardH, GL_LUMINANCE_ALPHA);
+    
+}
+
+//--------------------------------------------------------------
+void testApp::undoDraw(){
+    //THIS DOES NOT YET ACCOUNT FOR THE INK USED
+    cout<<"undo"<<endl;
+    
+    //set the color images to be the preivous one
+    blackImg = prevBlackImg;
+    blackPixels = blackImg.getPixels();
+    for (int i=0; i<3; i++){
+        colorImgs[i] = prevColorImgs[i];
+        colorPixels[i] = prevColorImgs[i].getPixels();
+    }
+    
+//    //update this pixel on the display images
+//    for (int i=0; i<3; i++){
+//        colorDispPixels[i][dispPos+1] = MIN(255, colorPixels[i][pos]);
+//    }
+//    //and the black display image
+//    wallDispPixels[dispPos+1] = blackPixels[pos];
+    
+    //update the display images
+    for (int col=0; col<boardW; col++){
+        for (int row=0; row<boardH; row++){
+            //figure out where in the arrays this pixel is
+            int pos= row*boardW+col;
+            int dispPos= row*boardW*2+col*2;    //locaiton in the array of greyscale/alpha pixels used for display
+            
+            //update this pixel on the display images
+            for (int i=0; i<3; i++){
+                colorDispPixels[i][dispPos+1] = MIN(255, colorPixels[i][pos]);
+            }
+            //and the black display image
+            wallDispPixels[dispPos+1] = blackPixels[pos];
+            
+            //since soemthing changed, flag that we need to alter the game
+            needToConvertDrawingToGame = true;
+        }
+    }
+    
+    //apply it to the game
+    convertDrawingToGame();
     
 }
 
