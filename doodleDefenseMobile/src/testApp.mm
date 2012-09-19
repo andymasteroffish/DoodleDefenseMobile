@@ -155,8 +155,14 @@ void testApp::setup(){
     float pauseButtonEndY = ofGetHeight()*0.85;
     for (int i=0; i<4; i++){
         pauseScreenButtons[i].set(ofGetWidth()/2-pauseScreenButtonPics[i].width/2, (int)ofMap(i,0,3,pauseButtonStartY,pauseButtonEndY), pauseScreenButtonPics[i].width, pauseScreenButtonPics[i].height);
-        
     }
+    //about to quit warning
+    aboutToQuit=false;
+    yesNoButtonPics[0].loadImage("buttons/pauseScreen/no"+picNameEnd);
+    yesNoButtonPics[1].loadImage("buttons/pauseScreen/yes"+picNameEnd);
+    yesNoButtons[0].set(0,0, yesNoButtonPics[0].width, yesNoButtonPics[0].height);
+    yesNoButtons[1].set(0,0, yesNoButtonPics[1].width, yesNoButtonPics[1].height);
+    quitWarningPic.loadImage("buttons/pauseScreen/quitWarning"+picNameEnd);
 	
 	//testing different views
     for (int i=0; i<5; i++){
@@ -666,7 +672,7 @@ void testApp::draw(){
     }
     
     //draw the mute buttons on menu or pause
-    if (gameState=="menu" || playerPause){
+    if ( (gameState=="menu" || playerPause) && gameState!="credits"){
         ofSetColor(255);
         muteSoundsButtonPics[SM.muteSoundEffects].draw(muteSoundsButton.x,muteSoundsButton.y);
         muteMusicButtonPics[SM.muteMusic].draw(muteMusicButton.x,muteMusicButton.y);
@@ -824,13 +830,32 @@ void testApp::drawPause(){
     ofSetColor(0);
     banners[5].draw(bannerX, bannerY);
     
-    //draw the buttons
-    ofSetRectMode(OF_RECTMODE_CORNER);
-    ofSetColor(255);
-    for (int i=0; i<4; i++){
-        pauseScreenButtonPics[i].draw(pauseScreenButtons[i].x, pauseScreenButtons[i].y, pauseScreenButtons[i].width, pauseScreenButtons[i].height);
+    //show normal buttons when not showing the quit warning
+    if (!aboutToQuit){
+        //draw the buttons
+        ofSetRectMode(OF_RECTMODE_CORNER);
+        ofSetColor(255);
+        for (int i=0; i<4; i++){
+            pauseScreenButtonPics[i].draw(pauseScreenButtons[i].x, pauseScreenButtons[i].y, pauseScreenButtons[i].width, pauseScreenButtons[i].height);
+        }
+    }else{
+        int buttonY = ofGetHeight()*0.7;
+        int spacing = ofGetWidth()*0.1;
+        yesNoButtons[0].x = ofGetWidth()/2-yesNoButtons[0].width-spacing;
+        yesNoButtons[0].y =buttonY;
+        yesNoButtons[1].x = ofGetWidth()/2+spacing;
+        yesNoButtons[1].y = buttonY;
+        
+        ofSetRectMode(OF_RECTMODE_CENTER);
+        ofSetColor(255);
+        quitWarningPic.draw(ofGetWidth()/2, ofGetHeight()*0.5);
+        
+        ofSetRectMode(OF_RECTMODE_CORNER);
+        
+        for (int i=0; i<2; i++){
+            yesNoButtonPics[i].draw(yesNoButtons[i].x, yesNoButtons[i].y);
+        }
     }
-    
 }
 
 //--------------------------------------------------------------
@@ -867,8 +892,10 @@ void testApp::drawEndGame(bool win){
     }
     
     //reset button
+    int alpha = ofMap(sin(ofGetElapsedTimef()*3),-1,1, 180, 255);
+    ofSetColor(255,alpha);
     ofSetRectMode(OF_RECTMODE_CORNER);
-    gameOverButton.y=messageY+ofGetHeight()*0.36;
+    gameOverButton.y=messageY+ofGetHeight()*0.34;
     gameOverButton.x= messageX-gameOverButton.width/2;
     gameOverButtonPic.draw(gameOverButton.x, gameOverButton.y);
 }
@@ -1181,7 +1208,7 @@ void testApp::touchDown(ofTouchEventArgs & touch){
         
     }
     
-    if (playerPause || gameState=="menu"){
+    if ((playerPause || gameState=="menu") && gameState!="credits"){
         if (muteSoundsButton.inside(touch.x, touch.y)){
             SM.toggleSounds();
             SM.playSound("paper");
@@ -1288,8 +1315,19 @@ void testApp::touchUp(ofTouchEventArgs & touch){
             }
             
             if (pauseScreenButtons[3].inside(touch.x,touch.y)){
-                gameState="menu";
+                aboutToQuit=true;
+//                gameState="menu";
                 SM.playSound("paper");
+            }else if (aboutToQuit){
+                if (yesNoButtons[0].inside(touch.x,touch.y)){
+                    aboutToQuit=false;
+                    SM.playSound("paper");
+                }
+                if (yesNoButtons[1].inside(touch.x,touch.y)){
+                    gameState="menu";
+                    SM.playSound("paper");
+                    aboutToQuit=false;
+                }
             }
             
         }

@@ -132,6 +132,7 @@ public:
     unsigned char *			colorPixels[3];
     
     //undo functionality
+    //NOT USED
     ofxCvGrayscaleImage		prevBlackImg;
     ofxCvGrayscaleImage     prevColorImgs[3];
     
@@ -280,6 +281,11 @@ public:
     //pause screen buttons
     ofRectangle pauseScreenButtons[4];
     ofImage pauseScreenButtonPics[4];
+    //showing the about to quit wanring
+    bool aboutToQuit;
+    ofImage yesNoButtonPics[2];
+    ofRectangle yesNoButtons[2];
+    ofImage quitWarningPic;
     
     //game overbuttons
     ofRectangle gameOverButton;
