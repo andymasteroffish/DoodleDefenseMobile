@@ -75,7 +75,7 @@ public:
     void setMazeBorders();
     void thickenWallImage();    //KILL THIS
     
-    void spawnFoe(string name, int level);
+    void spawnFoe(string name, float level);
     void killFoe(int num);
     void checkTowers(string type);
     
@@ -305,7 +305,7 @@ public:
     
     //main menu
     ofImage titlePic;
-    #define NUM_MENU_BUTONS 3
+    #define NUM_MENU_BUTONS 4
     ofRectangle menuButtons[NUM_MENU_BUTONS];
     ofImage menuButtonPics[NUM_MENU_BUTONS];
     
@@ -340,6 +340,12 @@ public:
     //timing
     float prevFrameTime;
     float deltaTime;
+    
+    //modulating difficulty (hard mode)
+    bool hardModeUnlocked;
+    bool hardModeBeaten;
+    bool hardModeActive;
+    float hardModeLevelIncrease;  //how much gets added to the level of each foe
     
     //testing
     int lastX;

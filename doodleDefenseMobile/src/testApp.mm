@@ -269,11 +269,12 @@ void testApp::setup(){
     menuButtonPics[0]=pauseScreenButtonPics[0];
     menuButtonPics[1]=pauseScreenButtonPics[1];
     menuButtonPics[2]=pauseScreenButtonPics[2];
+    menuButtonPics[3].loadImage("buttons/pauseScreen/playHard"+picNameEnd);
     float menuButtonsStartY = ofGetHeight()*0.55;
     float menuButtonsEndY = ofGetHeight()*0.85;
     for (int i=0; i<NUM_MENU_BUTONS; i++){
-        menuButtons[i].set(ofGetWidth()/2-menuButtonPics[i].width/2, (int)ofMap(i,0,NUM_MENU_BUTONS-1,menuButtonsStartY,menuButtonsEndY), menuButtonPics[i].width, menuButtonPics[i].height);
-        
+        menuButtons[i].set(ofGetWidth()/2-menuButtonPics[i].width/2, (int)ofMap(i,0,NUM_MENU_BUTONS-2,menuButtonsStartY,menuButtonsEndY), menuButtonPics[i].width, menuButtonPics[i].height);
+        //play hard mode (menuButtonPics[3]), will be moved in drawMenu if it available to the player
     }
     
     //how To
@@ -306,12 +307,19 @@ void testApp::setup(){
     punishmentTimerDecrease=0.05;
     punishmentFoeTimer=0;
     
+    //hard mode
+    hardModeUnlocked=false;
+    hardModeBeaten=false;
+    hardModeActive = false;
+    hardModeLevelIncrease =1.5;
+    
     //load the prefrences
     loadData();
     
     //pre-game stuff
     showAllInfo = false;
     
+    //states
     fingerDown = false;
     ignoreTouchUp = false;
     gameStarted = true;
@@ -443,7 +451,7 @@ void testApp::update(){
             if (curWave>=0 && !wavesDone){
                 waves[curWave].update(paused, fastForward);
                 if (waves[curWave].readyForNextFoe)
-                    spawnFoe(waves[curWave].getNextFoe(),waves[curWave].level);
+                    spawnFoe(waves[curWave].getNextFoe(),waves[curWave].level + (hardModeActive*hardModeLevelIncrease));
                 
                 //if this wave is done, and all foes are dead or offscreen, we can start the next wave if the player is still alive
                 if (waves[curWave].done && foes.size()==0 && health>0 && !waveComplete)
@@ -1063,13 +1071,21 @@ void testApp::drawMenu(){
     ofSetColor(255);
     titlePic.draw(ofGetWidth()*0.5, ofGetHeight()*0.27);
     
+    //if hardmode is unlocked, reposition play and playHard
+    if (hardModeUnlocked){
+        int spacing = ofGetWidth()*0.1;
+        menuButtons[0].x=ofGetWidth()/2 - spacing - menuButtons[0].width;
+        menuButtons[3].x=ofGetWidth()/2;// + spacing;
+        menuButtons[3].y=menuButtons[0].y;
+    }
+    
     ofSetRectMode(OF_RECTMODE_CORNER);
     //draw the buttons
-    for (int i=0; i<NUM_MENU_BUTONS; i++){
+    for (int i=0; i<NUM_MENU_BUTONS-(1-hardModeUnlocked); i++){
         //have play pulse
-        int alpha = (i==0) ? ofMap(sin(ofGetElapsedTimef()*3),-1,1, 180, 255) : 255;
+        int alpha = (i==0 || i==3) ? ofMap(sin(ofGetElapsedTimef()*3),-1,1, 180, 255) : 255;
         ofSetColor(255,alpha);
-        menuButtonPics[i].draw(menuButtons[i].x, menuButtons[i].y, menuButtons[i].width, menuButtons[i].height);
+        menuButtonPics[i].draw(menuButtons[i].x, menuButtons[i].y);
     }
     
     //probaby don't need to draw your name if its on the launch image and the credits page
@@ -1346,6 +1362,7 @@ void testApp::touchUp(ofTouchEventArgs & touch){
             if (!forceHowTo){
                 gameState="game";
                 SM.playSound("paper");
+                hardModeActive=false;
                 reset();
             }
             else{
@@ -1356,6 +1373,12 @@ void testApp::touchUp(ofTouchEventArgs & touch){
                 playerPause = true; //don't let the timer start running
             }
             
+        }
+        if (menuButtons[3].inside(touch.x,touch.y) && hardModeUnlocked){
+            gameState="game";
+            SM.playSound("paper");
+            hardModeActive=true;
+            reset();
         }
         
         if (menuButtons[1].inside(touch.x, touch.y)){
@@ -2001,7 +2024,17 @@ void testApp::startNextWave(){
         cout<<"we're done!"<<endl;
         curWave=waves.size()-1;
         wavesDone=true;
-        endWave();  //show the game complete message
+        //unlock hard mode and save the data!
+        cout<<"unlock hardmode"<<endl;
+        hardModeUnlocked = true;
+        //and if they were playing hard mode, mark that tey beat is
+        if (hardModeActive){
+            cout<<"beat hard mode!"<<endl;
+            hardModeBeaten=true;
+        }
+        saveData();
+        //show the game complete message
+        endWave();  
     }
     
     //check if it is time to increase the number of entrances starting with the 3rd wave
@@ -2030,7 +2063,7 @@ void testApp::endWave(){
 }
 
 //--------------------------------------------------------------
-void testApp::spawnFoe(string name, int level){ 
+void testApp::spawnFoe(string name, float level){ 
     if (name=="fast"){
         FastFoe * newFoe=new FastFoe;
         newFoe->setPics(fastFoePic[0], fastFoePic[1]);
@@ -2152,6 +2185,8 @@ void testApp::saveData(){
     fout << SM.muteSoundEffects<<endl;
     fout << SM.muteMusic<<endl;
     fout << forceHowTo<<endl;
+    fout << hardModeUnlocked<<endl;
+    fout << hardModeBeaten<<endl;
     
     fout.close();
 }
@@ -2182,7 +2217,7 @@ void testApp::loadData(){
         }
         
         //make sure there is enough to fill all of the options
-        if (dataStrings.size()<3){
+        if (dataStrings.size()<5){
             cout<<"NOT ENOUGH DATA"<<endl;
             return;
         }
@@ -2198,6 +2233,10 @@ void testApp::loadData(){
         }
         
         forceHowTo = ofToInt(dataStrings[2]);
+        hardModeUnlocked = ofToInt(dataStrings[3]);
+        hardModeBeaten = ofToInt(dataStrings[4]);
+        cout<<"hard mode unlocked: "<<hardModeUnlocked<<endl;
+        cout<<"hard mode beaten: "<<hardModeBeaten<<endl;
     }
 	
 	

@@ -9,7 +9,7 @@
 #include "NormFoe.h"
 
 //------------------------------------------------------------
-void NormFoe::typeSetup(int level){
+void NormFoe::typeSetup(float level){
     //normal foe just uses the defaults
     type="norm";
 }

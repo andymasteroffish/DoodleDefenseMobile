@@ -9,7 +9,7 @@
 #include "ImmuneFoe.h"
 
 //------------------------------------------------------------
-void ImmuneFoe::typeSetup(int level){
+void ImmuneFoe::typeSetup(float level){
     type="immune";
     fullHP=40+ 40*level;    //slightly reduced health
 }

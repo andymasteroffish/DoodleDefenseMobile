@@ -9,7 +9,7 @@
 #include "FastFoe.h"
 
 //------------------------------------------------------------
-void FastFoe::typeSetup(int level){
+void FastFoe::typeSetup(float level){
     type="fast";
     speed*=2;
 }

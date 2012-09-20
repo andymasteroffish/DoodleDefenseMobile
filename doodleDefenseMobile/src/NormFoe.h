@@ -16,7 +16,7 @@
 class NormFoe : public Foe{
 public:
     
-    void typeSetup(int level);
+    void typeSetup(float level);
     //void draw();
     
 };

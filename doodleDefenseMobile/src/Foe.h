@@ -19,9 +19,9 @@
 class Foe{
 public:
     
-    void setup(float x, float y, float goalX, float goalY, float _fieldScale, int _fieldW, int _fieldH, int level, bool _retina);
+    void setup(float x, float y, float goalX, float goalY, float _fieldScale, int _fieldW, int _fieldH, float level, bool _retina);
     void setPics(ofImage stroke[], ofImage fill[]);
-    virtual void typeSetup(int level){}
+    virtual void typeSetup(float level){}
     void update();
     virtual void draw(){ standardDraw(); }
     void standardDraw();

@@ -9,7 +9,7 @@
 #include "Foe.h"
 
 //------------------------------------------------------------
-void Foe::setup(float x, float y, float _goalX, float _goalY, float _fieldScale, int _fieldW, int _fieldH, int level, bool _retina){
+void Foe::setup(float x, float y, float _goalX, float _goalY, float _fieldScale, int _fieldW, int _fieldH, float level, bool _retina){
     p.pos.x=x;
     p.pos.y=y;
     fieldScale=_fieldScale;
@@ -69,6 +69,7 @@ void Foe::setup(float x, float y, float _goalX, float _goalY, float _fieldScale,
     //turning the picture
     displayAngle=0;
     turnSpeed=0.1;
+    
     
 }
 

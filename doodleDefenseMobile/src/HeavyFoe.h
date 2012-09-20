@@ -14,7 +14,7 @@
 class HeavyFoe : public Foe{
 public:
     
-    void typeSetup(int level);
+    void typeSetup(float level);
     //void draw();
     
 };

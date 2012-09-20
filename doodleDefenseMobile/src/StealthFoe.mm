@@ -18,7 +18,7 @@
 #include "StealthFoe.h"
 
 //------------------------------------------------------------
-void StealthFoe::typeSetup(int level){
+void StealthFoe::typeSetup(float level){
     type="stealth";
     
 }

@@ -3,7 +3,7 @@
 #include "HeavyFoe.h"
 
 //------------------------------------------------------------
-void HeavyFoe::typeSetup(int level){
+void HeavyFoe::typeSetup(float level){
     type="heavy";
     fullHP*=3;  //way more health than a normal foe
     speed*=0.3; //slow it down
