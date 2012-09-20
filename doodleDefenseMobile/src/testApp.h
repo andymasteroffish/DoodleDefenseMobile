@@ -346,6 +346,7 @@ public:
     bool hardModeBeaten;
     bool hardModeActive;
     float hardModeLevelIncrease;  //how much gets added to the level of each foe
+    ofImage hardModeCrownPic;
     
     //testing
     int lastX;

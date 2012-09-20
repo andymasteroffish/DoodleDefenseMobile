@@ -312,6 +312,7 @@ void testApp::setup(){
     hardModeBeaten=false;
     hardModeActive = false;
     hardModeLevelIncrease =1.5;
+    hardModeCrownPic.loadImage("menu/titleCrown"+picNameEnd);
     
     //load the prefrences
     loadData();
@@ -1077,6 +1078,15 @@ void testApp::drawMenu(){
         menuButtons[0].x=ofGetWidth()/2 - spacing - menuButtons[0].width;
         menuButtons[3].x=ofGetWidth()/2;// + spacing;
         menuButtons[3].y=menuButtons[0].y;
+    }
+    
+    //show the crowns if they've beaten the game at all
+    ofSetColor(255);
+    if (hardModeUnlocked){
+        hardModeCrownPic.draw(ofGetWidth()*0.35, ofGetHeight()*0.09);
+        
+        if (hardModeBeaten)
+            hardModeCrownPic.draw(ofGetWidth()*0.64, ofGetHeight()*0.08, -hardModeCrownPic.width, hardModeCrownPic.height);
     }
     
     ofSetRectMode(OF_RECTMODE_CORNER);
