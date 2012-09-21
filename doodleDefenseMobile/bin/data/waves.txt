@@ -1,5 +1,116 @@
 new 1
-dur 30
-add norm 3
+dur 60
+add norm 15
 col norm
 mes Start drawing
+
+new 1
+dur 50
+add norm 30
+col norm
+mes A bit faster#now
+
+new 1
+dur 30
+add fast 25
+col fast 
+mes Watch out for#fast invaders
+
+new 2
+dur 60
+add heavy 15
+col heavy
+mes Heavies take#more damage#to kill
+
+new 2
+dur 80
+add norm 30
+add fast 10
+col norm
+mes knock knock
+
+new 3
+dur 45
+add stealth 15
+col stealth
+mes They can go#through walls?
+
+new 3
+dur 35
+add immune 12
+col immune
+mes Hope you don't#use too much#green
+
+new 4
+dur 80
+add norm 30
+add fast 8
+add heavy 8
+rand
+mes Medley
+
+new 5
+dur 30
+add fast 20
+rand
+col fast
+mes 2 Fast#2 Furious#Tokyo Drift
+
+new 5
+dur 50
+add heavy 20
+rand
+col heavy
+mes Get Heavy
+
+new 6
+dur 40
+add stealth 10
+rand
+col stealth
+mes More stealth
+
+new 6
+dur 100
+add norm 30
+add immune 20
+add heavy 20
+add fast 20
+add stealth 16
+rand
+mes Luke,#We've got#company
+
+
+new 8
+dur 60
+add norm 60
+col norm
+mes Let's take#a break
+
+new 9
+dur 80
+add heavy 30
+add fast 30
+rand
+mes fast and#slow
+
+new 10
+dur 100
+add norm 30
+add immune 20
+add heavy 20
+add fast 20
+add stealth 16
+rand
+mes Back for#more
+
+new 12
+dur 100
+add norm 30
+add immune 20
+add heavy 20
+add fast 20
+add stealth 16
+rand
+mes Are You#a bad#enough dude?
+

@@ -269,12 +269,13 @@ void testApp::setup(){
     menuButtonPics[0]=pauseScreenButtonPics[0];
     menuButtonPics[1]=pauseScreenButtonPics[1];
     menuButtonPics[2]=pauseScreenButtonPics[2];
-    menuButtonPics[3].loadImage("buttons/pauseScreen/playHard"+picNameEnd);
+    menuButtonPics[3].loadImage("buttons/menu/playHard"+picNameEnd);
+    menuButtonPics[4].loadImage("buttons/menu/playNormal"+picNameEnd);
     float menuButtonsStartY = ofGetHeight()*0.55;
     float menuButtonsEndY = ofGetHeight()*0.85;
     for (int i=0; i<NUM_MENU_BUTONS; i++){
-        menuButtons[i].set(ofGetWidth()/2-menuButtonPics[i].width/2, (int)ofMap(i,0,NUM_MENU_BUTONS-2,menuButtonsStartY,menuButtonsEndY), menuButtonPics[i].width, menuButtonPics[i].height);
-        //play hard mode (menuButtonPics[3]), will be moved in drawMenu if it available to the player
+        menuButtons[i].set(ofGetWidth()/2-menuButtonPics[i].width/2, (int)ofMap(i,0,2,menuButtonsStartY,menuButtonsEndY), menuButtonPics[i].width, menuButtonPics[i].height);
+        //buttons 3 and 4, will be moved in drawMenu if it available to the player
     }
     
     //how To
@@ -1074,9 +1075,11 @@ void testApp::drawMenu(){
     
     //if hardmode is unlocked, reposition play and playHard
     if (hardModeUnlocked){
-        int spacing = ofGetWidth()*0.1;
-        menuButtons[0].x=ofGetWidth()/2 - spacing - menuButtons[0].width;
-        menuButtons[3].x=ofGetWidth()/2;// + spacing;
+        int spacing = ofGetWidth()*0.25;
+        menuButtons[0].width = menuButtonPics[4].width;
+        menuButtons[0].height = menuButtonPics[4].width;
+        menuButtons[0].x=ofGetWidth()/2-spacing-menuButtons[0].width/2;
+        menuButtons[3].x=ofGetWidth()/2+spacing-menuButtons[3].width/2;
         menuButtons[3].y=menuButtons[0].y;
     }
     
@@ -1095,7 +1098,11 @@ void testApp::drawMenu(){
         //have play pulse
         int alpha = (i==0 || i==3) ? ofMap(sin(ofGetElapsedTimef()*3),-1,1, 180, 255) : 255;
         ofSetColor(255,alpha);
-        menuButtonPics[i].draw(menuButtons[i].x, menuButtons[i].y);
+        if (i==0 && hardModeUnlocked){
+            menuButtonPics[4].draw(menuButtons[i].x, menuButtons[i].y);
+        }else{
+            menuButtonPics[i].draw(menuButtons[i].x, menuButtons[i].y);
+        }
     }
     
     //probaby don't need to draw your name if its on the launch image and the credits page
@@ -1432,6 +1439,8 @@ void testApp::touchCancelled(ofTouchEventArgs & touch){
 void testApp::lostFocus(){
     //pause the game
     playerPause = true;
+    cout<<"See ya later bye"<<endl;
+    saveGameState();
 }
 
 //--------------------------------------------------------------
@@ -2250,6 +2259,16 @@ void testApp::loadData(){
     }
 	
 	
+}
+
+//--------------------------------------------------------------
+void testApp::loadGameState(){
+    
+}
+//--------------------------------------------------------------
+void testApp::saveGameState(){
+    cout<<"saving gamestate"<<endl;
+    
 }
 
 //--------------------------------------------------------------

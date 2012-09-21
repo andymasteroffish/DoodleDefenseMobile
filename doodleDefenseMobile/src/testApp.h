@@ -6,6 +6,8 @@
 #include "ofxiPhoneExtras.h"
 #include "ofxiPhoneExternalDisplay.h"   //for mirroring
 
+#include "ofxXmlSettings.h"
+
 #include "Foe.h"
 #include "NormFoe.h"
 #include "FastFoe.h"
@@ -88,6 +90,9 @@ public:
     
     void loadData();
     void saveData();
+    
+    void loadGameState();
+    void saveGameState();
     
     void drawCenteredText(string text, ofTrueTypeFont font, int x, int y);
     void setBackerNames();  //in main.cpp because it is long and borring
@@ -307,7 +312,7 @@ public:
     ofImage titlePic;
     #define NUM_MENU_BUTONS 4
     ofRectangle menuButtons[NUM_MENU_BUTONS];
-    ofImage menuButtonPics[NUM_MENU_BUTONS];
+    ofImage menuButtonPics[NUM_MENU_BUTONS+1];  //the new play-normal button replaces the old
     
     //mute buttons
     ofImage muteSoundsButtonPics[2];
