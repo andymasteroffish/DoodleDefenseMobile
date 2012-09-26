@@ -54,7 +54,7 @@ void Foe::setup(float x, float y, float _goalX, float _goalY, float _fieldScale,
     //default game vals
     fullHP=50+ 50*level;
     speed=0.15;//0.1;
-    inkVal=6;
+    inkVal=7;
     damageToPlayer=1;
     
     //set type specific game values that might change the above values

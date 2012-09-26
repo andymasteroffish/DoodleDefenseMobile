@@ -53,7 +53,8 @@ void testApp::setup(){
     
     //set the colors to display each image
     dispColor[0].set(255,0,0);
-    dispColor[1].set(0,255,0);
+    //dispColor[1].set(0,255,0);
+    dispColor[1].setHex(0xD4D413);
     dispColor[2].set(0,0,255);
     
     //threhsolding info
@@ -108,7 +109,7 @@ void testApp::setup(){
     borderPics[1].loadImage("walls2Entrance.png");
     
     //for calculating what counts as a tower
-    maxCompactness = 1.6;
+    maxCompactness = 1.8;
     
     //color selection
     curBrushColor = 3;
@@ -1472,7 +1473,7 @@ void testApp::brushDown(float touchX, float touchY){
     
     //black gets a smaller but more powerful brush
     if (curBrushColor == 3){ 
-        maxDist*=0.5;   //black can be smaller
+        maxDist*=0.35;   //black can be smaller
         brushStrength = 255;
     }
     

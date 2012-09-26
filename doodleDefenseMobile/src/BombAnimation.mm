@@ -27,16 +27,10 @@ void BombAnimation::update(){
 void BombAnimation::draw(){
     
     int sections=3;
-//    for (int i=timer/sections; i<endTime/sections; i++){
-//        ofSetColor(0, ofMap(i,0,endTime/sections,150,255), 0, 100);
-//        
-//        float thisSize=ofMap(i,0,endTime/sections,size,1);
-//        ofCircle(x, y, thisSize);
-//        cout<<i<<endl;
-//    }
 
     for (int i=0; i<sections; i++){
-        ofSetColor(0, ofMap(i,0,sections,150,255), 0, 100);
+        ofSetColor(ofMap(i,0,sections,150,255), ofMap(i,0,sections,150,255), 0, 100);
+        
         
         float thisSize=ofMap(timer,0,endTime,size,1)/i;
         ofCircle(x, y, thisSize);
