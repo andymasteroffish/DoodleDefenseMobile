@@ -39,7 +39,7 @@ new 3
 dur 35
 add immune 12
 col immune
-mes Hope you don't#use too much#green
+mes Hope you don't#use too much#yellow
 
 new 4
 dur 80
