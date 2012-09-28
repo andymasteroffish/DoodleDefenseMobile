@@ -53,8 +53,7 @@ void testApp::setup(){
     
     //set the colors to display each image
     dispColor[0].set(255,0,0);
-    //dispColor[1].set(0,255,0);
-    dispColor[1].setHex(0xD4D413);
+    dispColor[1].setHex(0xfffd44);
     dispColor[2].set(0,0,255);
     
     //threhsolding info
