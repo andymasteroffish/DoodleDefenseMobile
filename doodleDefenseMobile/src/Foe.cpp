@@ -27,6 +27,7 @@ void Foe::setup(float x, float y, float _goalX, float _goalY, float _fieldScale,
     //set pathfinding distance values
     horzDist=10;
     diagDist=14;
+    nextToClosedDist=20;
     
     //set the goal THIS IS IN FIELD UNITS
     goalX=_goalX/fieldScale;
@@ -552,7 +553,7 @@ void Foe::standardFindPath(){
                     if (wallPixels[pixelPos]==255){
                         //don't add any tile that is adjacent to a wall
                         //this is to help keep the path a little less hugging one wall
-                        bool nextToWall=false;
+//                        bool nextToWall=false;
 //                        for (int x2=-1; x2<=1; x2++){
 //                            for (int y2=-1; y2<=1; y2++){
 //                                int pixelPos2=(yPos+y2)*fieldW+(xPos+x2);
@@ -561,57 +562,86 @@ void Foe::standardFindPath(){
 //                            }
 //                        }
                         
-                        if (!nextToWall){
-                            //check that the tile is not in the closed list
-                            bool inClosedList=false;  //assume it isn't
-                            for (int c=0; c<closedList.size(); c++){
-                                if (closedList[c]->x==xPos && closedList[c]->y==yPos)
-                                    inClosedList=true;
+                        //check that the tile is not in the closed list
+                        bool inClosedList=false;  //assume it isn't
+                        for (int c=0; c<closedList.size(); c++){
+                            if (closedList[c]->x==xPos && closedList[c]->y==yPos)
+                                inClosedList=true;
+                        }
+                        if (!inClosedList){
+                            //check to see if it is already in the open list
+                            int openListID=-1;
+                            for (int o=0; o<openList.size(); o++){
+                                if (openList[o]->x==xPos && openList[o]->y==yPos)
+                                    openListID=o;
                             }
-                            if (!inClosedList){
-                                //check to see if it is already in the open list
-                                int openListID=-1;
-                                for (int o=0; o<openList.size(); o++){
-                                    if (openList[o]->x==xPos && openList[o]->y==yPos)
-                                        openListID=o;
+                            
+                            //add it to the open list if it isn't already there
+                            if (openListID==-1){
+                                tile * t = new tile();
+                                t->x=xPos;
+                                t->y=yPos;
+                                if (y==0 || x==0) t->g=current->g+horzDist;
+                                else              t->g=current->g+diagDist;
+                                
+                                //ADD IN A CHECK FOR NEARBY CLOSED TILES HERE
+                                //INCREASE THE DISTANCE IF THIS PATH BRINGS IT RIGHT NOEXT TO A CLOSED TILE
+                                bool nextToWall=false;
+                                for (int x2=-1; x2<=1; x2++){
+                                    for (int y2=-1; y2<=1; y2++){
+                                        int pixelPos2=(yPos+y2)*fieldW+(xPos+x2);
+                                        if (wallPixels[pixelPos2]==0)
+                                            nextToWall=true;
+                                    }
+                                }
+                                if (nextToWall){
+                                    t->g += nextToClosedDist;
                                 }
                                 
-                                //add it to the open list if it isn't already there
-                                if (openListID==-1){
-                                    tile * t = new tile();
-                                    t->x=xPos;
-                                    t->y=yPos;
-                                    if (y==0 || x==0) t->g=current->g+horzDist;
-                                    else              t->g=current->g+diagDist;
-                                    t->h=getDistToGoal(xPos, yPos);
-                                    t->f=t->g+t->h;
-                                    t->parent=current;
-                                    openList.push_back(t);
-                                    //if we just added the goal to the open list, we're done
-                                    //THIS WILL NOT ALWAYS BE AS ACURATE AS WAITING UNTIL THE GOAL IS ADDED TO THE CLOSED LIST
-                                    //BUT IT IS FASTER
-                                    if (t->x==goalX && t->y==goalY){
-                                        doneSearching=true;
-                                        goalFound=true;
-                                        //add it to closed list so it will be added to the route
-                                        closedList.push_back(t);
-                                        //remove it from the open list
-                                        openList.erase(openList.begin()+openList.size()-1);
+                                t->h=getDistToGoal(xPos, yPos);
+                                t->f=t->g+t->h;
+                                t->parent=current;
+                                openList.push_back(t);
+                                //if we just added the goal to the open list, we're done
+                                //THIS WILL NOT ALWAYS BE AS ACURATE AS WAITING UNTIL THE GOAL IS ADDED TO THE CLOSED LIST
+                                //BUT IT IS FASTER
+                                if (t->x==goalX && t->y==goalY){
+                                    doneSearching=true;
+                                    goalFound=true;
+                                    //add it to closed list so it will be added to the route
+                                    closedList.push_back(t);
+                                    //remove it from the open list
+                                    openList.erase(openList.begin()+openList.size()-1);
+                                }
+                            }else{
+                                //if it is there see if this path is faster
+                                int newG;       //measure distance to the tile based on g
+                                if (y==0 || x==0) newG=current->g+horzDist;
+                                else              newG=current->g+diagDist;
+                                
+                                //ADD IN A CHECK FOR NEARBY CLOSED TILES HERE
+                                //INCREASE THE DISTANCE IF THIS PATH BRINGS IT RIGHT NOEXT TO A CLOSED TILE
+                                bool nextToWall=false;
+                                for (int x2=-1; x2<=1; x2++){
+                                    for (int y2=-1; y2<=1; y2++){
+                                        int pixelPos2=(yPos+y2)*fieldW+(xPos+x2);
+                                        if (wallPixels[pixelPos2]==0)
+                                            nextToWall=true;
                                     }
-                                }else{
-                                    //if it is there see if this path is faster
-                                    int newG;       //measure distance to the tile based on g
-                                    if (y==0 || x==0) newG=current->g+horzDist;
-                                    else              newG=current->g+diagDist;
-                                    if (newG<openList[openListID]->g){
-                                        openList[openListID]->g=newG;   //set g to be the new, shorter distance
-                                        openList[openListID]->f=newG+openList[openListID]->h;   //reset the f value for this tile
-                                        openList[openListID]->parent=current;   //change the parent
-                                    }
+                                }
+                                if (nextToWall){
+                                    newG += nextToClosedDist;
+                                }
+                                
+                                if (newG<openList[openListID]->g){
+                                    openList[openListID]->g=newG;   //set g to be the new, shorter distance
+                                    openList[openListID]->f=newG+openList[openListID]->h;   //reset the f value for this tile
+                                    openList[openListID]->parent=current;   //change the parent
                                 }
                             }
                         }
                     }
+                    
                 }
             }
         }

@@ -650,7 +650,7 @@ void testApp::draw(){
         //show the border
         ofSetRectMode(OF_RECTMODE_CORNER);
         ofSetColor(255);
-        //borderPics[numEntrances-1].draw(boardOffset.x, boardOffset.y, borderPics[numEntrances-1].width*(1+retina), borderPics[numEntrances-1].height*(1+retina));
+        borderPics[numEntrances-1].draw(boardOffset.x, boardOffset.y, borderPics[numEntrances-1].width*(1+retina), borderPics[numEntrances-1].height*(1+retina));
         
         //show player stats that live outside of the game area
         drawPlayerInfo(); 
@@ -1475,7 +1475,7 @@ void testApp::brushDown(float touchX, float touchY){
     
     //black gets a smaller but more powerful brush
     if (curBrushColor == 3){ 
-        maxDist*= (retina) ? 0.6 : 0.6;   //black can be smaller On retina devices they sometimes walk through thinner walls
+        maxDist*= (retina) ? 0.6 : 0.5;   //black can be smaller On retina devices they sometimes walk through thinner walls
         brushStrength = 255;
     }
     
@@ -1977,11 +1977,11 @@ void testApp::setMazeBorders(){
 //    }
     
     //keep the hole empty
-    int hole=mazeLeft+ (mazeRight-mazeLeft)/2;
+    int hole;//=mazeLeft+ (mazeRight-mazeLeft)/2;
     hole = fieldW/2;
     //top and bottom walls
     for (int i=mazeLeft; i<=mazeRight; i++){
-        if(i<hole-5 || i>hole+5){
+        if(i<hole-5 || i>hole+5 || numEntrances==1){
             int topPos=mazeTop*fieldW+i;
             int bottomPos=mazeBottom*fieldW+i;
             wallPixels[topPos]=0;
@@ -2060,8 +2060,9 @@ void testApp::startNextWave(){
     }
     
     //check if it is time to increase the number of entrances starting with the 3rd wave
-    if (curWave>=4){ //should be 4
+    if (curWave>=1){ //should be 4
         numEntrances=2;
+        convertDrawingToGame(); //to account for the new maze border
     }
     
     //cout<<"end start Next"<<endl;
