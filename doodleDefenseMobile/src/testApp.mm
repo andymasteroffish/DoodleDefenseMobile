@@ -752,7 +752,7 @@ void testApp::drawGame(){
     //draw the board
     ofSetRectMode(OF_RECTMODE_CORNER);
     //black walls
-    ofSetColor(255);
+    ofSetColor(255, 160);
     wallDispTex.draw(0,0, boardW*boardScale, boardH*boardScale);
     //collored bits
     for (int i=0; i<3; i++){
@@ -1475,7 +1475,7 @@ void testApp::brushDown(float touchX, float touchY){
     
     //black gets a smaller but more powerful brush
     if (curBrushColor == 3){ 
-        maxDist*= (retina) ? 0.6 : 0.5;   //black can be smaller On retina devices they sometimes walk through thinner walls
+        maxDist*= (retina) ? 0.6 : 0.45;   //black can be smaller. On retina devices they sometimes walk through thinner walls
         brushStrength = 255;
     }
     
@@ -2060,7 +2060,7 @@ void testApp::startNextWave(){
     }
     
     //check if it is time to increase the number of entrances starting with the 3rd wave
-    if (curWave>=1){ //should be 4
+    if (curWave>=4){ //should be 4
         numEntrances=2;
         convertDrawingToGame(); //to account for the new maze border
     }

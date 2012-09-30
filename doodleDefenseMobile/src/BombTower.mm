@@ -27,7 +27,7 @@ void BombTower::draw(){
     ofFill();
     if (! *showAllInfo){
         //ofSetColor(0, 255, 0,80);
-        ofSetColor(0, 255, 0,40);
+        ofSetColor(0, 255, 0,20);
         //ofSetHexColor(0xD4D413, 100);
         if (playerDead) ofSetColor(100,100,100,70);
         

@@ -408,36 +408,24 @@ vector<tile *> Foe::checkProximityToExistingRoute(ofPoint (&routeGrid)[FIELD_W][
                         int pixelPos=yPos*fieldW+xPos;   
                         //check if the tile is impassible
                         if (wallPixels[pixelPos]==255){     //255 is a clear tile that can be moved through
-                            //don't add any tile that is adjacent to a wall
-                            //this is to help keep the path a little less hugging one wall
-                            bool nextToWall=false;
-                            for (int x2=-1; x2<=1; x2++){
-                                for (int y2=-1; y2<=1; y2++){
-                                    int pixelPos2=(yPos+y2)*fieldW+(xPos+x2);
-                                    if (wallPixels[pixelPos2]==0)
-                                        nextToWall=true;
-                                }
+                            
+                            //check that the tile is not already in the explroed or unexplroed lists
+                            bool inList=false;  //assume it isn't
+                            for (int i=0; i<unexplored.size(); i++){
+                                if (unexplored[i]->x==xPos && unexplored[i]->y==yPos)
+                                    inList=true;
+                            }
+                            for (int i=0; i<explored.size(); i++){
+                                if (explored[i]->x==xPos && explored[i]->y==yPos)
+                                    inList=true;
                             }
                             
-                            if (!nextToWall){
-                                //check that the tile is not already in the explroed or unexplroed lists
-                                bool inList=false;  //assume it isn't
-                                for (int i=0; i<unexplored.size(); i++){
-                                    if (unexplored[i]->x==xPos && unexplored[i]->y==yPos)
-                                        inList=true;
-                                }
-                                for (int i=0; i<explored.size(); i++){
-                                    if (explored[i]->x==xPos && explored[i]->y==yPos)
-                                        inList=true;
-                                }
-                                
-                                //if it isn't in any one of those lists, make a tile for it and add it to unexplroed
-                                if (!inList){
-                                    tile * newTile = new tile(xPos,yPos);
-                                    newTile->parent = current;
-                                    newTile->depth = current->depth+1;
-                                    unexplored.push_back(newTile);
-                                }
+                            //if it isn't in any one of those lists, make a tile for it and add it to unexplroed
+                            if (!inList){
+                                tile * newTile = new tile(xPos,yPos);
+                                newTile->parent = current;
+                                newTile->depth = current->depth+1;
+                                unexplored.push_back(newTile);
                             }
                         }
                     }
@@ -551,16 +539,6 @@ void Foe::standardFindPath(){
                     int pixelPos=yPos*fieldW+xPos;   //MAKE A FUNCTION FOR THIS
                     //check if the tile is impassible
                     if (wallPixels[pixelPos]==255){
-                        //don't add any tile that is adjacent to a wall
-                        //this is to help keep the path a little less hugging one wall
-//                        bool nextToWall=false;
-//                        for (int x2=-1; x2<=1; x2++){
-//                            for (int y2=-1; y2<=1; y2++){
-//                                int pixelPos2=(yPos+y2)*fieldW+(xPos+x2);
-//                                if (wallPixels[pixelPos2]==0)
-//                                    nextToWall=true;
-//                            }
-//                        }
                         
                         //check that the tile is not in the closed list
                         bool inClosedList=false;  //assume it isn't
@@ -641,7 +619,6 @@ void Foe::standardFindPath(){
                             }
                         }
                     }
-                    
                 }
             }
         }
