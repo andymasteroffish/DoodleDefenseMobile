@@ -1,5 +1,11 @@
 new 1
 dur 60
+add fast 15
+col norm
+mes TEST
+
+new 1
+dur 60
 add norm 15
 col norm
 mes Start drawing
