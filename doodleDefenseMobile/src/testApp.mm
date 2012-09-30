@@ -21,6 +21,10 @@ void testApp::setup(){
     
     cout<<ofGetWidth()<<" X "<<ofGetHeight()<<endl;
     
+    //set sprites
+    spriteRenderer = new ofxSpriteSheetRenderer(1, 10000, 0, 8*(retina+1)); //declare a new renderer with 1 layer, 10000 tiles per layer, default layer of 0, tile size of 16
+	spriteRenderer->loadTexture("sprites/spriteSheet.png", 512*(retina+1), GL_LINEAR); // load the spriteSheetExample.png texture of size 256x256 into the sprite sheet. set it's scale mode to nearest since it's pixel art
+    
     //size of the grid the game is played on
     float sizeIncreaseToBoard = 7;
     fieldW=FIELD_W;
@@ -691,18 +695,18 @@ void testApp::draw(){
     ofDisableAlphaBlending();
     
     //debug info
-//    ofSetColor(255,100,100);
-//    ofDrawBitmapString(ofToString(ofGetFrameRate()), 5,ofGetHeight()-2);
-//    string pausedText = "not paused";
-//    if (paused){
-//        pausedText = "paused because  ";
-//        if (playerPause)    pausedText+="player paused  ";
-//        if (noPath)         pausedText+="no path  ";
-//        if (!gameStarted)   pausedText+="game not started  ";
-//        if (waveComplete)   pausedText+="wave complete  ";
-//        if (fingerDown)     pausedText+="finger down";
-//    }
-//    ofDrawBitmapString(pausedText, 100, ofGetHeight()-2);
+    ofSetColor(255,100,100);
+    ofDrawBitmapString(ofToString(ofGetFrameRate()), 5,ofGetHeight()-2);
+    string pausedText = "not paused";
+    if (paused){
+        pausedText = "paused because  ";
+        if (playerPause)    pausedText+="player paused  ";
+        if (noPath)         pausedText+="no path  ";
+        if (!gameStarted)   pausedText+="game not started  ";
+        if (waveComplete)   pausedText+="wave complete  ";
+        if (fingerDown)     pausedText+="finger down";
+    }
+    ofDrawBitmapString(pausedText, 100, ofGetHeight()-2);
     
 }
 
@@ -752,7 +756,7 @@ void testApp::drawGame(){
     //draw the board
     ofSetRectMode(OF_RECTMODE_CORNER);
     //black walls
-    ofSetColor(255, 160);
+    ofSetColor(255);
     wallDispTex.draw(0,0, boardW*boardScale, boardH*boardScale);
     //collored bits
     for (int i=0; i<3; i++){
@@ -764,12 +768,37 @@ void testApp::drawGame(){
     
     ofSetRectMode(OF_RECTMODE_CENTER);
     //show the foes
+//    for (int i=0; i<foes.size(); i++){
+//        foes[i]->draw();
+//        
+//        if (showAllInfo)
+//            foes[i]->drawDebug();
+//    }
+    
+    //foe sprites
+    spriteRenderer->clear(); // clear the sheet
+    spriteRenderer->update(ofGetElapsedTimeMillis());
+    CollisionBox_t cBox;
+    cBox.UL.set(0, 0);
+    cBox.UR.set(0, 0);
+    cBox.LL.set(0, 0);
+    cBox.LR.set(0, 0);
+    
     for (int i=0; i<foes.size(); i++){
-        foes[i]->draw();
+        //spriteRenderer->addCenteredTile(&foes[i]->fillSprite, foes[i]->p.pos.x, foes[i]->p.pos.y, -1, F_NONE, 1, 255,255,255, ofMap(foes[i]->hp, 0,foes[i]->fullHP, 0,255));
+        float angle;// = ofRadToDeg(foes[i]->displayAngle)-360;
+        angle =ofRadToDeg( (foes[i]->displayAngle>0)? foes[i]->displayAngle : foes[i]->displayAngle+TWO_PI );
+        float fillAlpha = ofMap(foes[i]->hp, 0,foes[i]->fullHP, 0,255);
         
-        if (showAllInfo)
-            foes[i]->drawDebug();
+        spriteRenderer->addCenterRotatedTile(&foes[i]->fillSprite, foes[i]->p.pos.x, foes[i]->p.pos.y, -1, F_NONE, 1, angle, &cBox, 255, 255, 255, fillAlpha );
+        spriteRenderer->addCenterRotatedTile(&foes[i]->strokeSprite, foes[i]->p.pos.x, foes[i]->p.pos.y, -1, F_NONE, 1, angle, &cBox, 0, 0, 0, 255 );
+        
+        //(animation_t* sprite, float x, float y, int layer, flipDirection f, float scale, int r, int g, int b, int alpha)
+    
     }
+    
+    spriteRenderer->draw();
+    
     
     //draw the bomb animations if there are any
     ofFill();
@@ -2060,7 +2089,7 @@ void testApp::startNextWave(){
     }
     
     //check if it is time to increase the number of entrances starting with the 3rd wave
-    if (curWave>=4){ //should be 4
+    if (curWave==4){ //should be 4
         numEntrances=2;
         convertDrawingToGame(); //to account for the new maze border
     }

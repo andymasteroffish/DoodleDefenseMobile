@@ -1,6 +1,6 @@
 new 1
 dur 60
-add fast 15
+add heavy 15
 col norm
 mes TEST
 

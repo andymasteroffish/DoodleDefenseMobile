@@ -16,6 +16,8 @@
 #include "tile.h"
 #include "ofxOpenCv.h"  //DOES NOT NEED THIS
 
+#include "ofxSpriteSheetRenderer.h"
+
 class Foe{
 public:
     
@@ -106,6 +108,11 @@ public:
     float nextFrameTime;
     float displayAngle;
     float turnSpeed;    //percentage to zeno toward the current angle
+    
+    //sprites
+    int frameTime;
+    animation_t strokeSprite;
+    animation_t fillSprite;
 
 };
 

@@ -59,6 +59,7 @@ void Foe::setup(float x, float y, float _goalX, float _goalY, float _fieldScale,
     damageToPlayer=1;
     
     //set type specific game values that might change the above values
+    frameTime=100;
     typeSetup(level);
     hp=fullHP;  //give it the full HP set in typeSetup
     

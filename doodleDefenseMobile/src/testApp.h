@@ -6,6 +6,7 @@
 #include "ofxiPhoneExtras.h"
 #include "ofxiPhoneExternalDisplay.h"   //for mirroring
 
+#include "ofxSpriteSheetRenderer.h"
 #include "ofxXmlSettings.h"
 
 #include "Foe.h"
@@ -352,6 +353,9 @@ public:
     bool hardModeActive;
     float hardModeLevelIncrease;  //how much gets added to the level of each foe
     ofImage hardModeCrownPic;
+    
+    //showing sprites
+    ofxSpriteSheetRenderer * spriteRenderer;	// our spriteRenderer
     
     //testing
     int lastX;
