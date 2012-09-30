@@ -989,7 +989,7 @@
 					../../../addons/ofxOpenCv/src,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 3.1;
-				ONLY_ACTIVE_ARCH = NO;
+				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
 					"$(OF_CORE_LIBS)",
 					../../../addons/ofxOpenCv/libs/opencv/lib/ios/opencv_calib3d.a,
@@ -1009,7 +1009,7 @@
 				PREBINDING = NO;
 				PROVISIONING_PROFILE = "3B389F47-7F0E-4B08-A590-8318C56A08F2";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "3B389F47-7F0E-4B08-A590-8318C56A08F2";
-				SDKROOT = iphoneos;
+				SDKROOT = iphoneos5.1;
 				TARGETED_DEVICE_FAMILY = 1;
 				WARNING_LDFLAGS = "-no_arch_warnings";
 			};
@@ -1058,7 +1058,7 @@
 					../../../addons/ofxOpenCv/src,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 3.1;
-				ONLY_ACTIVE_ARCH = NO;
+				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
 					"$(OF_CORE_LIBS)",
 					../../../addons/ofxOpenCv/libs/opencv/lib/ios/opencv_calib3d.a,
@@ -1076,9 +1076,9 @@
 					../../../addons/ofxOpenCv/libs/opencv/lib/ios/zlib.a,
 				);
 				PREBINDING = NO;
-				PROVISIONING_PROFILE = "B28EFBC4-6863-4B65-A5E3-8C62884047C5";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "B28EFBC4-6863-4B65-A5E3-8C62884047C5";
-				SDKROOT = iphoneos;
+				PROVISIONING_PROFILE = "55DDE8A9-7BAF-4183-B533-6154601FB10D";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "55DDE8A9-7BAF-4183-B533-6154601FB10D";
+				SDKROOT = iphoneos5.1;
 				TARGETED_DEVICE_FAMILY = 1;
 				WARNING_LDFLAGS = "-no_arch_warnings";
 			};

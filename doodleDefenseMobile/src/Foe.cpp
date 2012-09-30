@@ -540,7 +540,7 @@ void Foe::standardFindPath(){
             doneSearching=true;
         }
         
-        //check the 8 tiles aorund this one
+        //check the 8 tiles around this one
         for (int x=-1; x<=1; x++){
             for (int y=-1; y<=1; y++){
                 int xPos=current->x+x;
@@ -553,13 +553,13 @@ void Foe::standardFindPath(){
                         //don't add any tile that is adjacent to a wall
                         //this is to help keep the path a little less hugging one wall
                         bool nextToWall=false;
-                        for (int x2=-1; x2<=1; x2++){
-                            for (int y2=-1; y2<=1; y2++){
-                                int pixelPos2=(yPos+y2)*fieldW+(xPos+x2);
-                                if (wallPixels[pixelPos2]==0)
-                                    nextToWall=true;
-                            }
-                        }
+//                        for (int x2=-1; x2<=1; x2++){
+//                            for (int y2=-1; y2<=1; y2++){
+//                                int pixelPos2=(yPos+y2)*fieldW+(xPos+x2);
+//                                if (wallPixels[pixelPos2]==0)
+//                                    nextToWall=true;
+//                            }
+//                        }
                         
                         if (!nextToWall){
                             //check that the tile is not in the closed list

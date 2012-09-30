@@ -5,7 +5,7 @@
 void testApp::setup(){	
     
     //orient landscape
-	iPhoneSetOrientation(OFXIPHONE_ORIENTATION_LANDSCAPE_RIGHT);
+	iPhoneSetOrientation(OFXIPHONE_ORIENTATION_LANDSCAPE_LEFT);
 	ofSetFrameRate(30);
     
     //check for retina
@@ -53,7 +53,7 @@ void testApp::setup(){
     
     //set the colors to display each image
     dispColor[0].set(255,0,0);
-    dispColor[1].setHex(0xfffd44);
+    dispColor[1].set(0,255,0);
     dispColor[2].set(0,0,255);
     
     //threhsolding info
@@ -650,7 +650,7 @@ void testApp::draw(){
         //show the border
         ofSetRectMode(OF_RECTMODE_CORNER);
         ofSetColor(255);
-        borderPics[numEntrances-1].draw(boardOffset.x, boardOffset.y, borderPics[numEntrances-1].width*(1+retina), borderPics[numEntrances-1].height*(1+retina));
+        //borderPics[numEntrances-1].draw(boardOffset.x, boardOffset.y, borderPics[numEntrances-1].width*(1+retina), borderPics[numEntrances-1].height*(1+retina));
         
         //show player stats that live outside of the game area
         drawPlayerInfo(); 
@@ -743,8 +743,11 @@ void testApp::drawGame(){
     }
     
     //show the towers
+    ofEnableBlendMode(OF_BLENDMODE_MULTIPLY);
     for (int i=0; i<towers.size(); i++)
         towers[i]->draw();
+    ofDisableBlendMode();
+    ofEnableAlphaBlending();
     
     //draw the board
     ofSetRectMode(OF_RECTMODE_CORNER);
@@ -1472,14 +1475,14 @@ void testApp::brushDown(float touchX, float touchY){
     
     //black gets a smaller but more powerful brush
     if (curBrushColor == 3){ 
-        maxDist*=0.35;   //black can be smaller
+        maxDist*= (retina) ? 0.6 : 0.6;   //black can be smaller On retina devices they sometimes walk through thinner walls
         brushStrength = 255;
     }
     
     //eraser gets a smaller brush
-    if (curBrushColor == 4) maxDist*=0.6;   
+    if (curBrushColor == 4) maxDist*=0.8;   
     
-    //keeping track of how much ink refund (if any) was generated
+    //keeping track of how much ink refund (if any) was generated 
     //float blackInkRefund=0;
     float colorInkRefund[4];    //slot 3 is black
     for (int i=0; i<4; i++) colorInkRefund[i]=0;
@@ -1987,7 +1990,7 @@ void testApp::setMazeBorders(){
     }
     
     // top entrance way
-    for (int i=0; i<mazeTop; i++){
+    for (int i=0; i<=mazeTop; i++){
         int leftPos=i*fieldW+(hole-5);
         int rightPos=i*fieldW+(hole+5);
         wallPixels[leftPos]=0;
@@ -2015,7 +2018,7 @@ void testApp::setMazeBorders(){
     }
     
     //left entrance way
-    for (int i=0; i<mazeLeft; i++){
+    for (int i=0; i<=mazeLeft; i++){
         int topPos=(center-5)*fieldW+i;
         int bottomPos=(center+5)*fieldW+i;
         wallPixels[topPos]=0;

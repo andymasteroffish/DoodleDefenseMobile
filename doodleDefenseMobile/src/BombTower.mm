@@ -17,8 +17,8 @@ void BombTower::typeSetup(){
     
     type="green";
     
-    //bulletCol.setHex(0x188C25);
-    bulletCol.setHex(0xD4D413);
+    bulletCol.setHex(0x188C25);
+    //bulletCol.setHex(0xD4D413);
     
     blastRadius=size*6.5 *mobileRangeIncrease;
 }
@@ -27,7 +27,8 @@ void BombTower::draw(){
     ofFill();
     if (! *showAllInfo){
         //ofSetColor(0, 255, 0,80);
-        ofSetHexColor(0xD4D413, 100);
+        ofSetColor(0, 255, 0,40);
+        //ofSetHexColor(0xD4D413, 100);
         if (playerDead) ofSetColor(100,100,100,70);
         
         ofCircle(pos.x, pos.y, range);
