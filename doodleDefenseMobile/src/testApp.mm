@@ -23,7 +23,7 @@ void testApp::setup(){
     
     //set sprites
     spriteRenderer = new ofxSpriteSheetRenderer(1, 10000, 0, 8*(retina+1)); //declare a new renderer with 1 layer, 10000 tiles per layer, default layer of 0, tile size of 16
-	spriteRenderer->loadTexture("sprites/spriteSheet.png", 512*(retina+1), GL_LINEAR); // load the spriteSheetExample.png texture of size 256x256 into the sprite sheet. set it's scale mode to nearest since it's pixel art
+	spriteRenderer->loadTexture("sprites/spriteSheet.png", 1024*(retina+1), GL_LINEAR); // load the spriteSheetExample.png texture of size 256x256 into the sprite sheet. set it's scale mode to nearest since it's pixel art
     
     //size of the grid the game is played on
     float sizeIncreaseToBoard = 7;

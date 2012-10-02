@@ -1,6 +1,11 @@
 new 1
-dur 60
+dur 120
+add fast 15
 add heavy 15
+add immune 15
+add norm 15
+add stealth 15
+rand
 col norm
 mes TEST
 

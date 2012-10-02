@@ -12,6 +12,9 @@
 void ImmuneFoe::typeSetup(float level){
     type="immune";
     fullHP=40+ 40*level;    //slightly reduced health
+    
+    strokeSprite = ofxSpriteSheetRenderer::makeSprite(0, 40, 5, 7, 7, frameTime, -1, -1, 1, 128);
+    fillSprite = ofxSpriteSheetRenderer::makeSprite(0, 47, 5, 7, 7, frameTime, -1, -1, 1, 128);
 }
 
 

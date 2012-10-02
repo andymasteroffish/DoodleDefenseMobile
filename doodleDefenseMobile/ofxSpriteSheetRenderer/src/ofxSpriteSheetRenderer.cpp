@@ -674,6 +674,12 @@ bool ofxSpriteSheetRenderer::addCenterRotatedTile(int tile_name, int frame, floa
 	
 	frameX += frame*w*tileSize_f;
 	//add a check here to make animations wrap around
+    
+    //ANDY EDIT to make the animation wrap around
+    //THIS WILL ONLY WOKR ONCE if the animaiton take up more than 2 rows, this will not go to the third
+    if (frameX>=spriteSheetWidth*tileSize_f){
+        frameY+=h*tileSize_f;
+    }
 	
 	addTexCoords(f, frameX, frameY, layer, w, h);
 	
@@ -1514,6 +1520,7 @@ bool ofxSpriteSheetRenderer::addCircle(float x, float y, float z, float radius, 
 			k+=2;
 		}
 	}
+    return true;
 }
 
 bool ofxSpriteSheetRenderer::addRect(float x, float y, float z, float w, float h, int layer)
@@ -1698,12 +1705,10 @@ void ofxSpriteSheetRenderer::setCircleResolution(int res){
 	}
 }
 
-
 //ANDY EDIT
-animation_t ofxSpriteSheetRenderer::makeSprite(int xPos, int yPos, int totalFrames, int width, int height, int frameDuration, int loops, int finalIndex, int frameSkip, int sheetSize){
-    
+animation_t ofxSpriteSheetRenderer::makeSprite(int indexX, int indexY, int totalFrames, int width, int height, int frameDuration, int loops, int finalIndex, int frameSkip, int sheetSize){
     animation_t newSprite;
-    newSprite.index=xPos+yPos*sheetSize;
+    newSprite.index=indexX + indexY*sheetSize;
     newSprite.frame=0;
     newSprite.total_frames=totalFrames;
     newSprite.w=width;
@@ -1714,11 +1719,5 @@ animation_t ofxSpriteSheetRenderer::makeSprite(int xPos, int yPos, int totalFram
     newSprite.final_index=finalIndex;
     newSprite.frame_skip=frameSkip;
     
-    
-//    cout<<"xPos: "<<xPos<<"   yPos: "<<yPos<<endl;
-//    cout<<"sheet size: "<<sheetSize<<endl;
-//    cout<<"index: "<<newSprite.index<<endl;
-    
     return newSprite;
-    
 }

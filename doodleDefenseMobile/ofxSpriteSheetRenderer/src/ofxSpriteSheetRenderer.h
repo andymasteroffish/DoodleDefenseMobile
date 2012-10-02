@@ -149,11 +149,11 @@ public:
 	void addMisc(string fileName, int x, int y, int glType=GL_RGBA);
 	
 	void finishTexture();
-	
-	// -----------------------------------------
     
     //ANDY EDIT
-    static animation_t makeSprite(int xPos, int yPos, int totalFrames, int width, int height, int frameDuration, int loops, int finalIndex, int frameSkip, int sheetSize);
+    static animation_t makeSprite(int indexX, int indexY, int totalFrames, int width, int height, int frameDuration, int loops, int finalIndex, int frameSkip, int sheetSize);
+	
+	// -----------------------------------------
 
 	protected:
 	
