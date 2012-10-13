@@ -172,12 +172,12 @@ void testApp::setup(){
     
     //player values
     healthStart=15;
-    startInk=500;
+    startInk=450;
     
     waveAnimationTime=5;    //flash for x seconds when a wave is finished
     
     //ink values
-    float relativeInkScale = 0.39;   //for adjusting the overall cost of things
+    float relativeInkScale = 0.4;   //for adjusting the overall cost of things
     blackInkValue   = .02 *relativeInkScale;
     colorInkValue[0] = .23 *relativeInkScale;
     colorInkValue[1] = .35 *relativeInkScale;
@@ -649,7 +649,7 @@ void testApp::draw(){
         
         //show the border
         ofSetRectMode(OF_RECTMODE_CORNER);
-        ofSetColor(255,140);
+        ofSetColor(255);
         borderPics[numEntrances-1].draw(boardOffset.x, boardOffset.y, borderPics[numEntrances-1].width*(1+retina), borderPics[numEntrances-1].height*(1+retina));
         
         //show player stats that live outside of the game area
