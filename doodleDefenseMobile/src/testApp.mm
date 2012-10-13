@@ -177,7 +177,7 @@ void testApp::setup(){
     waveAnimationTime=5;    //flash for x seconds when a wave is finished
     
     //ink values
-    float relativeInkScale = 0.4;   //for adjusting the overall cost of things
+    float relativeInkScale = 0.39;   //for adjusting the overall cost of things
     blackInkValue   = .02 *relativeInkScale;
     colorInkValue[0] = .23 *relativeInkScale;
     colorInkValue[1] = .35 *relativeInkScale;
@@ -305,7 +305,7 @@ void testApp::setup(){
     
     //punishing the player for forcing backtracks
     punishmentFoeTime=50;
-    punishmentTimerDecrease=0.05;
+    punishmentTimerDecrease=0.5;
     punishmentFoeTimer=0;
     
     //hard mode
@@ -489,6 +489,7 @@ void testApp::update(){
             }
             
             //add to the punishment timer if a foe back tracked
+            cout<<"punishment timer: "<<punishmentFoeTimer<<endl;
             if (addToPunishmentTimer)
                 punishmentFoeTimer++;
             
@@ -1032,6 +1033,12 @@ void testApp::drawPlayerInfo(){
     }
     ofSetColor(255);
     fastForwardButtonPic.draw(fastForwardButton.x, fastForwardButton.y);
+    
+    //if they are playing in hard mode, show the crown on top
+    if (hardModeActive){
+        ofSetColor(255,100);
+        hardModeCrownPic.draw(ofGetWidth()*0.99, ofGetHeight()*0.05, hardModeCrownPic.width*0.5,hardModeCrownPic.height*0.5);
+    }
     
     //BANNERS
     //let the player no if there is no path
@@ -1716,13 +1723,13 @@ void testApp::convertDrawingToGame(){
         colorImgs[i].threshold(colorThreshold, false);
     }
     
-    contourFinder.findContours(colorImgs[0], minArea, maxArea, maxNumberOfBlobs, true);
+    contourFinder.findContours(colorImgs[0], minArea, maxArea, maxNumberOfBlobs+10, true);
     checkTowers("red");
     //green
     contourFinder.findContours(colorImgs[1], minArea, maxArea, maxNumberOfBlobs, true);
     checkTowers("green");
     //blue
-    contourFinder.findContours(colorImgs[2], minArea, maxArea, maxNumberOfBlobs, true);
+    contourFinder.findContours(colorImgs[2], minArea, maxArea, maxNumberOfBlobs-10, true);
     checkTowers("blue");
     
     //find any towers that were not found in the last sweep and kill them

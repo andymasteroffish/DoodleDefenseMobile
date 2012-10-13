@@ -1,15 +1,4 @@
 new 1
-dur 120
-add fast 15
-add heavy 15
-add immune 15
-add norm 15
-add stealth 15
-rand
-col norm
-mes TEST
-
-new 1
 dur 60
 add norm 15
 col norm
@@ -51,6 +40,12 @@ dur 35
 add immune 12
 col immune
 mes Hope you don't#use too much#yellow
+
+new 20
+dur 4
+add heavy 1
+col heavy
+mes Boss Battle
 
 new 4
 dur 80
