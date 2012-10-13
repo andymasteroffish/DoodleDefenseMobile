@@ -489,7 +489,6 @@ void testApp::update(){
             }
             
             //add to the punishment timer if a foe back tracked
-            cout<<"punishment timer: "<<punishmentFoeTimer<<endl;
             if (addToPunishmentTimer)
                 punishmentFoeTimer++;
             
@@ -650,7 +649,7 @@ void testApp::draw(){
         
         //show the border
         ofSetRectMode(OF_RECTMODE_CORNER);
-        ofSetColor(255);
+        ofSetColor(255,140);
         borderPics[numEntrances-1].draw(boardOffset.x, boardOffset.y, borderPics[numEntrances-1].width*(1+retina), borderPics[numEntrances-1].height*(1+retina));
         
         //show player stats that live outside of the game area
@@ -1036,8 +1035,13 @@ void testApp::drawPlayerInfo(){
     
     //if they are playing in hard mode, show the crown on top
     if (hardModeActive){
-        ofSetColor(255,100);
-        hardModeCrownPic.draw(ofGetWidth()*0.99, ofGetHeight()*0.05, hardModeCrownPic.width*0.5,hardModeCrownPic.height*0.5);
+        ofPushMatrix();
+        ofTranslate(ofGetWidth()*0.89, ofGetHeight()*0.04);
+        ofScale(0.5,0.5);
+        ofRotate(69);
+        ofSetColor(255,120);
+        hardModeCrownPic.draw(-hardModeCrownPic.width/2,-hardModeCrownPic.height/2);
+        ofPopMatrix();
     }
     
     //BANNERS
@@ -1502,10 +1506,11 @@ void testApp::brushDown(float touchX, float touchY){
     int xMid=relativeX/boardScale;
     int yMid=relativeY/boardScale;
     
-    int xStart=MAX(ofMap(mazeLeft,0,fieldW,0,boardW),xMid-brushSize);
-    int xEnd=MIN(ofMap(mazeRight,0,fieldW,0,boardW),xMid+brushSize);
-    int yStart=MAX(ofMap(mazeTop,0,fieldH,0,boardH),yMid-brushSize);
-    int yEnd=MIN(ofMap(mazeBottom,0,fieldH,0,boardH),yMid+brushSize);
+    int padding = 3;    //let them draw off the board just a bit
+    int xStart=MAX(ofMap(mazeLeft,0,fieldW,-padding,boardW+padding),xMid-brushSize);
+    int xEnd=MIN(ofMap(mazeRight,0,fieldW,-padding,boardW+padding),xMid+brushSize);
+    int yStart=MAX(ofMap(mazeTop,0,fieldH,-padding,boardH+padding),yMid-brushSize);
+    int yEnd=MIN(ofMap(mazeBottom,0,fieldH,-padding,boardH+padding),yMid+brushSize);
     
     //go through and set the pixels being effected by the brush
     for (int col=xStart; col<xEnd; col++){
