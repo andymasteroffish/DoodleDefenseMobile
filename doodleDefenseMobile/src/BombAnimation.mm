@@ -29,7 +29,7 @@ void BombAnimation::draw(){
     int sections=3;
 
     for (int i=0; i<sections; i++){
-        ofSetColor(ofMap(i,0,sections,150,255), ofMap(i,0,sections,150,255), 0, 100);
+        ofSetColor(0, ofMap(i,0,sections,150,255), 0, 170);
         
         
         float thisSize=ofMap(timer,0,endTime,size,1)/i;

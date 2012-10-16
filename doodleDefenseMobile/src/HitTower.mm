@@ -14,7 +14,7 @@ void HitTower::typeSetup(){
     
     rechargeTime=15;         //fast recharge (always going up even when firing
     bulletAtraction=1;//0.5;    //fast bullet
-    bulletDamage=size*0.85;        //moderate damage based on tower size
+    bulletDamage=size*0.9;//0.85;        //moderate damage based on tower size
     
     bulletCol.setHex(0xCF1515);
     

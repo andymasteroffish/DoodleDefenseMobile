@@ -39,9 +39,9 @@ new 3
 dur 35
 add immune 12
 col immune
-mes Hope you don't#use too much#green
+mes Hope you don't#use too much#yellow
 
-new 8
+new 9
 dur 4
 add heavy 1
 col heavy
@@ -67,7 +67,7 @@ dur 50
 add heavy 20
 rand
 col heavy
-mes Do ya wanna#get Heavy
+mes Get Heavy
 
 new 6
 dur 40
@@ -77,51 +77,58 @@ col stealth
 mes More stealth
 
 new 6
-dur 110
-add norm 28
-add immune 18
-add heavy 18
-add fast 18
-add stealth 15
+dur 100
+add norm 30
+add immune 20
+add heavy 20
+add fast 20
+add stealth 16
 rand
 mes Luke,#We've got#company
 
-new 26
+new 15
 dur 12
 add fast 2
 col fast
 mes Twinsies
 
-new 13
+
+new 8
+dur 60
+add norm 60
+col norm
+mes Let's take#a break
+
+new 9
 dur 80
-add heavy 25
-add fast 25
+add heavy 30
+add fast 30
 rand
 mes fast and#slow
 
-new 13
-dur 120
-add norm 25
-add immune 17
+new 10
+dur 100
+add norm 30
+add immune 20
 add heavy 20
-add fast 17
-add stealth 8
+add fast 20
+add stealth 16
 rand
 mes Back for#more
 
-new 60
+new 25
 dur 2
 add norm 1
 col norm
 mes Big Boss
 
-new 15
+new 12
 dur 100
-add norm 35
-add immune 19
-add heavy 19
-add fast 19
-add stealth 8
+add norm 30
+add immune 20
+add heavy 20
+add fast 20
+add stealth 16
 rand
 mes Are You#a bad#enough dude?
 

@@ -13,7 +13,9 @@ void BombTower::typeSetup(){
     
     rechargeTime=60;         //slow recharge
     bulletAtraction=0.6;    //slow bullet
-    bulletDamage=30;        //huge damage
+    bulletDamage=25+size/2;        //huge damage
+    
+    cout<<"SIZE: "<<size<<endl;
     
     type="green";
     

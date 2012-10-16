@@ -177,7 +177,7 @@ void testApp::setup(){
     waveAnimationTime=5;    //flash for x seconds when a wave is finished
     
     //ink values
-    float relativeInkScale = 0.4;   //for adjusting the overall cost of things
+    float relativeInkScale = 0.37;//0.4;   //for adjusting the overall cost of things
     blackInkValue   = .02 *relativeInkScale;
     colorInkValue[0] = .23 *relativeInkScale;
     colorInkValue[1] = .35 *relativeInkScale;
