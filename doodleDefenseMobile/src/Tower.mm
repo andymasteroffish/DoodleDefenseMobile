@@ -59,7 +59,7 @@ void Tower::update(){
         if (!shooting || type=="red")  
             timer++; 
         
-        if (timer>rechargeTime && !shooting){
+        if (timer>rechargeTime && !shooting && !playerDead){
             
             //if we have a target already, check if it is still in range
             bool needsNewTarget=true;   //assume we will need a new atrget

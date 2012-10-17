@@ -21,6 +21,8 @@
 void StealthFoe::typeSetup(float level){
     type="stealth";
     
+    fullHP*=0.95;
+    
     strokeSprite = ofxSpriteSheetRenderer::makeSprite(0, 72, 5, 8, 6, frameTime, -1, -1, 1, 128);
     fillSprite = ofxSpriteSheetRenderer::makeSprite(0, 78, 5, 8, 6, frameTime, -1, -1, 1, 128);
 }

@@ -312,7 +312,7 @@ void testApp::setup(){
     hardModeUnlocked=false;
     hardModeBeaten=false;
     hardModeActive = false;
-    hardModeLevelIncrease =1.5;
+    hardModeLevelIncrease =2.5;
     hardModeCrownPic.loadImage("menu/titleCrown"+picNameEnd);
     
     //load the prefrences
@@ -479,8 +479,8 @@ void testApp::update(){
                     takeDamage(foes[i]->damageToPlayer);   //player takes damage
                     killFoe(i);
                 }
-                //remove it if it is dead
-                else if (foes[i]->dead){
+                //remove it if it is dead (and the player is still alive)
+                else if (foes[i]->dead && health>0){
                     //kill it
                     killFoe(i);
                     //play the sound
@@ -556,7 +556,7 @@ void testApp::update(){
                     
                     //find all of the foes in range of the bullet and damage them
                     for (int k=0; k<foes.size(); k++){
-                        if (towers[i]->bullet.pos.distance(foes[k]->p.pos)<towers[i]->blastRadius && foes[k]->type!="immune"){
+                        if (towers[i]->bullet.pos.distance(foes[k]->p.pos)<towers[i]->blastRadius && foes[k]->type!="immune" && health>0){
                             foes[k]->hp-=towers[i]->bulletDamage;
                         }
                     }
@@ -1050,14 +1050,14 @@ void testApp::drawPlayerInfo(){
     int messageX=boardOffset.x+boardW*boardScale*0.5;
     int messageY=ofGetHeight()*0.11;//*0.25;
     ofSetColor(0,0,0);
-    if (noPath){
+    if (noPath && !wavesDone){
         ofSetColor(255,ofMap(sin(ofGetElapsedTimef()*2), -1,1, 120,210));
         bannerBacks[0].draw(messageX, messageY);
         ofSetColor(0);
         banners[0].draw(messageX, messageY);
     }
     //let the player know if they used too much ink
-    if (outOfInkBannerTimer > 0){
+    if (outOfInkBannerTimer > 0 && !wavesDone){
         float alpha = ofMap(outOfInkBannerTimer, outOfInkBannerTime*0.75, 0, 255,0);
         ofSetColor(255,alpha-40);
         bannerBacks[1].draw(messageX, messageY);
@@ -1839,9 +1839,7 @@ bool testApp::findPathsForFoes(){
             //first, if nothing was erased, check if their current path is still clear
             bool curPathOK = false;
             if (curBrushColor != 4){
-                //curPathOK = foes[i]->checkRouteForObstruction();
                 curPathOK = !foes[i]->isObstructed;
-
             }
             
             //if that didn't work, see if they can hop on the existing route
@@ -1852,9 +1850,7 @@ bool testApp::findPathsForFoes(){
                 else
                     standardRouteOK = foes[i]->checkExistingRoute(routeFromTopGrid);
                 
-                if (standardRouteOK){
-                    //cout<<"using standard route"<<endl;
-                }
+                //if (standardRouteOK)   cout<<"using standard route"<<endl;
             }
             
             //if that doens't work, have the foe find its own path
@@ -2082,7 +2078,7 @@ void testApp::startNextWave(){
         //unlock hard mode and save the data!
         cout<<"unlock hardmode"<<endl;
         hardModeUnlocked = true;
-        //and if they were playing hard mode, mark that tey beat is
+        //and if they were playing hard mode, mark that they beat it
         if (hardModeActive){
             cout<<"beat hard mode!"<<endl;
             hardModeBeaten=true;
@@ -2221,8 +2217,9 @@ void testApp::takeDamage(int damage){
     //check if the player is dead
     if (health<=0){
         //gray out all towers
-        for (int i=0; i<towers.size(); i++)
+        for (int i=0; i<towers.size(); i++){
             towers[i]->playerDead=true;
+        }
         //play the lose game sound
         SM.playSound("lose");
         gameOver = true;

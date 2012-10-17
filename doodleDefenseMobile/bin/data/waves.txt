@@ -86,7 +86,7 @@ add stealth 15
 rand
 mes Luke,#We've got#company
 
-new 26
+new 27
 dur 12
 add fast 2
 col fast
