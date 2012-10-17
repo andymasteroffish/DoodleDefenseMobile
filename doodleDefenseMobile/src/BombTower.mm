@@ -15,8 +15,6 @@ void BombTower::typeSetup(){
     bulletAtraction=0.6;    //slow bullet
     bulletDamage=25+size/2;        //huge damage
     
-    cout<<"SIZE: "<<size<<endl;
-    
     type="green";
     
     bulletCol.setHex(0x188C25);

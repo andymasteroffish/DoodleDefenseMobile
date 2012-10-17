@@ -553,7 +553,6 @@ void testApp::update(){
                 //if this is a bomb tower, check if it just hit
                 if(towers[i]->bombHit){
                     towers[i]->bombHit=false;
-                    cout<<endl;
                     
                     //find all of the foes in range of the bullet and damage them
                     for (int k=0; k<foes.size(); k++){
@@ -1215,7 +1214,8 @@ void testApp::exit(){
 
 //--------------------------------------------------------------
 void testApp::touchDown(ofTouchEventArgs & touch){
-    
+    cout<<"num towers: "<<towers.size()<<endl;
+    cout<<"num foes: "<<foes.size()<<endl;
     if (touch.id == 0 && gameState=="game"){
         fingerDown = true;
         
@@ -1689,7 +1689,9 @@ void testApp::undoDraw(){
 }
 
 //--------------------------------------------------------------
-void testApp::convertDrawingToGame(){ 
+void testApp::convertDrawingToGame(){
+    cout<<endl<<"start converting drawing to game"<<endl;
+    float startTime=ofGetElapsedTimef();
     
     needToConvertDrawingToGame = false; //turn the flag off
     
@@ -1744,11 +1746,12 @@ void testApp::convertDrawingToGame(){
             towers.erase(towers.begin()+i);
         }
     }
-    
+    cout<<"converting drawing to game took "<<(ofGetElapsedTimef()-startTime)<<endl;
 }
 
 //--------------------------------------------------------------
 bool testApp::findPathsForFoes(){
+    float startTime = ofGetElapsedTimef();
     //create a pair of temp foes to find paths for us
     //NormFoe tempFoeLeft;
     //NormFoe tempFoeTop;
@@ -1853,13 +1856,14 @@ bool testApp::findPathsForFoes(){
         }
     }
     
-    
+    cout<<"pathfinding took "<<(ofGetElapsedTimef()-startTime)<<endl;
     return true;
 }
 
 //--------------------------------------------------------------
 //checks the contour finder for blobs and updates the towers based on them
 void testApp::checkTowers(string type){
+    float startTime = ofGetElapsedTimef();
     //cout<<"checking "<<type<<endl;
     //if there is a blob inside of another blob, then it was not a full circle and should not be considerred
     vector <int> skip;
@@ -1868,8 +1872,8 @@ void testApp::checkTowers(string type){
     //JUST USE the holes boolean in the blob. JESUS
     for (int i = 0; i < contourFinder.nBlobs; i++){
         for (int k=0; k<i; k++){
-            if (ofDist(contourFinder.blobs[i].centroid.x,contourFinder.blobs[i].centroid.y,
-                       contourFinder.blobs[k].centroid.x,contourFinder.blobs[k].centroid.y)<minDist){
+            if (ofDistSquared(contourFinder.blobs[i].centroid.x,contourFinder.blobs[i].centroid.y,
+                       contourFinder.blobs[k].centroid.x,contourFinder.blobs[k].centroid.y)<minDist*minDist){
                 skip.push_back(i);
                 skip.push_back(k);
             }
@@ -1902,7 +1906,7 @@ void testApp::checkTowers(string type){
             bool towerHere=false;
             
             for (int k=0; k<towers.size(); k++){
-                if ( ofDist(towers[k]->pos.x,towers[k]->pos.y, contourFinder.blobs[i].centroid.x*boardScale,contourFinder.blobs[i].centroid.y*boardScale)<size*boardScale &&
+                if ( ofDistSquared(towers[k]->pos.x,towers[k]->pos.y, contourFinder.blobs[i].centroid.x*boardScale,contourFinder.blobs[i].centroid.y*boardScale)<powf(size*boardScale,2) &&
                     towers[k]->type==type){
                     //there is a tower here
                     towerHere=true;
@@ -1911,6 +1915,7 @@ void testApp::checkTowers(string type){
                     //was the tower built up? adjust its size and center position
                     //the image is twice the size of the field, so we need to cut the values in half before scalling them up to game size
                     towers[k]->setNewPos(contourFinder.blobs[i].centroid.x*boardScale, contourFinder.blobs[i].centroid.y*boardScale, size*boardScale);
+                    cout<<"I found ya"<<endl;
                 }
             }
             
@@ -1943,6 +1948,8 @@ void testApp::checkTowers(string type){
             }
         }
     }
+    
+    cout<<"checking "<<type<<" took "<<(ofGetElapsedTimef()-startTime)<<endl;
 }
 
 //--------------------------------------------------------------
