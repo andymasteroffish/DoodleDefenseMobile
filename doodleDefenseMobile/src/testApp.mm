@@ -1752,9 +1752,25 @@ void testApp::convertDrawingToGame(){
 //--------------------------------------------------------------
 bool testApp::findPathsForFoes(){
     float startTime = ofGetElapsedTimef();
-    //create a pair of temp foes to find paths for us
-    //NormFoe tempFoeLeft;
-    //NormFoe tempFoeTop;
+    
+    //check if we even need to bother
+    if (curBrushColor != 4){
+        bool noObstruction = true;
+        for (int i=foes.size()-1; i>=0; i--){
+            //foes[i]->isObstructed=false;    //assume it's OK
+            if (foes[i]->checkRouteForObstruction() == false){
+                noObstruction=false;
+            }
+        }
+        
+        if (noObstruction){
+            cout<<"no need to do more pathfinding"<<endl;
+            cout<<"pathfinding took "<<(ofGetElapsedTimef()-startTime)<<endl;
+            return true;
+        }
+    }
+    
+    
     
     //give the foes all of the info they need
     //for left
@@ -1823,11 +1839,9 @@ bool testApp::findPathsForFoes(){
             //first, if nothing was erased, check if their current path is still clear
             bool curPathOK = false;
             if (curBrushColor != 4){
-                curPathOK = foes[i]->checkRouteForObstruction();
-                
-                if (curPathOK){
-                    //cout<<"using current path"<<endl;
-                }
+                //curPathOK = foes[i]->checkRouteForObstruction();
+                curPathOK = !foes[i]->isObstructed;
+
             }
             
             //if that didn't work, see if they can hop on the existing route

@@ -76,6 +76,8 @@ public:
     int diagDist;
     int nextToClosedDist;   //make pathfinding reluctant to select tiles that are next to closed tiles
     
+    bool isObstructed;
+    
     //highlighting what has been explored so that player can see where the foe got stuck
     bool showPath;
     

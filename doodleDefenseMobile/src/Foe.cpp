@@ -72,7 +72,7 @@ void Foe::setup(float x, float y, float _goalX, float _goalY, float _fieldScale,
     displayAngle=0;
     turnSpeed=0.1;
     
-    
+    isObstructed = false;
 }
 
 //------------------------------------------------------------
@@ -656,6 +656,7 @@ void Foe::standardFindPath(){
 //goes thorugh the route the foe has now and returns true if none of the tiles on the route are obstructed or next to an obstructions
 bool Foe::checkRouteForObstruction(){
     showPath=false;
+    isObstructed = false;   //assume the path is clear
     
     //stealth foes can ignore this
     if (type=="stealth")
@@ -664,6 +665,7 @@ bool Foe::checkRouteForObstruction(){
     //error checking 
     if (nextNode>route.size()){
         cout<<"We got problems: nextNode was larger than route.size()"<<endl;
+        isObstructed = true;
         return false;
     }
     
@@ -676,11 +678,14 @@ bool Foe::checkRouteForObstruction(){
             for (int x2=-1; x2<=1; x2++){
                 for (int y2=-1; y2<=1; y2++){
                     int pixelPos2=(route[i]->y+y2)*fieldW+(route[i]->x+x2);
-                    if (wallPixels[pixelPos2]==0)
+                    if (wallPixels[pixelPos2]==0){
+                        isObstructed = true;
                         return false;   //this tile is impassible because there is a tile next to it that is a wall
+                    }
                 }
             }
         }else{
+            isObstructed = true;
             return false;   //this tile itself has become impassible
         }
     }
