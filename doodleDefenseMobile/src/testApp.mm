@@ -312,7 +312,8 @@ void testApp::setup(){
     hardModeUnlocked=false;
     hardModeBeaten=false;
     hardModeActive = false;
-    hardModeLevelIncrease =2.5;
+    hardModeLevelIncrease =2.2;
+    hardModeInkBonus = 50;
     hardModeCrownPic.loadImage("menu/titleCrown"+picNameEnd);
     
     //load the prefrences
@@ -352,6 +353,7 @@ void testApp::reset(){
     
     health=healthStart;
     totalInk=startInk;
+    if (hardModeActive) totalInk+=hardModeInkBonus;
     score=0;
     outOfInkBannerTimer=0;
     numEntrances=1; //TESTING

@@ -352,6 +352,7 @@ public:
     bool hardModeBeaten;
     bool hardModeActive;
     float hardModeLevelIncrease;  //how much gets added to the level of each foe
+    int hardModeInkBonus;           //start with slightly more ink in hard mode
     ofImage hardModeCrownPic;
     
     //showing sprites
