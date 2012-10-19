@@ -171,14 +171,12 @@ void SoundManager::toggleMusic(){
 
 /*
 void SoundManager::startPlayingMarkerSound(){
-    cout<<"start that terrible sound"<<endl;
     [markerStartSound play];
     [markerLoop play];
     playingMarkerStartSound = true;
 }
 
 void SoundManager::updateMarkerSound(){
-    cout<<"update my cunt: "<<markerStartSound.currentTime<<endl;
 //    if (!markerStartSound.isPlaying && playingMarkerStartSound){
 //        [markerLoop play];
 //        playingMarkerStartSound = false;
@@ -186,7 +184,6 @@ void SoundManager::updateMarkerSound(){
 }
 
 void SoundManager::stopPlayingMarkerSound(){
-    cout<<"STOP DAD"<<endl;
     [markerLoop pause];
 }
 */

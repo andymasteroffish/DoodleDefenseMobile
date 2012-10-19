@@ -71,7 +71,6 @@ public:
     void reset();
     
     void brushDown(float touchX, float touchY);
-    void undoDraw();
     
     void convertDrawingToGame();    //takes the pixels and reads the game values from them
     bool findPathsForFoes();
@@ -136,11 +135,6 @@ public:
     //images that get drawn in
     ofxCvGrayscaleImage     colorImgs[3];
     unsigned char *			colorPixels[3];
-    
-    //undo functionality
-    //NOT USED
-    ofxCvGrayscaleImage		prevBlackImg;
-    ofxCvGrayscaleImage     prevColorImgs[3];
     
     //display images - taking the CV images and showing them on screen
     unsigned char * colorDispPixels[3];

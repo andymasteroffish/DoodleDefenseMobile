@@ -9,7 +9,6 @@
 #include"HitTower.h"
 
 void HitTower::typeSetup(){
-    //cout<<"size: "<< size<<endl;
     range=size*3.5 *mobileRangeIncrease;           //moderate range
     
     rechargeTime=15;         //fast recharge (always going up even when firing
@@ -18,6 +17,7 @@ void HitTower::typeSetup(){
     
     bulletCol.setHex(0xCF1515);
     
+    //cout<<"size: "<< size<<endl;
     //cout<<"bullet damage: "<<bulletDamage<<endl;
     type="red";
 }

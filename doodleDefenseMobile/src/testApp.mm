@@ -39,7 +39,6 @@ void testApp::setup(){
     //black image
     blackImg.allocate(boardW, boardH);
     blackPixels = new unsigned char [boardW * boardH];
-    prevBlackImg.allocate(boardW, boardH);
     
     //set up the images
     wallPixels = new unsigned char [fieldW * fieldH];
@@ -49,7 +48,6 @@ void testApp::setup(){
     for (int i=0; i<3; i++){
         colorImgs[i].allocate(boardW, boardH);
         colorPixels[i]= new unsigned char [boardW * boardH];
-        prevColorImgs[i].allocate(boardW, boardH);
     }
     
     //set the colors to display each image
@@ -336,8 +334,7 @@ void testApp::setup(){
 }
 
 //--------------------------------------------------------------
-void testApp::reset(){ 
-    cout<<"reset"<<endl;
+void testApp::reset(){
     gameOver = false;
     
     //clear out any foes if there are any
@@ -434,7 +431,6 @@ void testApp::update(){
             ofxiPhoneExternalDisplay::isMirroring();
         }
     }
-    //cout<<"cur wave: "<<curWave<<endl;
     //TESTING
     //waveComplete = false;
     
@@ -951,7 +947,6 @@ void testApp::drawWaveCompleteAnimation(){
     
     //if time is up, return to the game
     if (curTime>waveAnimationTime){
-        cout<<"start it I think"<<endl;
         startNextWave();
     }
 }
@@ -1217,8 +1212,6 @@ void testApp::exit(){
 //--------------------------------------------------------------
 void testApp::touchDown(ofTouchEventArgs & touch){
     
-    cout<<"num towers: "<<towers.size()<<endl;
-    cout<<"num foes: "<<foes.size()<<endl;
     if (gameState=="game"){
         fingerDown = true;
         
@@ -1238,19 +1231,6 @@ void testApp::touchDown(ofTouchEventArgs & touch){
                 playerPause = true;
                 SM.playSound("paper");
             }
-
-            //undo button not working yet (or possibly ever)
-//            if (fastForwardButton.inside(touch.x,touch.y)){
-//                //fastForward=!fastForward;
-//                undoDraw();
-//            }else{
-//                cout<<"save"<<endl;
-//                //save the current board in case the player wants to undo
-//                prevBlackImg = blackImg;
-//                for (int i=0; i<3; i++){
-//                    prevColorImgs[i] = colorImgs[i];
-//                }
-//            }
             
             //start applying the brush
             if (touch.id==0){
@@ -1658,55 +1638,9 @@ void testApp::brushDown(float touchX, float touchY){
     
 }
 
-//--------------------------------------------------------------
-void testApp::undoDraw(){
-    //THIS DOES NOT YET ACCOUNT FOR THE INK USED
-    cout<<"undo"<<endl;
-    
-    //set the color images to be the preivous one
-    blackImg = prevBlackImg;
-    blackPixels = blackImg.getPixels();
-    for (int i=0; i<3; i++){
-        colorImgs[i] = prevColorImgs[i];
-        colorPixels[i] = prevColorImgs[i].getPixels();
-    }
-    
-//    //update this pixel on the display images
-//    for (int i=0; i<3; i++){
-//        colorDispPixels[i][dispPos+1] = MIN(255, colorPixels[i][pos]);
-//    }
-//    //and the black display image
-//    wallDispPixels[dispPos+1] = blackPixels[pos];
-    
-    //update the display images
-    for (int col=0; col<boardW; col++){
-        for (int row=0; row<boardH; row++){
-            //figure out where in the arrays this pixel is
-            int pos= row*boardW+col;
-            int dispPos= row*boardW*2+col*2;    //locaiton in the array of greyscale/alpha pixels used for display
-            
-            //update this pixel on the display images
-            for (int i=0; i<3; i++){
-                colorDispPixels[i][dispPos+1] = MIN(255, colorPixels[i][pos]);
-            }
-            //and the black display image
-            wallDispPixels[dispPos+1] = blackPixels[pos];
-            
-            //since soemthing changed, flag that we need to alter the game
-            needToConvertDrawingToGame = true;
-        }
-    }
-    
-    //apply it to the game
-    convertDrawingToGame();
-    
-}
 
 //--------------------------------------------------------------
 void testApp::convertDrawingToGame(){
-    cout<<endl<<"start converting drawing to game"<<endl;
-    float startTime=ofGetElapsedTimef();
-    
     needToConvertDrawingToGame = false; //turn the flag off
     
     //get the walls
@@ -1760,13 +1694,10 @@ void testApp::convertDrawingToGame(){
             towers.erase(towers.begin()+i);
         }
     }
-    cout<<"converting drawing to game took "<<(ofGetElapsedTimef()-startTime)<<endl;
 }
 
 //--------------------------------------------------------------
 bool testApp::findPathsForFoes(){
-    float startTime = ofGetElapsedTimef();
-    
     //check if we even need to bother
     if (curBrushColor != 4){
         bool noObstruction = true;
@@ -1778,8 +1709,6 @@ bool testApp::findPathsForFoes(){
         }
         
         if (noObstruction){
-            cout<<"no need to do more pathfinding"<<endl;
-            cout<<"pathfinding took "<<(ofGetElapsedTimef()-startTime)<<endl;
             return true;
         }
     }
@@ -1880,15 +1809,12 @@ bool testApp::findPathsForFoes(){
         }
     }
     
-    cout<<"pathfinding took "<<(ofGetElapsedTimef()-startTime)<<endl;
     return true;
 }
 
 //--------------------------------------------------------------
 //checks the contour finder for blobs and updates the towers based on them
 void testApp::checkTowers(string type){
-    float startTime = ofGetElapsedTimef();
-    //cout<<"checking "<<type<<endl;
     //if there is a blob inside of another blob, then it was not a full circle and should not be considerred
     vector <int> skip;
     float minDist=5;
@@ -1939,7 +1865,6 @@ void testApp::checkTowers(string type){
                     //was the tower built up? adjust its size and center position
                     //the image is twice the size of the field, so we need to cut the values in half before scalling them up to game size
                     towers[k]->setNewPos(contourFinder.blobs[i].centroid.x*boardScale, contourFinder.blobs[i].centroid.y*boardScale, size*boardScale);
-                    cout<<"I found ya"<<endl;
                 }
             }
             
@@ -1973,7 +1898,6 @@ void testApp::checkTowers(string type){
         }
     }
     
-    cout<<"checking "<<type<<" took "<<(ofGetElapsedTimef()-startTime)<<endl;
 }
 
 //--------------------------------------------------------------
@@ -2080,7 +2004,6 @@ void testApp::setMazeBorders(){
 
 //--------------------------------------------------------------
 void testApp::startNextWave(){
-    //cout<<"start Next"<<endl;
     waveComplete=false;
     curWave++;
     if (curWave<waves.size()){
@@ -2107,13 +2030,11 @@ void testApp::startNextWave(){
         numEntrances=2;
         convertDrawingToGame(); //to account for the new maze border
     }
-    
-    //cout<<"end start Next"<<endl;
+
 }
 
 //--------------------------------------------------------------
 void testApp::endWave(){
-    cout<<"END DAT WAVE"<<endl;
     waveComplete=true;
     waveAnimationStart=ofGetElapsedTimef();
     
@@ -2183,7 +2104,6 @@ void testApp::spawnFoe(string name, float level){
         if (!foes[foes.size()-1]->pathFound){
             noPath=true;
             SM.playSound("error");  //play the sound
-            cout<<"NO PATH. GET OUT"<<endl;
         }
     }
     
