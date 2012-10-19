@@ -632,8 +632,7 @@ void testApp::update(){
             }
         }
     }
-    
-	
+
 }
 
 //--------------------------------------------------------------
@@ -1216,9 +1215,10 @@ void testApp::exit(){
 
 //--------------------------------------------------------------
 void testApp::touchDown(ofTouchEventArgs & touch){
+    
     cout<<"num towers: "<<towers.size()<<endl;
     cout<<"num foes: "<<foes.size()<<endl;
-    if (touch.id == 0 && gameState=="game"){
+    if (gameState=="game"){
         fingerDown = true;
         
         if (!playerPause && health>0){
@@ -1252,7 +1252,10 @@ void testApp::touchDown(ofTouchEventArgs & touch){
 //            }
             
             //start applying the brush
-            brushDown(touch.x, touch.y);
+            if (touch.id==0){
+                brushDown(touch.x, touch.y);
+            }
+            
         }
         
     }
@@ -1294,8 +1297,10 @@ void testApp::touchDown(ofTouchEventArgs & touch){
         }
     }
     
-    lastX = touch.x;
-    lastY = touch.y;
+    if (touch.id==0){
+        lastX = touch.x;
+        lastY = touch.y;
+    }
     
 }
 
@@ -1318,16 +1323,19 @@ void testApp::touchMoved(ofTouchEventArgs & touch){
         for (int i=0; i<numSpacedPoints+1; i++){
             brushDown(lastX + i*run, lastY + i*rise);
         }
+        
+        lastX = touch.x;
+        lastY = touch.y;
     
     }
     
-    lastX = touch.x;
-    lastY = touch.y;
+    
     
 }
 
 //--------------------------------------------------------------
 void testApp::touchUp(ofTouchEventArgs & touch){
+    
     if (ignoreTouchUp){
         //turn off the flag and get out
         ignoreTouchUp=false;

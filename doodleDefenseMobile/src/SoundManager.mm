@@ -32,8 +32,15 @@ void SoundManager::setup(){
     //game music
     gameMusic = loadSingleSound("audio/DD_THEME_LOOP", "caf", 0.35, true);
     
+    //marker sound
+//    markerStartSound = loadSingleSound("audio/MARKER_FRONT", "caf", 1, false);
+//    markerLoop = loadSingleSound("audio/MARKER_LOOP", "caf", 1, true);
+ //    playingMarkerStartSound = false;
+    
     muteSoundEffects = false;
     muteMusic = true;
+    
+
     
     if (!muteMusic)
         [gameMusic play];
@@ -161,3 +168,25 @@ void SoundManager::toggleMusic(){
         [gameMusic pause];
     }
 }
+
+/*
+void SoundManager::startPlayingMarkerSound(){
+    cout<<"start that terrible sound"<<endl;
+    [markerStartSound play];
+    [markerLoop play];
+    playingMarkerStartSound = true;
+}
+
+void SoundManager::updateMarkerSound(){
+    cout<<"update my cunt: "<<markerStartSound.currentTime<<endl;
+//    if (!markerStartSound.isPlaying && playingMarkerStartSound){
+//        [markerLoop play];
+//        playingMarkerStartSound = false;
+//    }
+}
+
+void SoundManager::stopPlayingMarkerSound(){
+    cout<<"STOP DAD"<<endl;
+    [markerLoop pause];
+}
+*/

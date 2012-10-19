@@ -22,6 +22,10 @@ public:
     AVAudioPlayer* loadSingleSound(string fileName, string fileType, float volume, bool loop);
     bool playSound(string refrenceName);
     
+//    void startPlayingMarkerSound();
+//    void updateMarkerSound();
+//    void stopPlayingMarkerSound();
+    
     void toggleSounds();
     void toggleMusic();
     
@@ -38,6 +42,10 @@ public:
     AVAudioPlayer* hitSounds[NUM_DUP_SOUNDS];
     AVAudioPlayer* shootSounds[NUM_DUP_SOUNDS];
     
+    //drawing sounds
+//    AVAudioPlayer* markerStartSound;
+//    AVAudioPlayer* markerLoop;
+//    bool playingMarkerStartSound;
     
     bool muteSoundEffects;
     bool muteMusic;
