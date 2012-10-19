@@ -1,5 +1,6 @@
 #include "testApp.h"
 
+bool publicRelease = true;
 
 //--------------------------------------------------------------
 void testApp::setup(){	
@@ -1441,14 +1442,17 @@ void testApp::touchUp(ofTouchEventArgs & touch){
 
 //--------------------------------------------------------------
 void testApp::touchDoubleTap(ofTouchEventArgs & touch){
-    if (touch.x<60 && touch.y>ofGetHeight()-60)
-        showAllInfo = !showAllInfo;
     
-    if (touch.x>ofGetWidth()-60 && touch.y>ofGetHeight()-60)
-        spawnFoe("norm", 1);
-    
-    if (touch.x<60 && touch.y<60)
-        reset();
+    if(!publicRelease){
+        if (touch.x<60 && touch.y>ofGetHeight()-60)
+            showAllInfo = !showAllInfo;
+        
+        if (touch.x>ofGetWidth()-60 && touch.y>ofGetHeight()-60)
+            spawnFoe("norm", 1);
+        
+        if (touch.x<60 && touch.y<60)
+            reset();
+    }
     
     //health-=1;
     
