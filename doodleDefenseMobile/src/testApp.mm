@@ -175,13 +175,6 @@ void testApp::setup(){
     
     waveAnimationTime=5;    //flash for x seconds when a wave is finished
     
-    //ink values
-    float relativeInkScale = 0.37;//0.4;   //for adjusting the overall cost of things
-    blackInkValue   = .02 *relativeInkScale;
-    colorInkValue[0] = .23 *relativeInkScale;
-    colorInkValue[1] = .35 *relativeInkScale;
-    colorInkValue[2] = .30 *relativeInkScale;
-    
     //getting ink back when towers and walls are erased
     towerRefund=0.7;    //what percentage of the tower's value a player gets back when they kill one
     wallRefund=0.85;
@@ -303,8 +296,8 @@ void testApp::setup(){
     
     
     //punishing the player for forcing backtracks
-    punishmentFoeTime=50;
-    punishmentTimerDecrease=0.5;
+    punishmentFoeTime=100;
+    punishmentTimerDecrease=0.6;
     punishmentFoeTimer=0;
     
     //hard mode
@@ -348,6 +341,17 @@ void testApp::reset(){
     //set all towers to think the player is alive
     for (int i=0; i<towers.size(); i++)
         towers[i]->playerDead=false;
+    
+    //ink values
+    float relativeInkScale;// = 0.37;//0.4;   //for adjusting the overall cost of things
+    if (!hardModeActive) relativeInkScale = 0.3;
+    else                relativeInkScale = 0.37;
+    blackInkValue   = .02 *relativeInkScale;
+    colorInkValue[0] = .23 *relativeInkScale;
+    colorInkValue[1] = .35 *relativeInkScale;
+    colorInkValue[2] = .30 *relativeInkScale;
+    
+    cout<<"THE INK SCAEL IS:"<<relativeInkScale<<endl;
     
     health=healthStart;
     totalInk=startInk;
