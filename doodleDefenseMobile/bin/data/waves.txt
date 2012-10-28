@@ -13,7 +13,7 @@ mes A bit faster#now
 new 1
 dur 30
 add fast 25
-col fast 
+col fast
 mes Watch out for#fast invaders
 
 new 2

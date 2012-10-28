@@ -351,8 +351,6 @@ void testApp::reset(){
     colorInkValue[1] = .35 *relativeInkScale;
     colorInkValue[2] = .30 *relativeInkScale;
     
-    cout<<"THE INK SCAEL IS:"<<relativeInkScale<<endl;
-    
     health=healthStart;
     totalInk=startInk;
     if (hardModeActive) totalInk+=hardModeInkBonus;
