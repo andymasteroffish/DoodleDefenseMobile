@@ -24,10 +24,8 @@ void WaveInfoBox::setup(int _waveNum, string _message, ofImage * _backPic, ofTru
     //set color based on the id
     if (colorID=="norm"){
         bgColor.set(207,128,182);
-        cout<<"I'm normal"<<endl;
     }
     if (colorID=="fast"){
-        cout<<"I'm fast"<<endl;
         bgColor.set(245,136,31);
     }
     if (colorID=="heavy")

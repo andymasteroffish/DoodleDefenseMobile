@@ -176,7 +176,7 @@ void testApp::setup(){
     waveAnimationTime=5;    //flash for x seconds when a wave is finished
     
     //getting ink back when towers and walls are erased
-    towerRefund=0.7;    //what percentage of the tower's value a player gets back when they kill one
+    towerRefund=0.85;    //what percentage of the tower's value a player gets back when they kill one
     wallRefund=0.85;
     
     
@@ -593,7 +593,7 @@ void testApp::update(){
             //check if it reached the end
             if (ofDist(inkParticles[i].pos.x, inkParticles[i].pos.y, inkEndX, inkEndY)<ofGetWidth()*0.02){
                 //give the player ink
-                totalInk+=inkParticles[i].inkValue;
+                //totalInk+=inkParticles[i].inkValue;
                 //kill the particle
                 inkParticles.erase(inkParticles.begin()+i);
             }
@@ -1073,7 +1073,9 @@ void testApp::drawPlayerInfo(){
     if (damageFlashTimer-- > 0){
         ofSetRectMode(OF_RECTMODE_CORNER);
         ofSetColor(255, ofMap(damageFlashTimer, 0, damageFlashTime, 0, 255));
-        playerHitPic.draw(51,179);
+        float damageX = boardOffset.x+boardW*boardScale*0.48 - playerHitPic.width/2;
+        float damageY = boardOffset.y+boardH*boardScale*0.5 - playerHitPic.height/2;
+        playerHitPic.draw(damageX,damageY);
     }
     
 }
@@ -1627,6 +1629,8 @@ void testApp::brushDown(float touchX, float touchY){
             inkParticles.push_back(newInkParticle);
             //take away from the total
             colorInkRefund[i]-=inkPerParticle;
+            //add the ink to the player
+            totalInk+=newInkParticle.inkValue;
         }
     }
     
@@ -2127,6 +2131,8 @@ void testApp::killFoe(int num){
             newInkParticle.col.set(0, 0, 0);
             newInkParticle.inkPic = &inkParticlePic;
             inkParticles.push_back(newInkParticle);
+            //add the ink to the player
+            totalInk+=newInkParticle.inkValue;
         }
 
     }
@@ -2145,13 +2151,10 @@ void testApp::killFoe(int num){
 
 //--------------------------------------------------------------
 void testApp::takeDamage(int damage){
-    //show red for a second if the player is still in the game
-    if (gameOver)   damageFlashTimer=damageFlashTime; 
-    
     health-=damage;
     
     //check if the player is dead
-    if (health<=0){
+    if (health==0){
         //gray out all towers
         for (int i=0; i<towers.size(); i++){
             towers[i]->playerDead=true;
@@ -2161,8 +2164,12 @@ void testApp::takeDamage(int damage){
         gameOver = true;
     }
     
-    //play the sound
-    SM.playSound("playerHit");
+    //play the sound if the player is still alive
+    if (health>0){
+        SM.playSound("playerHit");
+        //show red for a second if the player is still in the game
+        damageFlashTimer=damageFlashTime;
+    }
 }
 
 //--------------------------------------------------------------
