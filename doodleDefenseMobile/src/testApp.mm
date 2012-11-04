@@ -236,8 +236,8 @@ void testApp::setup(){
     }
     
     //displaying the wave info
-    waveInfoBottom=ofGetHeight()*0.90;//boardOffset.y+boardH*boardScale-ofGetHeight()*0.15;
-    waveInfoDistToFadeOut=ofGetHeight()*0.3;//*0.8;
+    waveInfoBottom=ofGetHeight()*0.90;
+    waveInfoDistToFadeOut=ofGetHeight()*0.27;
     //box images
     for (int i=0; i<NUM_WAVE_INFO_BOX_PICS; i++)
         waveInfoPics[i].loadImage("waveInfoBoxes/boxes-"+ofToString(i+1)+picNameEnd);
