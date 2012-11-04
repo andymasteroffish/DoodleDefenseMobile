@@ -1,11 +1,5 @@
 new 1
 dur 60
-add fast 100
-col norm
-mes TEST
-
-new 1
-dur 60
 add norm 15
 col norm
 mes Start drawing
@@ -20,7 +14,7 @@ new 1
 dur 30
 add fast 25
 col fast
-mes Watch out for#fast invaders
+mes Tougher Dudes
 
 new 2
 dur 60
