@@ -356,7 +356,7 @@ bool Foe::checkExistingRoute(ofPoint (&routeGrid)[FIELD_W][FIELD_H]){
 vector<tile *> Foe::checkProximityToExistingRoute(ofPoint (&routeGrid)[FIELD_W][FIELD_H]){
     ofPoint connectingPoint(-1,-1); //assume that no connecting point will be found
     
-    int distToCheck = 8;    //how far the route can be from the foe and still be found
+    int distToCheck = 5;    //how far the route can be from the foe and still be found
     
     vector<tile *> unexplored;     
     vector<tile *> explored;
