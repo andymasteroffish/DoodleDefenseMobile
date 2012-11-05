@@ -13,8 +13,6 @@ void FastFoe::typeSetup(float level){
     type="fast";
     speed*=2;
     
-    strokeSprite = ofxSpriteSheetRenderer::makeSprite(0, 0, 5, 11, 7, frameTime, -1, -1, 1, 128);
-    fillSprite = ofxSpriteSheetRenderer::makeSprite(0, 7, 5, 11, 7, frameTime, -1, -1, 1, 128);
 }
 
 

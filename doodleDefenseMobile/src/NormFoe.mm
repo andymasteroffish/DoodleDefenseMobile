@@ -13,8 +13,6 @@ void NormFoe::typeSetup(float level){
     //normal foe just uses the defaults
     type="norm";
     
-    strokeSprite = ofxSpriteSheetRenderer::makeSprite(0, 54, 5, 9, 9, frameTime, -1, -1, 1, 128);
-    fillSprite = ofxSpriteSheetRenderer::makeSprite(0, 63, 5, 9, 9, frameTime, -1, -1, 1, 128);
 }
 
 

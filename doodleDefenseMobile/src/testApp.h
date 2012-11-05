@@ -6,7 +6,6 @@
 #include "ofxiPhoneExtras.h"
 #include "ofxiPhoneExternalDisplay.h"   //for mirroring
 
-#include "ofxSpriteSheetRenderer.h"
 #include "ofxXmlSettings.h"
 
 #include "Foe.h"
@@ -348,9 +347,6 @@ public:
     float hardModeLevelIncrease;  //how much gets added to the level of each foe
     int hardModeInkBonus;           //start with slightly more ink in hard mode
     ofImage hardModeCrownPic;
-    
-    //showing sprites
-    ofxSpriteSheetRenderer * spriteRenderer;	// our spriteRenderer
     
     //testing
     int lastX;

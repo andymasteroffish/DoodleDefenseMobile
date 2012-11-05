@@ -8,8 +8,6 @@ void HeavyFoe::typeSetup(float level){
     fullHP*=3;  //way more health than a normal foe
     speed*=0.3; //slow it down
     
-    strokeSprite = ofxSpriteSheetRenderer::makeSprite(0, 14, 5, 9, 13, frameTime, -1, -1, 1, 128);
-    fillSprite = ofxSpriteSheetRenderer::makeSprite(0, 27, 5, 9, 13, frameTime, -1, -1, 1, 128);
 }
 
 

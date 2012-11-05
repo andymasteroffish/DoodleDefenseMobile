@@ -35,10 +35,6 @@
 		0AECA86315B4F9FA00123F00 /* BombAnimation.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0AECA85C15B4F9FA00123F00 /* BombAnimation.mm */; };
 		0AECA86415B4F9FA00123F00 /* FreezeTower.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0AECA85E15B4F9FA00123F00 /* FreezeTower.mm */; };
 		0AECA86515B4F9FA00123F00 /* HitTower.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0AECA86015B4F9FA00123F00 /* HitTower.mm */; };
-		0AFD81591618EF0000D78511 /* CollageTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AFD81511618EF0000D78511 /* CollageTexture.cpp */; };
-		0AFD815A1618EF0000D78511 /* LinearTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AFD81531618EF0000D78511 /* LinearTexture.cpp */; };
-		0AFD815B1618EF0000D78511 /* ofxSpriteSheetRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AFD81551618EF0000D78511 /* ofxSpriteSheetRenderer.cpp */; };
-		0AFD815C1618EF0000D78511 /* PixelTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AFD81571618EF0000D78511 /* PixelTexture.cpp */; };
 		169d3c72fde6c5590a1616f500a456b4 /* ofxCvFloatImage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7b6a03390302d5a2c9f0e4ab630ae8d6 /* ofxCvFloatImage.cpp */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
@@ -143,14 +139,6 @@
 		0AECA85E15B4F9FA00123F00 /* FreezeTower.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = FreezeTower.mm; sourceTree = "<group>"; };
 		0AECA85F15B4F9FA00123F00 /* HitTower.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HitTower.h; sourceTree = "<group>"; };
 		0AECA86015B4F9FA00123F00 /* HitTower.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = HitTower.mm; sourceTree = "<group>"; };
-		0AFD81511618EF0000D78511 /* CollageTexture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CollageTexture.cpp; sourceTree = "<group>"; };
-		0AFD81521618EF0000D78511 /* CollageTexture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CollageTexture.h; sourceTree = "<group>"; };
-		0AFD81531618EF0000D78511 /* LinearTexture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LinearTexture.cpp; sourceTree = "<group>"; };
-		0AFD81541618EF0000D78511 /* LinearTexture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LinearTexture.h; sourceTree = "<group>"; };
-		0AFD81551618EF0000D78511 /* ofxSpriteSheetRenderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxSpriteSheetRenderer.cpp; sourceTree = "<group>"; };
-		0AFD81561618EF0000D78511 /* ofxSpriteSheetRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxSpriteSheetRenderer.h; sourceTree = "<group>"; };
-		0AFD81571618EF0000D78511 /* PixelTexture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PixelTexture.cpp; sourceTree = "<group>"; };
-		0AFD81581618EF0000D78511 /* PixelTexture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PixelTexture.h; sourceTree = "<group>"; };
 		0cf0aa3895d28e97d8a1e4a938976234 /* ground_truth.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ground_truth.h; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv2/flann/ground_truth.h; sourceTree = SOURCE_ROOT; };
 		114b872696817cc33990fc83feb1259e /* imgproc.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = imgproc.hpp; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv2/imgproc/imgproc.hpp; sourceTree = SOURCE_ROOT; };
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -410,29 +398,6 @@
 			name = Towers;
 			sourceTree = "<group>";
 		};
-		0AFD814F1618EF0000D78511 /* ofxSpriteSheetRenderer */ = {
-			isa = PBXGroup;
-			children = (
-				0AFD81501618EF0000D78511 /* src */,
-			);
-			path = ofxSpriteSheetRenderer;
-			sourceTree = "<group>";
-		};
-		0AFD81501618EF0000D78511 /* src */ = {
-			isa = PBXGroup;
-			children = (
-				0AFD81511618EF0000D78511 /* CollageTexture.cpp */,
-				0AFD81521618EF0000D78511 /* CollageTexture.h */,
-				0AFD81531618EF0000D78511 /* LinearTexture.cpp */,
-				0AFD81541618EF0000D78511 /* LinearTexture.h */,
-				0AFD81551618EF0000D78511 /* ofxSpriteSheetRenderer.cpp */,
-				0AFD81561618EF0000D78511 /* ofxSpriteSheetRenderer.h */,
-				0AFD81571618EF0000D78511 /* PixelTexture.cpp */,
-				0AFD81581618EF0000D78511 /* PixelTexture.h */,
-			);
-			path = src;
-			sourceTree = "<group>";
-		};
 		0f07fe174552def007bf5ad5d0f37785 /* opencv2 */ = {
 			isa = PBXGroup;
 			children = (
@@ -646,7 +611,6 @@
 		BB16F26B0F2B646B00518274 /* addons */ = {
 			isa = PBXGroup;
 			children = (
-				0AFD814F1618EF0000D78511 /* ofxSpriteSheetRenderer */,
 				0A425F38160BF3A800F2A227 /* ofxDirList */,
 				0A425F3E160BF3A800F2A227 /* ofxXmlSettings */,
 				a0b90d3b0adb9c1716816714bf7f212b /* ofxOpenCv */,
@@ -941,10 +905,6 @@
 				0A425F4A160BF3A800F2A227 /* tinyxmlerror.cpp in Sources */,
 				0A425F4B160BF3A800F2A227 /* tinyxmlparser.cpp in Sources */,
 				0A425F4C160BF3A800F2A227 /* ofxXmlSettings.cpp in Sources */,
-				0AFD81591618EF0000D78511 /* CollageTexture.cpp in Sources */,
-				0AFD815A1618EF0000D78511 /* LinearTexture.cpp in Sources */,
-				0AFD815B1618EF0000D78511 /* ofxSpriteSheetRenderer.cpp in Sources */,
-				0AFD815C1618EF0000D78511 /* PixelTexture.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
