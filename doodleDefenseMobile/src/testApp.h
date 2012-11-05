@@ -316,7 +316,7 @@ public:
     ofRectangle muteMusicButton;
     
     //how to screens
-    #define NUM_HOW_TO_SLIDES 5
+    #define NUM_HOW_TO_SLIDES 6
     ofImage howToSlides[NUM_HOW_TO_SLIDES];
     ofImage nextButtonPic[2];
     ofRectangle nextButton;

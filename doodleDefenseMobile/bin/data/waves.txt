@@ -14,13 +14,13 @@ new 1
 dur 30
 add fast 25
 col fast
-mes Tougher Dudes
+mes Watch Out for#fast foes
 
 new 2
 dur 60
 add heavy 15
 col heavy
-mes Heavies take#more damage#to kill
+mes Tougher Dudes
 
 new 2
 dur 80
