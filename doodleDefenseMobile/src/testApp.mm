@@ -485,7 +485,7 @@ void testApp::update(){
                     //kill it
                     killFoe(i);
                     //play the sound
-                    //SM.playSound("enemyDeath");
+                    SM.playSound("enemyDeath");
                 }
             }
             
