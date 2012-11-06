@@ -566,6 +566,9 @@ void testApp::update(){
                     BombAnimation newBombAnimation;
                     newBombAnimation.setup(towers[i]->bullet.pos.x,towers[i]->bullet.pos.y,towers[i]->blastRadius);
                     bombAnimations.push_back(newBombAnimation);
+                    
+                    //play the sound
+                    SM.playSound("bomb");
                 }
             }
         }
@@ -2117,7 +2120,7 @@ void testApp::spawnFoe(string name, float level){
 
 //--------------------------------------------------------------
 void testApp::killFoe(int num){
-    //spawn an explosion and amke ink if it didn't reach the end
+    //spawn an explosion and make ink if it didn't reach the end
     if (!foes[num]->reachedTheEnd){
         Explosion newExplosion;
         newExplosion.setup(foes[num]->p.pos, &explosionPic);

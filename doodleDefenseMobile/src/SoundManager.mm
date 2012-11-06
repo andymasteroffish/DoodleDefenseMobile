@@ -31,16 +31,10 @@ void SoundManager::setup(){
     
     //game music
     gameMusic = loadSingleSound("audio/DD_THEME_LOOP", "caf", 0.35, true);
-    
-    //marker sound
-//    markerStartSound = loadSingleSound("audio/MARKER_FRONT", "caf", 1, false);
-//    markerLoop = loadSingleSound("audio/MARKER_LOOP", "caf", 1, true);
- //    playingMarkerStartSound = false;
+
     
     muteSoundEffects = false;
-    muteMusic = true;
-    
-
+    muteMusic = false;
     
     if (!muteMusic)
         [gameMusic play];

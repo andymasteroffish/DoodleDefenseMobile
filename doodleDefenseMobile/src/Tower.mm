@@ -48,8 +48,9 @@ void Tower::update(){
         shooting=false;
         
         //if this was a bomb tower, detonate the bomb where it was
-        if (type=="green")
+        if (type=="green"){
             bombHit=true;
+        }
         
     }
     

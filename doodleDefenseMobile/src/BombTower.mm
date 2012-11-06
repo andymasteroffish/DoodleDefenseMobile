@@ -39,6 +39,4 @@ void BombTower::draw(){
 void BombTower::hitTarget(){
     shooting=false;
     bombHit=true;
-    //play the sound
-    SM->playSound("bomb");
 }
