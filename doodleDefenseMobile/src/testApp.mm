@@ -1615,7 +1615,7 @@ void testApp::brushDown(float touchX, float touchY){
     }
     
     //spit out some ink pixels if ink was refunded
-    float inkPerParticle = 4;
+    //float inkPerParticle = 4;
     float pixelWiggle = ofGetWidth()*0.01;  //the force with which the particle can spawn
     
     //get the average locaiton of any refunds that hapenned
@@ -1624,26 +1624,23 @@ void testApp::brushDown(float touchX, float touchY){
     
     //check for colored ink
     for (int i=0; i<4; i++){
-        while(colorInkRefund[i]>0){
-            particle newInkParticle;
-            float thisAngle = ofRandom(TWO_PI);
-            float newX = refundAvgLoc.x*boardScale;
-            float newY = refundAvgLoc.y*boardScale;    //right now, this is not technicaly placing along a circle
-            newInkParticle.setInitialCondition(newX, newY, cos(thisAngle)*ofRandom(pixelWiggle), sin(thisAngle)*ofRandom(pixelWiggle));
-            //newInkParticle.inkValue = MIN(inkPerParticle, colorInkRefund[i]);
-            float inkVal=MIN(inkPerParticle, colorInkRefund[i]);
-            newInkParticle.col = (i<3) ? dispColor[i] : ofColor::black;
-            newInkParticle.inkPic = &inkParticlePic;
+        if (colorInkRefund[i]>0){
+            //give the player the ink
+            totalInk+=colorInkRefund[i];
+            //reset the refund value
+            colorInkRefund[i]=0;
             
-            //only push back some because it's running too damn slow
+            //spawn an ink particle some of the time
             if (ofRandomuf()<0.2){
+                particle newInkParticle;
+                float thisAngle = ofRandom(TWO_PI);
+                float newX = refundAvgLoc.x*boardScale;
+                float newY = refundAvgLoc.y*boardScale;    //right now, this is not technicaly placing along a circle
+                newInkParticle.setInitialCondition(newX, newY, cos(thisAngle)*ofRandom(pixelWiggle), sin(thisAngle)*ofRandom(pixelWiggle));
+                newInkParticle.col = (i<3) ? dispColor[i] : ofColor::black;
+                newInkParticle.inkPic = &inkParticlePic;
                 inkParticles.push_back(newInkParticle);
             }
-            //take away from the total
-            colorInkRefund[i]-=inkPerParticle;
-            //add the ink to the player
-            //totalInk+=newInkParticle.inkValue;
-            totalInk+=inkVal;
         }
     }
     
