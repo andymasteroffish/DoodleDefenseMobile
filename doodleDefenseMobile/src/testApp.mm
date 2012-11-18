@@ -1630,14 +1630,20 @@ void testApp::brushDown(float touchX, float touchY){
             float newX = refundAvgLoc.x*boardScale;
             float newY = refundAvgLoc.y*boardScale;    //right now, this is not technicaly placing along a circle
             newInkParticle.setInitialCondition(newX, newY, cos(thisAngle)*ofRandom(pixelWiggle), sin(thisAngle)*ofRandom(pixelWiggle));
-            newInkParticle.inkValue = MIN(inkPerParticle, colorInkRefund[i]);
+            //newInkParticle.inkValue = MIN(inkPerParticle, colorInkRefund[i]);
+            float inkVal=MIN(inkPerParticle, colorInkRefund[i]);
             newInkParticle.col = (i<3) ? dispColor[i] : ofColor::black;
             newInkParticle.inkPic = &inkParticlePic;
-            inkParticles.push_back(newInkParticle);
+            
+            //only push back some because it's running too damn slow
+            if (ofRandomuf()<0.2){
+                inkParticles.push_back(newInkParticle);
+            }
             //take away from the total
             colorInkRefund[i]-=inkPerParticle;
             //add the ink to the player
-            totalInk+=newInkParticle.inkValue;
+            //totalInk+=newInkParticle.inkValue;
+            totalInk+=inkVal;
         }
     }
     
@@ -2041,8 +2047,9 @@ void testApp::startNextWave(){
     //check if it is time to increase the number of entrances starting with the 3rd wave
     if (curWave>=4){ //should be 4
         numEntrances=2;
-        convertDrawingToGame(); //to account for the new maze border
     }
+    
+    convertDrawingToGame(); //to account for the new maze border
 
 }
 
@@ -2134,12 +2141,13 @@ void testApp::killFoe(int num){
         for (int p=0; p<foes[num]->inkVal;p++){
             particle newInkParticle;
             newInkParticle.setInitialCondition(foes[num]->p.pos.x,foes[num]->p.pos.y,ofRandom(-5,5),ofRandom(-5,5));
-            newInkParticle.inkValue = 1;
+            //newInkParticle.inkValue = 1;
             newInkParticle.col.set(0, 0, 0);
             newInkParticle.inkPic = &inkParticlePic;
             inkParticles.push_back(newInkParticle);
             //add the ink to the player
-            totalInk+=newInkParticle.inkValue;
+            //totalInk+=newInkParticle.inkValue;
+            totalInk += 1;
         }
 
     }

@@ -37,7 +37,7 @@ public:
 	
     float damping;
     
-    float inkValue;
+    //float inkValue;
     ofColor col;
     ofImage * inkPic;
     

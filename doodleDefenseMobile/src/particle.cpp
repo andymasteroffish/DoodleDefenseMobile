@@ -6,7 +6,7 @@ particle::particle(){
 	setInitialCondition(0,0,0,0);
 	damping = 0.05f;
 	bFixed = false;
-    inkValue = 0;   //most particles don't need to know anythign about inkValue
+    //inkValue = 0;   //most particles don't need to know anythign about inkValue
 }
 
 //------------------------------------------------------------
