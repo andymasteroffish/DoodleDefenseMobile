@@ -457,8 +457,15 @@ void testApp::update(){
             //manage the current wave
             if (curWave>=0 && !wavesDone){
                 waves[curWave].update(paused, fastForward);
-                if (waves[curWave].readyForNextFoe)
+                if (waves[curWave].readyForNextFoe){
+                    bool needToCheckBoard = waves[curWave].nextFoe==0;
                     spawnFoe(waves[curWave].getNextFoe(),waves[curWave].level + (hardModeActive*hardModeLevelIncrease));
+                    
+                    if (needToCheckBoard){
+                        cout<<"CHECK IT NOW"<<endl;
+                        convertDrawingToGame();
+                    }
+                }
                 
                 //if this wave is done, and all foes are dead or offscreen, we can start the next wave if the player is still alive
                 if (waves[curWave].done && foes.size()==0 && health>0 && !waveComplete)
@@ -1438,8 +1445,6 @@ void testApp::touchDoubleTap(ofTouchEventArgs & touch){
         if (touch.x<60 && touch.y>ofGetHeight()-60)
             showAllInfo = !showAllInfo;
         
-        if (touch.x>ofGetWidth()-60 && touch.y>ofGetHeight()-60)
-            spawnFoe("norm", 1);
         
         if (touch.x<60 && touch.y<60)
             reset();
@@ -2067,7 +2072,7 @@ void testApp::endWave(){
 }
 
 //--------------------------------------------------------------
-void testApp::spawnFoe(string name, float level){ 
+void testApp::spawnFoe(string name, float level){
     if (name=="fast"){
         FastFoe * newFoe=new FastFoe;
         newFoe->setPics(fastFoePic[0], fastFoePic[1]);

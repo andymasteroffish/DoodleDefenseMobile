@@ -52,7 +52,7 @@ void Wave::start(){
 
 void Wave::update(bool paused, bool fastForward){
     if (fastForward){
-        startTime-=16;  //at 60 frame/sec, this is roughly the equivalant of one farm
+        startTime-=16;  //at 60 frame/sec, this is roughly the equivalant of one frame
     }
     
     //don't advance time if the agme is paused
