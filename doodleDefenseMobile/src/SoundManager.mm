@@ -36,8 +36,6 @@ void SoundManager::setup(){
     muteSoundEffects = false;
     muteMusic = false;
     
-    if (!muteMusic)
-        [gameMusic play];
 }
 
 //adds an external file to the vector of sound effects

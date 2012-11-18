@@ -323,6 +323,10 @@ void testApp::setup(){
     
     gameState="menu";
     
+    //start the game music if we should
+    if (!SM.muteMusic)
+        [SM.gameMusic play];
+    
     reset();
 }
 
